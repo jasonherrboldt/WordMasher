@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Hello world!
+ * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
  *
  */
 public class App {
@@ -33,10 +33,10 @@ public class App {
             // initializeMemberVariables();
             englishWords = readFileIntoMemory(englishWordsFile);
             // debug
-            // printNStringsFromList(englishWords, 10);
+            printNStringsFromList(englishWords, "englishWords", 10);
             specialCharacters = readFileIntoMemory(specialCharactersFile);
             // debug
-            // printNStringsFromList(specialCharacters, 15);
+            printNStringsFromList(specialCharacters, "specialCharacters", 15);
             randomWords = pickRandomWords();
             // continue...
         }
@@ -274,18 +274,18 @@ public class App {
     /**
      * Mostly for debugging.
      *
-     * @param list The list to print
-     * @param n    How many items of the list to print.
+     * @param list     The list to print
+     * @param listName The name of the list
+     * @param n        How many items of the list to print
      */
-    private static void printNStringsFromList(List<String> list, int n) {
+    private static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
             println("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
         } else {
-            println("First " + n + " strings from submitted list.");
+            println("\nFirst " + n + " strings from list " + listName + ":");
             for(int i = 0; i < n; i++) {
                 println(list.get(i));
             }
         }
     }
-
 }

@@ -3,6 +3,7 @@ package com.jason.wordmasher;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class AppTest extends TestCase {
             assertEquals(false, App.validateArgs(args));
 
         } catch (IOException e) {
-            fail("Unable to create empty text file.");
+            fail("Unable to create empty text file. " + e.getMessage());
         }
     }
 
@@ -115,6 +116,7 @@ public class AppTest extends TestCase {
     public void testOneInNChance_oneInFour() {
         List<Integer> counts = new ArrayList<>();
         List<Boolean> bools = new ArrayList<>();
+        SummaryStatistics stats = new SummaryStatistics();
         int count = 0;
         for(int i = 0; i < 100; i++) {
             bools.clear();
@@ -127,14 +129,19 @@ public class AppTest extends TestCase {
                 }
             }
             counts.add(count);
+            stats.addValue((double)count);
             count = 0;
         }
+        double std = stats.getStandardDeviation();
+        double variance = stats.getVariance();
         double countsTotal = 0;
         for(Integer i : counts) {
             countsTotal += counts.get(i);
         }
         double average = countsTotal / (double)counts.size();
         App.println("average = " + average);
+        App.println("std = " + std);
+        App.println("variance = " + variance);
     }
 
     /**
