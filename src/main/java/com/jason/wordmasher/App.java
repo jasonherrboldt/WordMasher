@@ -3,6 +3,7 @@ package com.jason.wordmasher;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
@@ -19,36 +20,75 @@ public class App {
     private static final String LOG_FILENAME = LOG_DIR + DATE_STR + ".txt";
     private static final File LOG_FILE = new File(LOG_FILENAME);
     private static int numberOfFrankenwordsToPrint = 0;
-    private static List<String> englishWords;
+    private static List<String> chosenEnglishWords;
+    private static List<String> allEnglishWords;
     private static List<String> randomWords;
     private static List<String> frankenwords;
     private static List<String> specialCharacters;
     private static String parsingArgsResults;
 
-    public static void main( String[] args) {
+    public static void main(String[] args) {
         startLog();
         if(!parseArgs(args)) {
             logEntry("Encountered an error parsing program arguments: " + parsingArgsResults);
             print("Encountered an error parsing program arguments: " + parsingArgsResults);
         } else {
             // initializeMemberVariables();
-            englishWords = readFileIntoMemory(englishWordsFile);
+            allEnglishWords = readFileIntoMemory(englishWordsFile);
             // debug
-            printNStringsFromList(englishWords, "englishWords", 10);
+            printNStringsFromList(allEnglishWords, "allEnglishWords", 10);
             specialCharacters = readFileIntoMemory(specialCharactersFile);
             // debug
             printNStringsFromList(specialCharacters, "specialCharacters", 15);
             randomWords = pickRandomWords();
+
+            // 50% chance of picking 2 or 3 words from word list.
             int numberOfWordsToPick = oneInNChance(2) ? 2 : 3;
 
+            chosenEnglishWords = getNRandomStringsFromList(allEnglishWords, numberOfWordsToPick);
+            if(chosenEnglishWords == null) {
+                throw new IllegalStateException("chosenEnglishWords may not be null as it is sent from main to " +
+                        "printNStringsFromList.");
+            } else {
+                printNStringsFromList(chosenEnglishWords, "chosenEnglishWords", chosenEnglishWords.size());
+            }
 
             // continue...
         }
     }
 
-    public List<String> getNEnglishWords(int n) {
+    /**
+     * Chose n words at random from the list of all English words.
+     *
+     * @param n The number of words to chose
+     * @return  The chosen English words
+     */
+    public static List<String> getNRandomStringsFromList(List<String> list, int n) {
+        if(list == null || list.isEmpty() || n < 1) {
+            return null;
+        }
+        int firstRandomInt = 0;
+        int secondRandomInt = 0;
+        // Ensure the two random ints are distinct.
+        while(firstRandomInt == secondRandomInt) {
+            firstRandomInt = getRandomIntInRange(0, allEnglishWords.size());
+            secondRandomInt = getRandomIntInRange(0, allEnglishWords.size());
+        }
+        List<String> returnList = new ArrayList<>();
+        returnList.add(list.get(firstRandomInt));
+        returnList.add(list.get(secondRandomInt));
+        return returnList;
+    }
 
-        return null;
+    /**
+     * Generates a pseudorandom number in a specified range.
+     *
+     * @param min The minimum value of the range
+     * @param max The maximum value of the range
+     * @return    The chosen pseudorandom number
+     */
+    public static int getRandomIntInRange(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
     /**
@@ -108,15 +148,6 @@ public class App {
         logEntry("All program arguments validated.");
         return true;
     }
-
-    /**
-     * Initializes class member variables.
-     */
-//    private static void initializeMemberVariables() {
-//        frankenwords = new ArrayList<>();
-//        specialCharacters = new ArrayList<>();
-//        logEntry("Member variables initialized.");
-//    }
 
     /**
      * Reads contents of a file into a list of strings.
