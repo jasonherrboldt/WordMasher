@@ -58,26 +58,56 @@ public class App {
     }
 
     /**
-     * Chose n words at random from the list of all English words.
+     * Chose n words at random from a list of strings.
      *
      * @param n The number of words to chose
      * @return  The chosen English words
      */
-    public static List<String> getNRandomStringsFromList(List<String> list, int n) {
+    static List<String> getNRandomStringsFromList(List<String> list, int n) {
         if(list == null || list.isEmpty() || n < 1) {
             return null;
         }
-        int firstRandomInt = 0;
-        int secondRandomInt = 0;
-        // Ensure the two random ints are distinct.
-        while(firstRandomInt == secondRandomInt) {
-            firstRandomInt = getRandomIntInRange(0, list.size());
-            secondRandomInt = getRandomIntInRange(0, list.size());
+
+        List<Integer> integers = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            integers.add(0);
         }
-        List<String> returnList = new ArrayList<>();
-        returnList.add(list.get(firstRandomInt));
-        returnList.add(list.get(secondRandomInt));
-        return returnList;
+
+        print("integers: " + integers);
+        print("It is " + (integers.stream().distinct().limit(2).count() <= 1) + " that all items in the list " +
+                "have the same value.");
+        print("Assigning random values...");
+
+        // while(integers.stream().distinct().limit(2).count() <= 1) {
+        while(listContainsDistinctItems(integers)) {
+            for(int i = 0; i < integers.size(); i++) {
+                integers.set(i, getRandomIntInRange(0, n));
+            }
+        }
+
+        print("integers: " + integers);
+        print("It is " + (integers.stream().distinct().limit(2).count() <= 1) + " that all items in the list " +
+                "have the same value.");
+
+//        List<String> returnList = new ArrayList<>();
+//        return returnList;
+
+        return null;
+    }
+
+    /**
+     * Determines if a list of objects contains distinct items.
+     *
+     * @param list The list of objects
+     * @return     True if the list of objects are distict, false otherwise.
+     */
+    public static boolean listContainsDistinctItems(List<?> list) {
+        Set s = new HashSet<>();
+        // Collections.addAll(s, list);
+        for(Object o : list) {
+            s.add(o);
+        }
+        return s.size() == list.size();
     }
 
     /**
@@ -87,7 +117,7 @@ public class App {
      * @param max The maximum value of the range
      * @return    The chosen pseudorandom number
      */
-    public static int getRandomIntInRange(int min, int max) {
+    private static int getRandomIntInRange(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
@@ -115,7 +145,7 @@ public class App {
      * @param args Program arguments
      * @return     True if program arguments are valid, false otherwise.
      */
-    public static boolean validateArgs(String[] args) {
+    static boolean validateArgs(String[] args) {
         parsingArgsResults = "";
         if(args.length != 4) {
             parsingArgsResults = "Invalid number of program arguments received. Should be 4. " +
@@ -187,7 +217,7 @@ public class App {
      * @param n The chance range.
      * @return  One in N chance of being true
      */
-    public static boolean oneInNChance(int n) {
+    static boolean oneInNChance(int n) {
         if(n < 1) {
             logEntry("oneInNChance received a negative integer: " + n);
             throw new IllegalStateException("oneInNChance received a negative integer: " + n);
@@ -297,7 +327,7 @@ public class App {
      *
      * @param s String to print
      */
-    public static void print(String s) {
+    static void print(String s) {
         System.out.println(s);
     }
 
