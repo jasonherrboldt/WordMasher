@@ -35,8 +35,10 @@ public class AppTest extends TestCase {
         return new TestSuite( AppTest.class );
     }
 
+    /**
+     * Asserts App.validateArgs returns false for an illegal number of string array elements.
+     */
     public void testValidateArgs_invalidNumberOfArgs() {
-        // args = new String[0];
         args = createDummyArgsArray(0);
         assertEquals(false, App.validateArgs(args));
 
@@ -53,11 +55,17 @@ public class AppTest extends TestCase {
         assertEquals(false, App.validateArgs(args));
     }
 
+    /**
+     * Asserts App.validateArgs returns false if arguments array contains nonexistent files.
+     */
     public void testValidateArgs_nonExistentFiles() {
         args = createArgsArray("a.txt", "b.txt", "c.txt", "4");
         assertEquals(false, App.validateArgs(args));
     }
 
+    /**
+     * Asserts App.validateArgs returns false if arguments array contains empty files.
+     */
     public void testValidateArgs_emptyArgFiles() {
         try {
             File tempFile = File.createTempFile("empty", ".txt");
@@ -65,7 +73,6 @@ public class AppTest extends TestCase {
             if(!tempFile.canRead()) {
                 fail("Unable to read temporary test file 'empty*.txt'.");
             }
-
             String[] args = createArgsArray("empty.txt", "empty.txt", "output.txt", "4");
             assertEquals(false, App.validateArgs(args));
 
@@ -74,33 +81,41 @@ public class AppTest extends TestCase {
         }
     }
 
+    /**
+     * Asserts App.validateArgs returns false if arguments array contains an un-parsable integer string.
+     */
     public void testValidateArgs_unparsableNumberOfFrankenwords() {
         args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "x");
         assertEquals(false, App.validateArgs(args));
     }
 
+    /**
+     * Asserts App.validateArgs returns false if arguments array contains an integer string with a value of < 1.
+     */
     public void testValidateArgs_negativeNumberOfFrankenwords() {
         args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "-6");
         assertEquals(false, App.validateArgs(args));
     }
 
-    public void testValidateArgs_illegalNumberOfFrankenwords_zero() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "0");
-        assertEquals(false, App.validateArgs(args));
-    }
-
+    /**
+     * Asserts App.validateArgs returns false if arguments array contains an integer string with a value of > 1000.
+     */
     public void testValidateArgs_illegalNumberOfFrankenwords_1001() {
         args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
         assertEquals(false, App.validateArgs(args));
     }
 
+    /**
+     * Asserts App.validateArgs returns true if arguments array contains an integer string
+     * with a value of > 0 and < 1001.
+     */
     public void testValidateArgs_allParsableArguments() {
         args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1000");
         assertEquals(true, App.validateArgs(args));
     }
 
     /**
-     * Assert true comes back 100% (or 1 in 1) of the time.
+     * Assert App.oneInNChance returns true 100% (or 1 in 1) of the time.
      */
     public void testOneInNChance_oneInOne() {
         List<Boolean> bools = new ArrayList<>();
@@ -117,7 +132,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Assert true comes back 25% (or 1 in 4) of the time, plus or minus one percent.
+     * Assert App.oneInNChance returns true 25% (or 1 in 4) of the time, plus or minus one percent.
      */
     public void testOneInNChance_oneInFour() {
         List<Boolean> bools = new ArrayList<>();
@@ -140,7 +155,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Assert true comes back 5% (or 1 in 20) of the time, plus or minus one percent.
+     * Assert App.oneInNChance returns true 5% (or 1 in 20) of the time, plus or minus one percent.
      */
     public void testOneInNChance_oneInTwenty() {
         List<Boolean> bools = new ArrayList<>();
@@ -177,17 +192,15 @@ public class AppTest extends TestCase {
             throw new IllegalStateException("createArgsArray called with one or more null arguments.");
         }
         String[] args = new String[4];
-
         args[0] = arg_0;
         args[1] = arg_1;
         args[2] = arg_2;
         args[3] = arg_3;
-
         return args;
     }
 
     /**
-     * Helper method to create dummy program args for testing.
+     * Helper method to create dummy string array for testing. If n is "3", return array is ["0", "1", "2"].
      *
      * @param n Number of dummy arguments to create
      * @return String array of dummy arguments.

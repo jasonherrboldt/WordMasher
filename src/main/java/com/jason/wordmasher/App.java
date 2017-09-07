@@ -29,7 +29,7 @@ public class App {
         startLog();
         if(!parseArgs(args)) {
             logEntry("Encountered an error parsing program arguments: " + parsingArgsResults);
-            println("Encountered an error parsing program arguments: " + parsingArgsResults);
+            print("Encountered an error parsing program arguments: " + parsingArgsResults);
         } else {
             // initializeMemberVariables();
             englishWords = readFileIntoMemory(englishWordsFile);
@@ -39,10 +39,17 @@ public class App {
             // debug
             printNStringsFromList(specialCharacters, "specialCharacters", 15);
             randomWords = pickRandomWords();
+            int numberOfWordsToPick = oneInNChance(2) ? 2 : 3;
+
+
             // continue...
         }
     }
 
+    public List<String> getNEnglishWords(int n) {
+
+        return null;
+    }
 
     /**
      * Processes program arguments.
@@ -188,7 +195,7 @@ public class App {
         File dir = new File("logs");
         if(!dir.exists()) {
             if(!dir.mkdir()) {
-                println("WARN: unable to create directory 'logs'.");
+                print("WARN: unable to create directory 'logs'.");
             }
         }
         logEntry("New log started.");
@@ -214,7 +221,7 @@ public class App {
                     out.println(time + " " + log);
                     out.close();
                 } else {
-                    println("WARN: Main.logEntry unable to create new log file.");
+                    print("WARN: Main.logEntry unable to create new log file.");
                 }
             } else {
                 fw = new FileWriter(LOG_FILENAME, true);
@@ -225,7 +232,7 @@ public class App {
                 out.close();
             }
         } catch (IOException e) {
-            println("WARN: Main.logEntry encountered an IO exception: " + e.getMessage());
+            print("WARN: Main.logEntry encountered an IO exception: " + e.getMessage());
         }
     }
 
@@ -255,20 +262,11 @@ public class App {
     }
 
     /**
-     * Shortcut to System.out.print
-     *
-     * @param s String to print
-     */
-    public static void print(String s) {
-        System.out.print(s);
-    }
-
-    /**
      * Shortcut to System.out.println
      *
      * @param s String to print
      */
-    public static void println(String s) {
+    public static void print(String s) {
         System.out.println(s);
     }
 
@@ -281,11 +279,11 @@ public class App {
      */
     private static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
-            println("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
+            print("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
         } else {
-            println("\nFirst " + n + " strings from list " + listName + ":");
+            print("\nFirst " + n + " strings from list " + listName + ":");
             for(int i = 0; i < n; i++) {
-                println(list.get(i));
+                print(list.get(i));
             }
         }
     }
