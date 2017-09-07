@@ -71,8 +71,8 @@ public class App {
         int secondRandomInt = 0;
         // Ensure the two random ints are distinct.
         while(firstRandomInt == secondRandomInt) {
-            firstRandomInt = getRandomIntInRange(0, allEnglishWords.size());
-            secondRandomInt = getRandomIntInRange(0, allEnglishWords.size());
+            firstRandomInt = getRandomIntInRange(0, list.size());
+            secondRandomInt = getRandomIntInRange(0, list.size());
         }
         List<String> returnList = new ArrayList<>();
         returnList.add(list.get(firstRandomInt));

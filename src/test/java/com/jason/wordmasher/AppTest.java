@@ -8,6 +8,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
 public class AppTest extends TestCase {
 
     private String[] args;
-    
+
     /**
      * Create the test case
      *
@@ -135,22 +136,7 @@ public class AppTest extends TestCase {
      * Assert App.oneInNChance returns true 25% (or 1 in 4) of the time, plus or minus one percent.
      */
     public void testOneInNChance_oneInFour() {
-        List<Boolean> bools = new ArrayList<>();
-        SummaryStatistics stats = new SummaryStatistics();
-        int count = 0;
-        for(int i = 0; i < 100; i++) {
-            bools.clear();
-            for(int j = 0; j < 100; j++) {
-                bools.add(App.oneInNChance(4));
-            }
-            for(Boolean b : bools) {
-                if(b) {
-                    count++;
-                }
-            }
-            stats.addValue((double)count);
-            count = 0;
-        }
+        SummaryStatistics stats = getOneInNStats(100, 4);
         assert(!(stats.getMean() > (25 + 1)) && !(stats.getMean() < (25 - 1)));
     }
 
@@ -158,24 +144,27 @@ public class AppTest extends TestCase {
      * Assert App.oneInNChance returns true 5% (or 1 in 20) of the time, plus or minus one percent.
      */
     public void testOneInNChance_oneInTwenty() {
-        List<Boolean> bools = new ArrayList<>();
-        SummaryStatistics stats = new SummaryStatistics();
-        int count = 0;
-        for(int i = 0; i < 100; i++) {
-            bools.clear();
-            for(int j = 0; j < 100; j++) {
-                bools.add(App.oneInNChance(20));
-            }
-            for(Boolean b : bools) {
-                if(b) {
-                    count++;
-                }
-            }
-            stats.addValue((double)count);
-            count = 0;
-        }
+        SummaryStatistics stats = getOneInNStats(100, 20);
         assert(!(stats.getMean() > (5 + 1)) && !(stats.getMean() < (5 - 1)));
     }
+
+    public void testGetNRandomStringsFromList_returnsCorrectListSize() {
+        List<String> mockList = new ArrayList<>();
+        String[] fakeArray = createDummyArgsArray(100);
+        boolean addAll = Collections.addAll(mockList, fakeArray);
+        if(!addAll) {
+            fail("testGetNRandomStringsFromList was unable to copy elements from fakeArray to mockList.");
+        }
+        // App.print(mockList.toString());
+        List<String> testRun = App.getNRandomStringsFromList(mockList, 3);
+        assertEquals(testRun.size(), 3);
+        testRun = App.getNRandomStringsFromList(mockList, 6);
+        assertEquals(testRun.size(), 6);
+    }
+
+    /****************
+     * HELPER METHODS
+     ****************/
 
     /**
      * Helper method to create a string array of arguments for testing.
@@ -214,6 +203,44 @@ public class AppTest extends TestCase {
             args[i] = Integer.toString(i);
         }
         return args;
+    }
+
+    /**
+     * Helper method to generate a SummaryStatistics object for testOneInNChance_oneIn* unit tests.
+     *
+     * Creates (runs)^2 iterations of data for analysis.
+     *
+     * For example, a call to oneInNChance(4) has a 1/4 = 25% chance of returning true. So run that method
+     * runs times, and each time record the true / false value to a boolean list.
+     *
+     * Then step through every item of that boolean list and count each time a true value occurs. For a run of
+     * 100, there should be roughly 25 true elements in that list, plus or minus some standard deviation.
+     *
+     * Do this 100 times for each 100 iterations for a total of 10k data points. Add all of these values to the
+     * SummaryStatistics object for analysis upon return.
+     *
+     * @param runs   Number of runs
+     * @param oneInN Chance, i.e. 1 in 4 = 25%.
+     * @return       SummaryStatistics object
+     */
+    private SummaryStatistics getOneInNStats(int runs, int oneInN) {
+        List<Boolean> bools = new ArrayList<>();
+        SummaryStatistics stats = new SummaryStatistics();
+        int count = 0;
+        for(int i = 0; i < runs; i++) {
+            bools.clear();
+            for(int j = 0; j < runs; j++) {
+                bools.add(App.oneInNChance(oneInN));
+            }
+            for(Boolean b : bools) {
+                if(b) {
+                    count++;
+                }
+            }
+            stats.addValue((double)count);
+            count = 0;
+        }
+        return stats;
     }
 }
 
