@@ -18,6 +18,8 @@ public class AppTest extends TestCase {
 
     private String[] args;
     private static final int CREATE_DUMMY_ARRAY_MAX = 500;
+    private List<String> testRun;
+    private List<String> mockList;
 
     /**
      * Create the test case
@@ -153,17 +155,49 @@ public class AppTest extends TestCase {
      * Asserts App.getNRandomStringsFromList returns a list of the correct length.
      */
     public void testGetNRandomStringsFromList_returnsCorrectListSize() {
-        List<String> mockList = createDummyStringList(100);
+        mockList = createDummyStringList(100);
         if(mockList == null) {
             fail("testGetNRandomStringsFromList was unable to generate a mockList.");
         }
-        // App.print(mockList.toString());
-        List<String> testRun = App.getNRandomStringsFromList(mockList, 3);
-        // assertEquals(testRun.size(), 3);
-        // testRun = App.getNRandomStringsFromList(mockList, 6);
-        // assertEquals(testRun.size(), 6);
+        testRun = App.getNRandomAndDistinctStringsFromList(mockList, 10);
+        assertEquals(testRun.size(), 10);
+        testRun = App.getNRandomAndDistinctStringsFromList(mockList, 6);
+        assertEquals(testRun.size(), 6);
     }
 
+    /**
+     * Asserts that App.getNRandomAndDistinctStringsFromList returns a list of randomized elements.
+     */
+    public void testGetNRandomStringsFromList_isRandom() {
+        mockList = createDummyStringList(CREATE_DUMMY_ARRAY_MAX);
+        List<String> mockListCopy = new ArrayList<>(mockList);
+        testRun = App.getNRandomAndDistinctStringsFromList(mockList, CREATE_DUMMY_ARRAY_MAX);
+        if(testRun == null) {
+            fail("testRun cannot be null here.");
+        }
+        if(mockList.size() != testRun.size()) {
+            fail("mockList cannot have a different size than testRun here.");
+        }
+        /*
+        There is a very, VERY slim chance that the below statement could return true. In fact, the chances
+        are 1 in the factorial of CREATE_DUMMY_ARRAY_MAX, which has lately been 500. (This would be a number with
+        1,135 digits.) Email me if this ever happens so we can marvel at this statistical near-impossibility together.
+        */
+        assertFalse(mockListCopy.equals(testRun));
+    }
+
+    /**
+     * Asserts that App.getNRandomAndDistinctStringsFromList returns a list of distinct elements.
+     */
+    public void testGetNRandomStringsFromList_isDistinct() {
+        // Make mockList and testRun class member variables.
+        mockList = createDummyStringList(25);
+        assert(App.listContainsDistinctItems(App.getNRandomAndDistinctStringsFromList(mockList, 10)));
+    }
+
+    /**
+     * Asserts App.listContainsDistinctItems correctly identifies a list of distinct items (of any type).
+     */
     public void testListContainsDistinctItems() {
         assert(App.listContainsDistinctItems(createDummyStringList(10)));
     }
@@ -173,7 +207,8 @@ public class AppTest extends TestCase {
     //**************************//
 
     /**
-     * Utilizes createDummyArray to create a dummy string list.
+     * Utilizes createDummyArray to create a dummy string list of distinct numbered elements,
+     * e.g. ["0", "1", "2", ...].
      *
      * @param n The list length
      * @return  The dummy string list
@@ -236,7 +271,8 @@ public class AppTest extends TestCase {
      * Creates (runs)^2 iterations of data for analysis.
      *
      * For example, a call to oneInNChance(4) has a 1/4 = 25% chance of returning true. So run that method
-     * runs times, and each time record the true / false value to a boolean list.
+     * runs times (where 'runs' is the first method parameter), and each time record the true / false value
+     * to a boolean list.
      *
      * Then step through every item of that boolean list and count each time a true value occurs. For a run of
      * 100, there should be roughly 25 true elements in that list, plus or minus some standard deviation.

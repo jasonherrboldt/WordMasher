@@ -22,7 +22,7 @@ public class App {
     private static int numberOfFrankenwordsToPrint = 0;
     private static List<String> chosenEnglishWords;
     private static List<String> allEnglishWords;
-    private static List<String> randomWords;
+    // private static List<String> randomWords;
     private static List<String> frankenwords;
     private static List<String> specialCharacters;
     private static String parsingArgsResults;
@@ -36,16 +36,16 @@ public class App {
             // initializeMemberVariables();
             allEnglishWords = readFileIntoMemory(englishWordsFile);
             // debug
-            printNStringsFromList(allEnglishWords, "allEnglishWords", 10);
+            // printNStringsFromList(allEnglishWords, "allEnglishWords", 10);
             specialCharacters = readFileIntoMemory(specialCharactersFile);
             // debug
-            printNStringsFromList(specialCharacters, "specialCharacters", 15);
-            randomWords = pickRandomWords();
+            // printNStringsFromList(specialCharacters, "specialCharacters", 15);
+            // randomWords = pickRandomWords();
 
             // 50% chance of picking 2 or 3 words from word list.
             int numberOfWordsToPick = oneInNChance(2) ? 2 : 3;
 
-            chosenEnglishWords = getNRandomStringsFromList(allEnglishWords, numberOfWordsToPick);
+            chosenEnglishWords = getNRandomAndDistinctStringsFromList(allEnglishWords, numberOfWordsToPick);
             if(chosenEnglishWords == null) {
                 throw new IllegalStateException("chosenEnglishWords may not be null as it is sent from main to " +
                         "printNStringsFromList.");
@@ -63,36 +63,28 @@ public class App {
      * @param n The number of words to chose
      * @return  The chosen English words
      */
-    static List<String> getNRandomStringsFromList(List<String> list, int n) {
-        if(list == null || list.isEmpty() || n < 1) {
+    static List<String> getNRandomAndDistinctStringsFromList(List<String> list, int n) {
+        if(list == null || list.isEmpty() || n < 1 || n > 500 || n > list.size()) {
             return null;
         }
+        List<String> returnList = new ArrayList<>();
 
-        List<Integer> integers = new ArrayList<>();
+        /*
+        There is a more efficient way to do this. Shouldn't have to shuffle a list of 58,000 strings every
+        time. Try this instead: Create a list of ascending integers of length list.size(), e.g. [0, 1, 2, ...].
+        Then for n times, pick a number at random from this list and put it in a new list of random ints -- but ONLY
+        if any given random int isn't already in the list of random ints. Then there should be a list like this:
+        [15067, 456, 43519]. Shouldn't take very long if list.size() is very large, but for shorter lists (of say 10)
+        this will take longer because it's far more likely that a "random" number candidate is already in the random
+        numbers list.
+        */
+        Collections.shuffle(list);
         for(int i = 0; i < n; i++) {
-            integers.add(0);
+            returnList.add(list.get(i));
         }
 
-        print("integers: " + integers);
-        print("It is " + (integers.stream().distinct().limit(2).count() <= 1) + " that all items in the list " +
-                "have the same value.");
-        print("Assigning random values...");
-
-        // while(integers.stream().distinct().limit(2).count() <= 1) {
-        while(listContainsDistinctItems(integers)) {
-            for(int i = 0; i < integers.size(); i++) {
-                integers.set(i, getRandomIntInRange(0, n));
-            }
-        }
-
-        print("integers: " + integers);
-        print("It is " + (integers.stream().distinct().limit(2).count() <= 1) + " that all items in the list " +
-                "have the same value.");
-
-//        List<String> returnList = new ArrayList<>();
-//        return returnList;
-
-        return null;
+        logEntry("getNRandomAndDistinctStringsFromList selected " + returnList.size() + " strings.");
+        return returnList;
     }
 
     /**
@@ -101,13 +93,14 @@ public class App {
      * @param list The list of objects
      * @return     True if the list of objects are distict, false otherwise.
      */
-    public static boolean listContainsDistinctItems(List<?> list) {
+    static boolean listContainsDistinctItems(List<?> list) {
         Set s = new HashSet<>();
-        // Collections.addAll(s, list);
         for(Object o : list) {
             s.add(o);
         }
-        return s.size() == list.size();
+        boolean result = s.size() == list.size();
+        logEntry("listContainsDistinctItems is about to return " + result);
+        return result;
     }
 
     /**
@@ -118,6 +111,7 @@ public class App {
      * @return    The chosen pseudorandom number
      */
     private static int getRandomIntInRange(int min, int max) {
+        logEntry("getRandomIntInRange was called with min = " + min + " and max = " + max + ".");
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
