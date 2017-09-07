@@ -99,6 +99,9 @@ public class AppTest extends TestCase {
         assertEquals(true, App.validateArgs(args));
     }
 
+    /**
+     * Assert true comes back 100% (or 1 in 1) of the time.
+     */
     public void testOneInNChance_oneInOne() {
         List<Boolean> bools = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
@@ -113,8 +116,10 @@ public class AppTest extends TestCase {
         assertEquals(falseFound, false);
     }
 
+    /**
+     * Assert true comes back 25% (or 1 in 4) of the time, plus or minus one percent.
+     */
     public void testOneInNChance_oneInFour() {
-        List<Integer> counts = new ArrayList<>();
         List<Boolean> bools = new ArrayList<>();
         SummaryStatistics stats = new SummaryStatistics();
         int count = 0;
@@ -128,20 +133,33 @@ public class AppTest extends TestCase {
                     count++;
                 }
             }
-            counts.add(count);
             stats.addValue((double)count);
             count = 0;
         }
-        double std = stats.getStandardDeviation();
-        double variance = stats.getVariance();
-        double countsTotal = 0;
-        for(Integer i : counts) {
-            countsTotal += counts.get(i);
+        assert(!(stats.getMean() > (25 + 1)) && !(stats.getMean() < (25 - 1)));
+    }
+
+    /**
+     * Assert true comes back 5% (or 1 in 20) of the time, plus or minus one percent.
+     */
+    public void testOneInNChance_oneInTwenty() {
+        List<Boolean> bools = new ArrayList<>();
+        SummaryStatistics stats = new SummaryStatistics();
+        int count = 0;
+        for(int i = 0; i < 100; i++) {
+            bools.clear();
+            for(int j = 0; j < 100; j++) {
+                bools.add(App.oneInNChance(20));
+            }
+            for(Boolean b : bools) {
+                if(b) {
+                    count++;
+                }
+            }
+            stats.addValue((double)count);
+            count = 0;
         }
-        double average = countsTotal / (double)counts.size();
-        App.println("average = " + average);
-        App.println("std = " + std);
-        App.println("variance = " + variance);
+        assert(!(stats.getMean() > (5 + 1)) && !(stats.getMean() < (5 - 1)));
     }
 
     /**

@@ -7,6 +7,7 @@ import java.util.*;
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
  *
+ * Created by Jason Herrboldt (intothefuture@gmail.com), September 2017.
  */
 public class App {
 
