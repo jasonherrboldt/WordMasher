@@ -1,6 +1,7 @@
 package com.jason.wordmasher;
 
-import java.io.File;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -8,41 +9,17 @@ import java.util.List;
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
  *
+ * Github profile: github.com/jasonherrboldt
+ *
  * Created by Jason Herrboldt (intothefuture@gmail.com), September 2017.
  */
 public class App {
 
     // Program arguments
-    // Let englishWordsFile be the file of all English words
     private static File englishWordsFile;
-
-    // Let specialCharactersFile be the file of special characters
     private static File specialCharactersFile;
-
-    // Let outputFile be the output file
     private static File outputFile;
-
-    // Let numberOfFrankenwordsToCreate be the number of words to create
     private static int numberOfFrankenwordsToCreate = 0;
-
-    // Misc global variables
-    // Let MAX_WORDS_TO_MASH be some integer around 10
-    private static final int MAX_WORDS_TO_MASH = 10;
-
-    // Let MAX_WHILE be some integer around 1000
-    private static final int MAX_WHILE = 1000;
-
-    // Let MAX_FRANKENWORDS be some integer around 1000
-    private static final int MAX_FRANKENWORDS = 1000;
-
-    // Let englishWords be the list of English words read into memory
-    private static List<String> englishWords;
-
-    // Let specialCharacters be the list of special characters read into memory
-    private static List<String> specialCharacters;
-
-    // Let usedWords be an empty list of strings
-    private static List<String> usedEnglishWords;
 
     // Logging
     private static final String DATE_STR = getTodaysDate();
@@ -50,6 +27,65 @@ public class App {
     private static final String LOG_FILENAME = LOG_DIR + DATE_STR + ".txt";
     private static final File LOG_FILE = new File(LOG_FILENAME);
 
+    // Misc global variables
+    private static final int MAX_WORDS_TO_MASH = 10;
+    private static final int MAX_WHILE = 1000;
+    private static final int MAX_FRANKENWORDS = 1000;
+    private static List<String> englishWords;
+    private static List<String> specialCharacters;
+    private static List<String> usedEnglishWords;
+
+    public static void main(String[] args) {
+        startLog();
+    }
+
+    /**
+     * Open a new logging session. Create a new /log directory as needed.
+     */
+    private static void startLog() {
+        File dir = new File("logs");
+        if(!dir.exists()) {
+            if(!dir.mkdir()) {
+                print("WARN: unable to create directory 'logs'.");
+            }
+        }
+        logEntry("New log started.");
+    }
+
+    /**
+     * Add a new log entry. Create a new document as needed, or append to an existing one.
+     *
+     * @param log the log entry
+     */
+    private static void logEntry(String log) {
+        try {
+            FileWriter fw;
+            BufferedWriter bw;
+            PrintWriter out;
+            String time;
+            if (!LOG_FILE.exists()){
+                if(LOG_FILE.createNewFile()) {
+                    fw = new FileWriter(LOG_FILE);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
+                    out.println(time + " " + log);
+                    out.close();
+                } else {
+                    print("WARN: Main.logEntry unable to create new log file.");
+                }
+            } else {
+                fw = new FileWriter(LOG_FILENAME, true);
+                bw = new BufferedWriter(fw);
+                out = new PrintWriter(bw);
+                time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
+                out.println(time + " " + log);
+                out.close();
+            }
+        } catch (IOException e) {
+            print("WARN: Main.logEntry encountered an IO exception: " + e.getMessage());
+        }
+    }
 
     /**
      * @return today's date in the format YYYY-MM-DD
@@ -77,6 +113,15 @@ public class App {
         }
 
         return Integer.toString(year) + "-" + monthStr + "-" + dayStr;
+    }
+
+    /**
+     * Shortcut to System.out.println
+     *
+     * @param s String to print
+     */
+    static void print(String s) {
+        System.out.println(s);
     }
 
 }
