@@ -1,9 +1,9 @@
 package com.jason.wordmasher;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
@@ -12,319 +12,48 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class App {
 
+    // Program arguments
+    // Let englishWordsFile be the file of all English words
     private static File englishWordsFile;
+
+    // Let specialCharactersFile be the file of special characters
     private static File specialCharactersFile;
+
+    // Let outputFile be the output file
     private static File outputFile;
+
+    // Let numberOfFrankenwordsToCreate be the number of words to create
+    private static int numberOfFrankenwordsToCreate = 0;
+
+    // Misc global variables
+    // Let MAX_WORDS_TO_MASH be some integer around 10
+    private static final int MAX_WORDS_TO_MASH = 10;
+
+    // Let MAX_WHILE be some integer around 1000
+    private static final int MAX_WHILE = 1000;
+
+    // Let MAX_FRANKENWORDS be some integer around 1000
+    private static final int MAX_FRANKENWORDS = 1000;
+
+    // Let englishWords be the list of English words read into memory
+    private static List<String> englishWords;
+
+    // Let specialCharacters be the list of special characters read into memory
+    private static List<String> specialCharacters;
+
+    // Let usedWords be an empty list of strings
+    private static List<String> usedEnglishWords;
+
+    // Logging
     private static final String DATE_STR = getTodaysDate();
     private static final String LOG_DIR = "logs/";
     private static final String LOG_FILENAME = LOG_DIR + DATE_STR + ".txt";
     private static final File LOG_FILE = new File(LOG_FILENAME);
-    private static int numberOfFrankenwordsToPrint = 0;
-    private static List<String> chosenEnglishWords;
-    private static List<String> allEnglishWords;
-    // private static List<String> randomWords;
-    private static List<String> frankenwords;
-    private static List<String> specialCharacters;
-    private static String parsingArgsResults;
 
-    public static void main(String[] args) {
-        startLog();
-        if(!parseArgs(args)) {
-            logEntry("Encountered an error parsing program arguments: " + parsingArgsResults);
-            print("Encountered an error parsing program arguments: " + parsingArgsResults);
-        } else {
-            // initializeMemberVariables();
-            allEnglishWords = readFileIntoMemory(englishWordsFile);
-            // debug
-            // printNStringsFromList(allEnglishWords, "allEnglishWords", 10);
-            specialCharacters = readFileIntoMemory(specialCharactersFile);
-            // debug
-            // printNStringsFromList(specialCharacters, "specialCharacters", 15);
-            // randomWords = pickRandomWords();
-
-            // 50% chance of picking 2 or 3 words from word list.
-            int numberOfWordsToPick = oneInNChance(2) ? 2 : 3;
-
-            chosenEnglishWords = getNRandomAndDistinctStringsFromList(allEnglishWords, numberOfWordsToPick);
-            if(chosenEnglishWords == null) {
-                throw new IllegalStateException("chosenEnglishWords may not be null as it is sent from main to " +
-                        "printNStringsFromList.");
-            } else {
-                printNStringsFromList(chosenEnglishWords, "chosenEnglishWords", chosenEnglishWords.size());
-            }
-
-            // continue...
-        }
-    }
 
     /**
-     * Creates a list of random and distinct integers within the range [0 (inclusive, n (exclusive)].
-     *
-     * @param n The maximum range
-     * @return  The list of ints
+     * @return today's date in the format YYYY-MM-DD
      */
-    public static List<Integer> getNRandomAndDistinctInts(int n, int listSize) {
-        if(n < 2 || n > 100000) {
-            throw new IllegalArgumentException("n must be in the range 1 > n < 100000 in getNRandomAndDistinctInts.");
-        }
-        List<Integer> randInts = new ArrayList<>();
-        for(int i = 0; i < n; i++) {
-            int thisInt = getRandomIntInRange(0, listSize);
-            if(!randInts.contains(thisInt)) {
-                randInts.add(thisInt);
-            }
-        }
-        print("randInts: " + randInts);
-        return randInts;
-    }
-
-    /**
-     * Chose n words at random from a list of strings.
-     *
-     * @param n The number of words to chose
-     * @return  The chosen English words
-     */
-    static List<String> getNRandomAndDistinctStringsFromList(List<String> list, int n) {
-        if(list == null || list.isEmpty() || n < 1 || n > 2000 || n > list.size()) {
-            return null;
-        }
-
-//        List<Integer> randInts = new ArrayList<>();
-//        for(int i = 0; i < n; i++) {
-//            randInts.add(0);
-//        }
-//
-//        // while(!listContainsDistinctItems(randInts)) {
-//        for(int j = 0; j < 100; j++) { // replace with while loop
-//            logEntry("In the getNRandomAndDistinctStringsFromList while loop.");
-//            randInts.clear();
-//            for(int i = 0; i < n; i++) {
-//                randInts.add(getRandomIntInRange(0, list.size()));
-//            }
-//        }
-
-        List<Integer> randInts = getNRandomAndDistinctInts(n, list.size());
-        for(int i = 0; i < n; i++) {
-            // int thisInt = getRandomIntInRange(0, list.size());
-            int thisInt = randInts.get(i);
-            if(!randInts.contains(thisInt)) {
-                randInts.add(thisInt);
-            }
-        }
-
-        List<String> returnList = new ArrayList<>();
-        for(int i = 0; i < n; i++) {
-            returnList.add(list.get(randInts.get(i)));
-        }
-
-        logEntry("getNRandomAndDistinctStringsFromList selected " + returnList.size() + " strings.");
-        return returnList;
-    }
-
-    /**
-     * Determines if a list of objects contains distinct items.
-     *
-     * @param list The list of objects
-     * @return     True if the list of objects are distict, false otherwise.
-     */
-    static boolean listContainsDistinctItems(List<?> list) {
-        Set s = new HashSet<>();
-        for(Object o : list) {
-            s.add(o);
-        }
-        boolean result = s.size() == list.size();
-        logEntry("listContainsDistinctItems is about to return " + result);
-        return result;
-    }
-
-    /**
-     * Generates a pseudorandom number in a specified range.
-     *
-     * @param min The minimum value of the range (inclusive)
-     * @param max The maximum value of the range (exclusive)
-     * @return    The chosen pseudorandom number
-     */
-    public static int getRandomIntInRange(int min, int max) {
-        // logEntry("getRandomIntInRange was called with min = " + min + " and max = " + max + ".");
-        return ThreadLocalRandom.current().nextInt(min, max);
-    }
-
-    /**
-     * Processes program arguments.
-     *
-     * @param args Program arguments
-     * @return     True if program arguments could be processed, false otherwise.
-     */
-    private static boolean parseArgs(String[] args) {
-        if(!validateArgs(args)) {
-            return false;
-        } else {
-            englishWordsFile = new File(args[0]);
-            specialCharactersFile = new File(args[1]);
-            outputFile = new File(args[2]);
-            logEntry("All program arguments have been parsed.");
-            return true;
-        }
-    }
-
-    /**
-     * Validates program arguments. Writes error messages to parsingArgsResults, which main displays to user.
-     *
-     * @param args Program arguments
-     * @return     True if program arguments are valid, false otherwise.
-     */
-    static boolean validateArgs(String[] args) {
-        parsingArgsResults = "";
-        if(args.length != 4) {
-            parsingArgsResults = "Invalid number of program arguments received. Should be 4. " +
-                    "Arguments received: " + args.length + ".";
-            return false;
-        }
-        for (int i = 0; i < 2; i++) {
-            if (!fileExists(args[i])) {
-                parsingArgsResults = "Unable to validate file '" + args[i] + "' can be read.";
-                return false;
-            }
-            File thisFile = new File(args[i]);
-            if(thisFile.length() == 0) {
-                parsingArgsResults = "File '" + args[i] + "' does not contain any data.";
-                return false;
-            }
-        }
-        try {
-            numberOfFrankenwordsToPrint = Integer.parseInt(args[3]);
-        } catch (NumberFormatException e) {
-            parsingArgsResults = "Unable to parse number of frankenwords to print. " +
-                    "Argument received: " + args[3] + ".";
-            return false;
-        }
-        if (numberOfFrankenwordsToPrint < 1 || numberOfFrankenwordsToPrint > 1000) {
-            parsingArgsResults = "Number of frankenwords to print must be > 0 and < 1001. " +
-                    "Argument received: " + numberOfFrankenwordsToPrint + ".";
-            return false;
-        }
-        logEntry("All program arguments validated.");
-        return true;
-    }
-
-    /**
-     * Reads contents of a file into a list of strings.
-     *
-     * @param  file File to read
-     * @return List of strings or null if exception thrown
-     */
-    private static List<String> readFileIntoMemory(File file) {
-        List<String> returnList = new ArrayList<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while((line = br.readLine()) != null) {
-                returnList.add(line);
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        logEntry("The file " + file.getName() + " has been read into memory.");
-        return returnList;
-    }
-
-    /**
-     * @return A list of two or three words chosen at random from the list of English words.
-     */
-    public static List<String> pickRandomWords() {
-        List<String> returnList = new ArrayList<>();
-
-
-        return returnList;
-    }
-
-    /**
-     * Generates a one in N boolean. For example, if N is four, a one in four chance would have a 25% chance of
-     * returning true.
-     *
-     * @param n The chance range.
-     * @return  One in N chance of being true
-     */
-    static boolean oneInNChance(int n) {
-        if(n < 1) {
-            logEntry("oneInNChance received a negative integer: " + n);
-            throw new IllegalStateException("oneInNChance received a negative integer: " + n);
-        } else if (n > 100) {
-            logEntry("oneInNChance received an integer greater than 100: " + n);
-            throw new IllegalStateException("oneInNChance received an integer greater than 100: " + n);
-        } else {
-            List<Boolean> bools = new ArrayList<>();
-            for(int i = 0; i < n; i++) {
-                if(i == 0) {
-                    bools.add(true);
-                } else {
-                    bools.add(false);
-                }
-            }
-            Collections.shuffle(bools);
-            return bools.get(0);
-        }
-    }
-
-    /**
-     * Verifies specified file exists.
-     *
-     * @param fileName Name of file
-     * @return         True if file can be read, false otherwise.
-     */
-    private static boolean fileExists(String fileName) {
-        File file = new File(fileName);
-        return file.canRead();
-    }
-
-    /**
-     * Open a new logging session. Create a new /log directory as needed.
-     */
-    private static void startLog() {
-        File dir = new File("logs");
-        if(!dir.exists()) {
-            if(!dir.mkdir()) {
-                print("WARN: unable to create directory 'logs'.");
-            }
-        }
-        logEntry("New log started.");
-    }
-
-    /**
-     * Add a new log entry. Create a new document as needed, or append to an existing one.
-     *
-     * @param log the log entry
-     */
-    private static void logEntry(String log) {
-        try {
-            FileWriter fw;
-            BufferedWriter bw;
-            PrintWriter out;
-            String time;
-            if (!LOG_FILE.exists()){
-                if(LOG_FILE.createNewFile()) {
-                    fw = new FileWriter(LOG_FILE);
-                    bw = new BufferedWriter(fw);
-                    out = new PrintWriter(bw);
-                    time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
-                    out.println(time + " " + log);
-                    out.close();
-                } else {
-                    print("WARN: Main.logEntry unable to create new log file.");
-                }
-            } else {
-                fw = new FileWriter(LOG_FILENAME, true);
-                bw = new BufferedWriter(fw);
-                out = new PrintWriter(bw);
-                time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
-                out.println(time + " " + log);
-                out.close();
-            }
-        } catch (IOException e) {
-            print("WARN: Main.logEntry encountered an IO exception: " + e.getMessage());
-        }
-    }
-
     private static String getTodaysDate() {
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
@@ -350,30 +79,43 @@ public class App {
         return Integer.toString(year) + "-" + monthStr + "-" + dayStr;
     }
 
-    /**
-     * Shortcut to System.out.println
-     *
-     * @param s String to print
-     */
-    static void print(String s) {
-        System.out.println(s);
-    }
-
-    /**
-     * Mostly for debugging.
-     *
-     * @param list     The list to print
-     * @param listName The name of the list
-     * @param n        How many items of the list to print
-     */
-    private static void printNStringsFromList(List<String> list, String listName, int n) {
-        if(n > list.size()) {
-            print("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
-        } else {
-            print("\nFirst " + n + " strings from list " + listName + ":");
-            for(int i = 0; i < n; i++) {
-                print(list.get(i));
-            }
-        }
-    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
