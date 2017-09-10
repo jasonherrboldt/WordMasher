@@ -37,6 +37,46 @@ public class App {
 
     public static void main(String[] args) {
         startLog();
+        try {
+            parseArgs(args);
+        } catch (Exception e) {
+            print("Something went wrong. See log for more information.");
+        }
+    }
+
+    /*
+    void parseArgs(String[] args)
+        If args.length != 4
+            Log the error
+            Throw an illegal arguments exception
+        for (int i = 0; i < 2; i++) {
+            if (!fileExists(args[i])) {
+                Log the error
+                Throw a new illegal arguments exception
+            File thisFile = new File(args[i]);
+            if(thisFile.length() == 0) {
+                Log the error
+                Throw a new illegal arguments exception
+            try {
+                numberOfFrankenwordsToPrint = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                Log the error
+                Throw a new illegal arguments exception
+            if (numberOfFrankenwordsToPrint < 1
+                || numberOfFrankenwordsToPrint > MAX_FRANKENWORDS) {
+                Log the error
+                Throw a new illegal arguments exception
+        englishWordsFile = new File(args[0]);
+        specialCharactersFile = new File(args[1]);
+        outputFile = new File(args[2]);
+     */
+
+    public static void parseArgs(String[] args){
+        if(args.length < 4) {
+            String errorMessage = "Program must have 4 arguments. Number of arguments received: " + args.length + ".";
+            logEntry(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     /**
