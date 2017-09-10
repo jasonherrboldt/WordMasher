@@ -58,29 +58,63 @@ public class App {
     }
 
     /**
+     * Creates a list of random and distinct integers within the range [0 (inclusive, n (exclusive)].
+     *
+     * @param n The maximum range
+     * @return  The list of ints
+     */
+    public static List<Integer> getNRandomAndDistinctInts(int n, int listSize) {
+        if(n < 2 || n > 100000) {
+            throw new IllegalArgumentException("n must be in the range 1 > n < 100000 in getNRandomAndDistinctInts.");
+        }
+        List<Integer> randInts = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            int thisInt = getRandomIntInRange(0, listSize);
+            if(!randInts.contains(thisInt)) {
+                randInts.add(thisInt);
+            }
+        }
+        print("randInts: " + randInts);
+        return randInts;
+    }
+
+    /**
      * Chose n words at random from a list of strings.
      *
      * @param n The number of words to chose
      * @return  The chosen English words
      */
     static List<String> getNRandomAndDistinctStringsFromList(List<String> list, int n) {
-        if(list == null || list.isEmpty() || n < 1 || n > 500 || n > list.size()) {
+        if(list == null || list.isEmpty() || n < 1 || n > 2000 || n > list.size()) {
             return null;
         }
-        List<String> returnList = new ArrayList<>();
 
-        /*
-        There is a more efficient way to do this. Shouldn't have to shuffle a list of 58,000 strings every
-        time. Try this instead: Create a list of ascending integers of length list.size(), e.g. [0, 1, 2, ...].
-        Then for n times, pick a number at random from this list and put it in a new list of random ints -- but ONLY
-        if any given random int isn't already in the list of random ints. Then there should be a list like this:
-        [15067, 456, 43519]. Shouldn't take very long if list.size() is very large, but for shorter lists (of say 10)
-        this will take longer because it's far more likely that a "random" number candidate is already in the random
-        numbers list.
-        */
-        Collections.shuffle(list);
+//        List<Integer> randInts = new ArrayList<>();
+//        for(int i = 0; i < n; i++) {
+//            randInts.add(0);
+//        }
+//
+//        // while(!listContainsDistinctItems(randInts)) {
+//        for(int j = 0; j < 100; j++) { // replace with while loop
+//            logEntry("In the getNRandomAndDistinctStringsFromList while loop.");
+//            randInts.clear();
+//            for(int i = 0; i < n; i++) {
+//                randInts.add(getRandomIntInRange(0, list.size()));
+//            }
+//        }
+
+        List<Integer> randInts = getNRandomAndDistinctInts(n, list.size());
         for(int i = 0; i < n; i++) {
-            returnList.add(list.get(i));
+            // int thisInt = getRandomIntInRange(0, list.size());
+            int thisInt = randInts.get(i);
+            if(!randInts.contains(thisInt)) {
+                randInts.add(thisInt);
+            }
+        }
+
+        List<String> returnList = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            returnList.add(list.get(randInts.get(i)));
         }
 
         logEntry("getNRandomAndDistinctStringsFromList selected " + returnList.size() + " strings.");
@@ -106,13 +140,13 @@ public class App {
     /**
      * Generates a pseudorandom number in a specified range.
      *
-     * @param min The minimum value of the range
-     * @param max The maximum value of the range
+     * @param min The minimum value of the range (inclusive)
+     * @param max The maximum value of the range (exclusive)
      * @return    The chosen pseudorandom number
      */
-    private static int getRandomIntInRange(int min, int max) {
-        logEntry("getRandomIntInRange was called with min = " + min + " and max = " + max + ".");
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    public static int getRandomIntInRange(int min, int max) {
+        // logEntry("getRandomIntInRange was called with min = " + min + " and max = " + max + ".");
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
     /**

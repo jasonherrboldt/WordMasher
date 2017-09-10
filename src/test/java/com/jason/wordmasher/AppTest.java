@@ -7,9 +7,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Unit test for simple App.
@@ -17,7 +15,7 @@ import java.util.List;
 public class AppTest extends TestCase {
 
     private String[] args;
-    private static final int CREATE_DUMMY_ARRAY_MAX = 500;
+    private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
     private List<String> testRun;
     private List<String> mockList;
 
@@ -157,7 +155,7 @@ public class AppTest extends TestCase {
     public void testGetNRandomStringsFromList_returnsCorrectListSize() {
         mockList = createDummyStringList(100);
         if(mockList == null) {
-            fail("testGetNRandomStringsFromList was unable to generate a mockList.");
+            fail("mockList cannot be null in testGetNRandomStringsFromList_returnsCorrectListSize.");
         }
         testRun = App.getNRandomAndDistinctStringsFromList(mockList, 10);
         assertEquals(testRun.size(), 10);
@@ -170,13 +168,16 @@ public class AppTest extends TestCase {
      */
     public void testGetNRandomStringsFromList_isRandom() {
         mockList = createDummyStringList(CREATE_DUMMY_ARRAY_MAX);
+        if(mockList == null) {
+            fail("mockList cannot be null in testGetNRandomStringsFromList_isRandom.");
+        }
         List<String> mockListCopy = new ArrayList<>(mockList);
         testRun = App.getNRandomAndDistinctStringsFromList(mockList, CREATE_DUMMY_ARRAY_MAX);
         if(testRun == null) {
-            fail("testRun cannot be null here.");
+            fail("testRun cannot be null in testGetNRandomStringsFromList_isRandom.");
         }
         if(mockList.size() != testRun.size()) {
-            fail("mockList cannot have a different size than testRun here.");
+            fail("mockList cannot have a different size than testRun in testGetNRandomStringsFromList_isRandom.");
         }
         /*
         There is a very, VERY slim chance that the below statement could return true. In fact, the chances
@@ -201,6 +202,21 @@ public class AppTest extends TestCase {
     public void testListContainsDistinctItems() {
         assert(App.listContainsDistinctItems(createDummyStringList(10)));
     }
+
+    public void testGetNRandomAndDistinctInts_generatesDifferentLists() {
+        List<Integer> run_A = App.getNRandomAndDistinctInts(50, 75);
+        List<Integer> run_B = App.getNRandomAndDistinctInts(50, 75);
+        assertFalse(run_A.equals(run_B));
+    }
+
+    public void testGetNRandomAndDistinctInts_generatesDistinctLists() {
+        List<Integer> listOfRandInts = App.getNRandomAndDistinctInts(50, 75);
+        Set<Integer> setOfRandInts = new HashSet<>(listOfRandInts);
+        assert(listOfRandInts.size() == setOfRandInts.size());
+    }
+
+
+
 
     //**************************//
     //***** HELPER METHODS *****//
@@ -303,6 +319,31 @@ public class AppTest extends TestCase {
         }
         return stats;
     }
+
+    // POC
+//    public void testQuick() {
+//        int wordListSize = 25;
+//        int randNumberListSize = 20;
+//        List<String> list = createDummyStringList(wordListSize);
+//        List<Integer> randInts = new ArrayList<>();
+//        int maxWhile = 0;
+//        if(list != null) {
+//            while(randInts.size() < randNumberListSize) {
+//                if(maxWhile > 100) { // prevent infinite looping
+//                    App.print("maxWhile reached.");
+//                    break;
+//                }
+//                int thisInt = App.getRandomIntInRange(0, list.size());
+//                if(!randInts.contains(thisInt)) {
+//                    randInts.add(thisInt);
+//                }
+//                maxWhile++;
+//            }
+//        }
+//        App.print("randInts: " + randInts);
+//        App.print("maxWhile: " + maxWhile);
+//        assert(true);
+//    }
 }
 
 
