@@ -94,21 +94,21 @@ public class AppTest extends TestCase {
      * Asserts App.parseArgs throws an exception if arguments array contains empty files.
      */
     public void testParseArgs_emptyArgFiles() {
+        String emptyFileName = "empty.txt";
+        List<String> emptyList = new ArrayList<>();
+        File tempFile = App.createFileWithStringList(emptyList, emptyFileName);
+        if(!tempFile.canRead()) {
+            fail("Unable to read temporary test file " + tempFile.getName());
+        }
+        String[] args = createArgsArray(emptyFileName, "charList.txt", "output.txt", "4");
         try {
-            File tempFile = File.createTempFile("empty", ".txt");
-            tempFile.deleteOnExit();
-            if(!tempFile.canRead()) {
-                fail("Unable to read temporary test file 'empty*.txt'.");
+            App.parseArgs(args);
+            fail("parseArgs should have thrown an illegal argument exception.");
+        } catch (IllegalArgumentException e) {
+            // Do nothing; test asserts exception is properly thrown.
+            if(!tempFile.delete()) {
+                fail("testParseArgs_emptyArgFiles was unable to delete " + tempFile.getName());
             }
-            String[] args = createArgsArray("empty.txt", "empty.txt", "output.txt", "4");
-            try {
-                App.parseArgs(args);
-                fail("parseArgs should have thrown an illegal argument exception.");
-            } catch (IllegalArgumentException e) {
-                // Do nothing; test asserts exception is properly thrown.
-            }
-        } catch (IOException e) {
-            fail("Unable to create empty text file. " + e.getMessage());
         }
     }
 
@@ -198,44 +198,16 @@ public class AppTest extends TestCase {
      * Asserts App.readFileIntoMemory returns a list that reflects the file data.
      */
     public void testReadFileIntoMemory_correctData() {
-        try {
-            List<String> mockList = createDummyStringList(20);
-            if(mockList == null || mockList.isEmpty()) {
-                fail("testReadFileIntoMemory_correctData was unable to populate mockList.");
-            } else {
-                FileWriter fw;
-                BufferedWriter bw;
-                PrintWriter out;
-                File mockFile = new File("mockFile.txt");
-                if(!mockFile.exists()) {
-                    if(mockFile.createNewFile()) {
-                        fw = new FileWriter(mockFile);
-                        bw = new BufferedWriter(fw);
-                        out = new PrintWriter(bw);
-                        for(String s : mockList) {
-                            out.println(s);
-                        }
-                        out.close();
-                    } else {
-                        fail("testReadFileIntoMemory_correctData unable to create mockFile.txt.");
-                    }
-                } else {
-                    fw = new FileWriter(mockFile, true);
-                    bw = new BufferedWriter(fw);
-                    out = new PrintWriter(bw);
-                    for(String s : mockList) {
-                        out.println(s);
-                    }
-                    out.close();
-                }
-                List<String> methodCall = App.readFileIntoMemory(mockFile);
-                assertEquals(methodCall, mockList);
-                if(!mockFile.delete()) {
-                    App.print("testReadFileIntoMemory_correctData was unable to delete " + mockFile.getName());
-                }
+        List<String> mockList = createDummyStringList(20);
+        if (mockList == null || mockList.isEmpty()) {
+            fail("testReadFileIntoMemory_correctData was unable to populate mockList.");
+        } else {
+            File mockFile = App.createFileWithStringList(mockList, "mock.txt");
+            List<String> methodCall = App.readFileIntoMemory(mockFile);
+            assertEquals(methodCall, mockList);
+            if (!mockFile.delete()) {
+                App.print("testReadFileIntoMemory_correctData was unable to delete " + mockFile.getName());
             }
-        } catch (IOException e) {
-            fail("testReadFileIntoMemory_correctSize threw an IO exception: " + e.getMessage());
         }
     }
 

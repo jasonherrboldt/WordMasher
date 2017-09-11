@@ -38,6 +38,7 @@ public class App {
     private static List<String> englishWords;
     private static List<String> specialCharacters;
     private static List<String> usedEnglishWords;
+    private static String errorMessage;
 
     public static void main(String[] args) {
         startLog();
@@ -137,10 +138,14 @@ public class App {
      */
     static List<String> readFileIntoMemory(File file) throws IllegalStateException {
         if(!fileExists(file.getName())) {
-            throw new IllegalStateException("App.readFileIntoMemory received a non-existent file: " + file.getName());
+            errorMessage = "App.readFileIntoMemory received a non-existent file: " + file.getName();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
         if(file.length() == 0) {
-            throw new IllegalStateException("App.readFileIntoMemory received an empty file: " + file.getName());
+            errorMessage = "App.readFileIntoMemory received an empty file: " + file.getName();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
         List<String> returnList = new ArrayList<>();
         try {
@@ -150,7 +155,9 @@ public class App {
                 returnList.add(line);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("App.readFileIntoMemory threw an IO exception: " + e.getMessage());
+            errorMessage = "App.readFileIntoMemory threw an IO exception: " + e.getMessage();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
         logEntry("The file " + file.getName() + " has been read into memory.");
         return returnList;
@@ -250,12 +257,58 @@ public class App {
      */
     private static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
-            print("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
+            errorMessage = "Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
         } else {
             print("\nFirst " + n + " strings from list " + listName + ":");
             for(int i = 0; i < n; i++) {
                 print(list.get(i));
             }
+        }
+    }
+
+    /**
+     * Writes a list of strings to a newly-created file. Writes over files if they already exist.
+     *
+     * @param list     List of strings to print
+     * @param fileName Name of file to create
+     * @return         Newly-created file
+     */
+    static File createFileWithStringList(List<String> list, String fileName) throws IllegalStateException {
+        try {
+            FileWriter fw;
+            BufferedWriter bw;
+            PrintWriter out;
+            File file = new File(fileName);
+            if(!file.exists()) {
+                if(file.createNewFile()) {
+                    fw = new FileWriter(file);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    for(String s : list) {
+                        out.println(s);
+                    }
+                    out.close();
+                } else {
+                    errorMessage = "App.writeStringListToFile was unable to create a new file.";
+                    logEntry(errorMessage);
+                    throw new IllegalStateException(errorMessage);
+                }
+            } else {
+                fw = new FileWriter(file, true);
+                bw = new BufferedWriter(fw);
+                out = new PrintWriter(bw);
+                for(String s : list) {
+                    out.println(s);
+                }
+                out.close();
+            }
+            return file;
+        } catch (IOException e) {
+            errorMessage = "App.writeStringListToFile threw an IO exception.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
     }
 }
