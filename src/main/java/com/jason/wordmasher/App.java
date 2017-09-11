@@ -34,8 +34,9 @@ public class App {
     private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
     private static final int MAX_FRANKENWORDS = 1000;
     private static final int MAX_WHILE = 1000;
-    private static final int MAX_WORDS_TO_MASH = 10;
+    public static final int MAX_WORDS_TO_MASH = 10;
     private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
+    public static final int MIN_WORDS_TO_MASH = 1;
     private static final String PARSE_ARGS_ERROR_MESSAGE = "App.parseArgs encountered one or more " +
             "illegal program arguments.";
     private static List<String> englishWords;
@@ -169,36 +170,43 @@ public class App {
      * Get a list of words to mash from englishWords.
      *
      * @param numberOfWordsToMash The number of words to mash
-     * @return                    A list of words to mash
+     * @param englishWords englishWords mock
+     * @param usedEnglishWords usedEnglishWords mock
+     * @return A list of words to mash
      */
-    List<String> getWordsToMash(int numberOfWordsToMash) throws IllegalStateException {
-        if(numberOfWordsToMash < 1 || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
+    static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
+                                       List<String> usedEnglishWords) throws IllegalStateException {
+        if(numberOfWordsToMash < MIN_WORDS_TO_MASH || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
             errorMessage = "App.getWordsToMash received an illegal int: "
                     + numberOfWordsToMash + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
-        } else {
-            List<String> wordsToMash = new ArrayList<>();
-            int i = 0;
-            while(wordsToMash.size() < numberOfWordsToMash) {
-                int randInt = getRandomIntInRange(0, englishWords.size() - 1);
-                String candidateWord = englishWords.get(randInt);
-                if(!usedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
-                    if(candidateWord.length() > MIN_CANDIDATE_WORD_LENGTH && candidateWord.length()
-                            < MAX_CANDIDATE_WORD_LENGTH) {
-                        wordsToMash.add(candidateWord);
-                        usedEnglishWords.add(candidateWord);
-                    }
-                }
-                i++;
-                if(i > MAX_WHILE) {
-                    errorMessage = "A while loop in getWordsToMash exceeded " + MAX_WHILE + " iterations.";
-                    logEntry(errorMessage);
-                    throw new IllegalStateException(errorMessage);
+        }
+        if(listIsNullOrEmpty(englishWords) || usedEnglishWords == null) {
+            errorMessage = "getWordsToMash received at least one string list that is null or empty.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        List<String> wordsToMash = new ArrayList<>();
+        int i = 0;
+        while(wordsToMash.size() < numberOfWordsToMash) {
+            int randInt = getRandomIntInRange(0, englishWords.size() - 1);
+            String candidateWord = englishWords.get(randInt);
+            if(!usedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
+                if(candidateWord.length() > MIN_CANDIDATE_WORD_LENGTH && candidateWord.length()
+                        < MAX_CANDIDATE_WORD_LENGTH) {
+                    wordsToMash.add(candidateWord);
+                    usedEnglishWords.add(candidateWord);
                 }
             }
-            return wordsToMash;
+            i++;
+            if(i > MAX_WHILE) {
+                errorMessage = "A while loop in getWordsToMash exceeded " + MAX_WHILE + " iterations.";
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
         }
+        return wordsToMash;
     }
 
     /**
@@ -358,6 +366,16 @@ public class App {
      */
     static int getRandomIntInRange(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    /**
+     * Checks to see if a list of objects is null or empty.
+     *
+     * @param list The list to analyze
+     * @return     True if the list is null or empty, false otherwise.
+     */
+    static boolean listIsNullOrEmpty(List<String> list) {
+        return list == null || list.isEmpty();
     }
 }
 

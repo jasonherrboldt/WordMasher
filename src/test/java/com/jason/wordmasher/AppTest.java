@@ -13,10 +13,12 @@ import java.util.*;
  */
 public class AppTest extends TestCase {
 
-    private String[] args;
+    private static String[] args;
     private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
-    private List<String> testRun;
-    private List<String> mockList;
+    private static List<String> testRun;
+    private static List<String> mockList;
+    private static List<String> englishWordsMock = populateEnglishWordsMock();
+    private static List<String> usedEnglishWordsMock = new ArrayList<>();
 
     /**
      * Create the test case
@@ -223,6 +225,38 @@ public class AppTest extends TestCase {
         assert(generatedInts.size() == 5);
     }
 
+    /**
+     * Asserts that App.getWordsToMash throws an exception for arg int too small.
+     */
+    public void testGetWordsToMash_throwsExceptions_intTooSmall() {
+        try {
+            App.getWordsToMash(App.MIN_WORDS_TO_MASH - 1, englishWordsMock, usedEnglishWordsMock);
+            fail("App.getWordsToMash should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts that App.getWordsToMash throws an exception for arg int too large.
+     */
+    public void testGetWordsToMash_throwsExceptions_intTooLarge() {
+        try {
+            App.getWordsToMash(App.MAX_WORDS_TO_MASH + 1, englishWordsMock, usedEnglishWordsMock);
+            fail("App.getWordsToMash should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.testGetWordsToMash correctly populates usedEnglishWords
+     */
+    public void testGetWordsToMash_populatesUsedEnglishWords() {
+        List wordToMash = App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
+        assert(wordToMash.equals(usedEnglishWordsMock));
+    }
+
 
 
     //**************************//
@@ -288,6 +322,15 @@ public class AppTest extends TestCase {
             return null;
         }
         return list;
+    }
+
+    private static List<String> populateEnglishWordsMock() {
+        List<String> words = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            StringBuilder word = new StringBuilder("word_");
+            words.add(word.append(Integer.toString(i)).toString());
+        }
+        return words;
     }
 }
 
