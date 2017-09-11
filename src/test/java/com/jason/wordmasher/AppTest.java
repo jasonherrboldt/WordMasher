@@ -4,8 +4,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -138,7 +139,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.validateArgs throws an exception if 4th program arguments is < 1.
+     * Asserts App.validateArgs throws an exception if 4th program arguments is > 1000.
      */
     public void testParseArgs_tooManyFrankenwords() {
         args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
@@ -151,11 +152,10 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.validateArgs returns true if arguments array contains an integer string
-     * with a value of > 0 and < 1001.
+     * Asserts App.validateArgs does not throw an exception when given valid program arguments.
      */
-    public void testValidateArgs_allParsableArguments() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1000");
+    public void testParseArgs_allParsableArguments() {
+        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "500");
         try {
             App.parseArgs(args);
         } catch (IllegalArgumentException e) {
@@ -163,6 +163,81 @@ public class AppTest extends TestCase {
         }
     }
 
+    /**
+     * Asserts App.readFileIntoMemory throws an exception if it receives a non-existent file as an argument.
+     */
+    public void testReadFileIntoMemory_nonExistentFile() {
+        try {
+            File fakeFile = new File("fake.txt");
+            App.readFileIntoMemory(fakeFile);
+            fail("App.readFileIntoMemory should have thrown an illegal argument exception.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.readFileIntoMemory throws an exception if it receives an empty file as an argument.
+     */
+    public void testReadFileIntoMemory_emptyFile() {
+        try {
+            File tempFile = File.createTempFile("empty", ".txt");
+            tempFile.deleteOnExit();
+            try {
+                App.readFileIntoMemory(tempFile);
+                fail("App.readFileIntoMemory should have thrown an illegal argument exception.");
+            } catch (IllegalStateException e) {
+                // Do nothing; test asserts exception is properly thrown.
+            }
+        } catch (IOException e) {
+            fail("Unable to create empty text file. " + e.getMessage());
+        }
+    }
+
+    /**
+     * Asserts App.readFileIntoMemory returns a list that reflects the file data.
+     */
+    public void testReadFileIntoMemory_correctData() {
+        try {
+            List<String> mockList = createDummyStringList(20);
+            if(mockList == null || mockList.isEmpty()) {
+                fail("testReadFileIntoMemory_correctData was unable to populate mockList.");
+            } else {
+                FileWriter fw;
+                BufferedWriter bw;
+                PrintWriter out;
+                File mockFile = new File("mockFile.txt");
+                if(!mockFile.exists()) {
+                    if(mockFile.createNewFile()) {
+                        fw = new FileWriter(mockFile);
+                        bw = new BufferedWriter(fw);
+                        out = new PrintWriter(bw);
+                        for(String s : mockList) {
+                            out.println(s);
+                        }
+                        out.close();
+                    } else {
+                        fail("testReadFileIntoMemory_correctData unable to create mockFile.txt.");
+                    }
+                } else {
+                    fw = new FileWriter(mockFile, true);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    for(String s : mockList) {
+                        out.println(s);
+                    }
+                    out.close();
+                }
+                List<String> methodCall = App.readFileIntoMemory(mockFile);
+                assertEquals(methodCall, mockList);
+                if(!mockFile.delete()) {
+                    App.print("testReadFileIntoMemory_correctData was unable to delete " + mockFile.getName());
+                }
+            }
+        } catch (IOException e) {
+            fail("testReadFileIntoMemory_correctSize threw an IO exception: " + e.getMessage());
+        }
+    }
 
 
     //**************************//
@@ -208,6 +283,26 @@ public class AppTest extends TestCase {
             args[i] = Integer.toString(i);
         }
         return args;
+    }
+
+    /**
+     * Utilizes createDummyArray to create a dummy string list of distinct numbered elements,
+     * e.g. ["0", "1", "2", ...].
+     *
+     * @param n The list length
+     * @return  The dummy string list
+     */
+    private List<String> createDummyStringList(int n) {
+        // Prevent createDummyArray from throwing an illegal argument exception.
+        if(n < 0 || n > CREATE_DUMMY_ARRAY_MAX) {
+            return null;
+        }
+        List<String> list = new ArrayList<>();
+        String[] array = createDummyArray(n);
+        if(!Collections.addAll(list, array)) {
+            return null;
+        }
+        return list;
     }
 }
 

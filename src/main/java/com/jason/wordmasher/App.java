@@ -2,6 +2,7 @@ package com.jason.wordmasher;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -9,9 +10,9 @@ import java.util.List;
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
  *
- * Github profile: github.com/jasonherrboldt
+ * See README for usage rules. Sample program args: "english_words.txt" "special_characters.txt" "output.txt" 10
  *
- * Created by Jason Herrboldt (intothefuture@gmail.com), September 2017.
+ * Created September 2017 by Jason Herrboldt (intothefuture@gmail.com, github.com/jasonherrboldt).
  */
 public class App {
 
@@ -27,7 +28,7 @@ public class App {
     private static final String LOG_FILENAME = LOG_DIR + DATE_STR + ".txt";
     private static final File LOG_FILE = new File(LOG_FILENAME);
 
-    // Misc global variables
+    // Misc variables
     private static final int MAX_WORDS_TO_MASH = 10;
     private static final int MAX_WHILE = 1000;
     private static final int MAX_FRANKENWORDS = 1000;
@@ -40,6 +41,8 @@ public class App {
         startLog();
         try {
             parseArgs(args);
+
+            logEntry("Program finished.");
         } catch (Exception e) {
             String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
             print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
@@ -110,7 +113,34 @@ public class App {
      */
     private static boolean fileExists(String fileName) {
         File file = new File(fileName);
-        return file.canRead();
+        return file.exists();
+    }
+
+    /**
+     * Reads contents of a file into a list of strings.
+     *
+     * @param  file File to read
+     * @return List of strings or null if exception thrown
+     */
+    static List<String> readFileIntoMemory(File file) throws IllegalStateException {
+        if(!fileExists(file.getName())) {
+            throw new IllegalStateException("App.readFileIntoMemory received a non-existent file: " + file.getName());
+        }
+        if(file.length() == 0) {
+            throw new IllegalStateException("App.readFileIntoMemory received an empty file: " + file.getName());
+        }
+        List<String> returnList = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = br.readLine()) != null) {
+                returnList.add(line);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("App.readFileIntoMemory threw an IO exception: " + e.getMessage());
+        }
+        logEntry("The file " + file.getName() + " has been read into memory.");
+        return returnList;
     }
 
     /**
@@ -194,7 +224,7 @@ public class App {
      *
      * @param s String to print
      */
-    private static void print(String s) {
+    static void print(String s) {
         System.out.println(s);
     }
 
