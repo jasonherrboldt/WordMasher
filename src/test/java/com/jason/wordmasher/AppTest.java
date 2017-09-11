@@ -315,6 +315,7 @@ public class AppTest extends TestCase {
      * Asserts App.testGetWordsToMash generates a list of random words.
      */
     public void testGetWordsToMash_generatesRandomWords() {
+        App.print("Hello from the top of testGetWordsToMash_generatesRandomWords.");
         boolean matchFound = false;
         /*
         Playing with the law of large numbers here; chances of fluke failure are lowered if the number of elements
@@ -327,6 +328,12 @@ public class AppTest extends TestCase {
                 matchFound = true;
             }
         }
+        if(matchFound) {
+            App.print("testGetWordsToMash_generatesRandomWords failed. Here's why:");
+            App.print("wordsToMash.size() / 2 = " + wordsToMash.size() / 2);
+            App.printNStringsFromList(englishWordsMock, "englishWordsMock", wordsToMash.size() / 2);
+            App.printNStringsFromList(wordsToMash, "wordsToMash", wordsToMash.size() / 2);
+        }
         assertFalse(matchFound);
     }
 
@@ -335,7 +342,7 @@ public class AppTest extends TestCase {
      */
     public void testMakeSubword_throwsException_firstArgNull() {
         try {
-            String test = App.makeSubword(null, 1);
+            App.makeSubword(null, 1);
             fail("App.makeSubword should have thrown an exception here.");
         } catch (IllegalStateException e) {
             // Do nothing; test asserts exception is properly thrown.
@@ -384,7 +391,6 @@ public class AppTest extends TestCase {
     /**
      * Asserts App.makeSubword properly implements case 1. (See README.)
      */
-    // App.makeSubword is still under construction
     public void testMakeSubword_case_1() {
         List<String> subWords = new ArrayList<>();
         String word = "Universe";
@@ -393,6 +399,33 @@ public class AppTest extends TestCase {
         }
         Set<String> subWordsSet = new HashSet<>(subWords);
         assertEquals(subWordsSet.size(), word.length());
+    }
+
+    /**
+     * Asserts App.makeSubword properly implements case 2. (See README.)
+     */
+    public void testMakeSubword_case_2() {
+        List<String> subWords = new ArrayList<>();
+        String word = "Universe";
+        for(int i = 0; i < 100; i++) {
+            subWords.add(App.makeSubword(word, 2));
+        }
+        Set<String> subWordsSet = new HashSet<>(subWords);
+        assertEquals(subWordsSet.size(), word.length());
+    }
+
+    /**
+     * Asserts App.makeSubword properly implements case 3. (See README.)
+     */
+    public void testMakeSubword_case_3() {
+        List<String> subWords = new ArrayList<>();
+        String word = "Universe";
+        for(int i = 0; i < 1000; i++) {
+            subWords.add(App.makeSubword(word, 3));
+        }
+        Set<String> subWordsSet = new HashSet<>(subWords);
+        // There are 35 distinct subwords in "UNIVERSE"
+        assertEquals(subWordsSet.size(), 35);
     }
 
 

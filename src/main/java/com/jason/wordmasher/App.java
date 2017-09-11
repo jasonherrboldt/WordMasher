@@ -230,27 +230,31 @@ public class App {
             throw new IllegalStateException(errorMessage);
         }
 
+        int i = 0;
+        int j = 0;
+
         switch(n) {
             case(1): {
                 // print("makeSubword case 1 reached.");
-                int i = getRandomIntInInclusiveRange(0, word.length() - 1);
+                i = getRandomIntInInclusiveRange(0, word.length() - 1);
                 return substringInclusive(word, 0, i);
             }
             case(2): {
-                // todo case 2
                 // print("makeSubword case 2 reached.");
-                break;
+                j = getRandomIntInInclusiveRange(0, word.length() - 1);
+                return substringInclusive(word, j, word.length() - 1);
             }
             case(3): {
-                // todo case 3
                 // print("makeSubword case 3 reached.");
-                break;
+                int wordLength = word.length();
+                i = getRandomIntInInclusiveRange(0, wordLength - 1);
+                j = getRandomIntInInclusiveRange(i, wordLength - 1);
+                return substringInclusive(word, i, j);
             }
         }
 
         // continue...
 
-        // print("makeSubword end of method reached.");
         return null;
     }
 
@@ -344,7 +348,7 @@ public class App {
      * @param listName The name of the list
      * @param n        How many items of the list to print
      */
-    private static void printNStringsFromList(List<String> list, String listName, int n) {
+    public static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
             errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
             logEntry(errorMessage);
