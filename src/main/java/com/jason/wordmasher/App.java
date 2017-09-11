@@ -33,6 +33,8 @@ public class App {
     private static final int MAX_WHILE = 1000;
     private static final int MAX_FRANKENWORDS = 1000;
     private static final int ARG_LENGTH_MAX = 50;
+    private static final String PARSE_ARGS_ERROR_MESSAGE = "App.parseArgs encountered one or more " +
+            "illegal program arguments.";
     private static List<String> englishWords;
     private static List<String> specialCharacters;
     private static List<String> usedEnglishWords;
@@ -41,6 +43,15 @@ public class App {
         startLog();
         try {
             parseArgs(args);
+            englishWords = readFileIntoMemory(englishWordsFile);
+            specialCharacters = readFileIntoMemory(specialCharactersFile);
+
+            // debug
+            printNStringsFromList(englishWords, "englishWords", 10);
+            // debug
+            printNStringsFromList(specialCharacters, "specialCharacters", 15);
+
+            // continue...
 
             logEntry("Program finished.");
         } catch (Exception e) {
@@ -52,6 +63,8 @@ public class App {
 
     /**
      * Validates and parses program arguments.
+     *
+     * (This method prints un-escaped user input to the logs. Not addressed because this is a toy program.)
      *
      * @param args Program arguments
      */
@@ -67,20 +80,20 @@ public class App {
             if (args[i].length() > ARG_LENGTH_MAX) {
                 logEntry("Error: One or more program argument exceeds the maximum length of " + ARG_LENGTH_MAX + ".");
                 logEntry("Program terminated");
-                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             }
         }
         for (int i = 0; i < 2; i++) {
             if (!fileExists(args[i])) {
                 logEntry("Error: Unable to verify that file " + args[i] + " exists.");
                 logEntry("Program terminated");
-                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             }
             File thisFile = new File(args[i]);
             if(thisFile.length() == 0) {
                 logEntry("Error: File " + args[i] + " appears to be empty.");
                 logEntry("Program terminated");
-                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             }
         }
         try {
@@ -88,13 +101,13 @@ public class App {
         } catch (NumberFormatException e) {
             logEntry("Error: Unable to parse number of frankenwords to print. Argument received: " + args[3] + ".");
             logEntry("Program terminated");
-            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
         if (numberOfFrankenwordsToCreate < 1 || numberOfFrankenwordsToCreate > MAX_FRANKENWORDS) {
             logEntry("Error: Number of frankenwords to print must be > 0 and < " + MAX_FRANKENWORDS + ".");
             logEntry("Argument received " + numberOfFrankenwordsToCreate + ".");
             logEntry("Program terminated");
-            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
         // Parse arguments
@@ -228,6 +241,23 @@ public class App {
         System.out.println(s);
     }
 
+    /**
+     * Mostly for debugging.
+     *
+     * @param list     The list to print
+     * @param listName The name of the list
+     * @param n        How many items of the list to print
+     */
+    private static void printNStringsFromList(List<String> list, String listName, int n) {
+        if(n > list.size()) {
+            print("Unable to print list. List has " + list.size() + " elements, and n = " + n + ".");
+        } else {
+            print("\nFirst " + n + " strings from list " + listName + ":");
+            for(int i = 0; i < n; i++) {
+                print(list.get(i));
+            }
+        }
+    }
 }
 
 
