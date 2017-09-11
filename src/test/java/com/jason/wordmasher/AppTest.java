@@ -222,7 +222,7 @@ public class AppTest extends TestCase {
         int minInclusive = 1;
         int maxInclusive = 5;
         for(int i = 0; i < 50; i++) {
-            generatedInts.add(App.getRandomIntInRange(minInclusive, maxInclusive));
+            generatedInts.add(App.getRandomIntInInclusiveRange(minInclusive, maxInclusive));
         }
         assert(generatedInts.size() == 5);
     }
@@ -288,8 +288,6 @@ public class AppTest extends TestCase {
         }
     }
 
-
-
     /**
      * Asserts App.testGetWordsToMash correctly populates usedEnglishWords.
      */
@@ -331,6 +329,71 @@ public class AppTest extends TestCase {
         }
         assertFalse(matchFound);
     }
+
+    /**
+     * Asserts App.makeSubword throws an exception when first arg is null.
+     */
+    public void testMakeSubword_throwsException_firstArgNull() {
+        try {
+            String test = App.makeSubword(null, 1);
+            fail("App.makeSubword should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.makeSubword throws an exception when first arg is too short.
+     */
+    public void testMakeSubword_throwsException_firstArgTooShort() {
+        try {
+            String firstArg = "a";
+            String test = App.makeSubword(firstArg, 1);
+            fail("App.makeSubword should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.makeSubword throws an exception when first arg is too long.
+     */
+    public void testMakeSubword_throwsException_firstArgTooLong() {
+        try {
+            String firstArg = "aaaaaaaaaaa";
+            String test = App.makeSubword(firstArg, 1);
+            fail("App.makeSubword should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.makeSubword throws an exception when second arg is not 1, 2, or 3.
+     */
+    public void testMakeSubword_throwsException_secondArgIllegalValue() {
+        try {
+            String firstArg = "just right";
+            String test = App.makeSubword(firstArg, 0);
+            fail("App.makeSubword should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.makeSubword properly implements case 1. (See README.)
+     */
+    // App.makeSubword is still under construction
+//    public void testMakeSubword_case_1() {
+//        List<String> subWords = new ArrayList<>();
+//        String word = "Universe";
+//        for(int i = 0; i < 100; i++) {
+//            subWords.add(App.makeSubword(word, 1));
+//        }
+//        Set<String> subWordsSet = new HashSet<>(subWords);
+//        assertEquals(subWordsSet.size(), word.length());
+//    }
 
 
 

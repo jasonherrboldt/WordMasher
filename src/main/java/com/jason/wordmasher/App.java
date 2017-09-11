@@ -141,12 +141,12 @@ public class App {
      */
     static List<String> readFileIntoMemory(File file) throws IllegalStateException {
         if(!fileExists(file.getName())) {
-            errorMessage = "App.readFileIntoMemory received a non-existent file: " + file.getName();
+            errorMessage = "Error: App.readFileIntoMemory received a non-existent file: " + file.getName();
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
         if(file.length() == 0) {
-            errorMessage = "App.readFileIntoMemory received an empty file: " + file.getName();
+            errorMessage = "Error: App.readFileIntoMemory received an empty file: " + file.getName();
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
@@ -158,7 +158,7 @@ public class App {
                 returnList.add(line);
             }
         } catch (IOException e) {
-            errorMessage = "App.readFileIntoMemory threw an IO exception: " + e.getMessage();
+            errorMessage = "Error: App.readFileIntoMemory threw an IO exception: " + e.getMessage();
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
@@ -177,20 +177,20 @@ public class App {
     static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
                                        List<String> usedEnglishWords) throws IllegalStateException {
         if(numberOfWordsToMash < MIN_WORDS_TO_MASH || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
-            errorMessage = "App.getWordsToMash received an illegal int: "
+            errorMessage = "Error: App.getWordsToMash received an illegal int: "
                     + numberOfWordsToMash + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
         if(listIsNullOrEmpty(englishWords) || usedEnglishWords == null) {
-            errorMessage = "getWordsToMash received at least one string list that is null or empty.";
+            errorMessage = "Error: getWordsToMash received at least one string list that is null or empty.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
         List<String> wordsToMash = new ArrayList<>();
         int i = 0;
         while(wordsToMash.size() < numberOfWordsToMash) {
-            int randInt = getRandomIntInRange(0, englishWords.size() - 1);
+            int randInt = getRandomIntInInclusiveRange(0, englishWords.size() - 1);
             String candidateWord = englishWords.get(randInt);
             if(!usedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
                 if(candidateWord.length() > MIN_CANDIDATE_WORD_LENGTH && candidateWord.length()
@@ -201,12 +201,58 @@ public class App {
             }
             i++;
             if(i > MAX_WHILE) {
-                errorMessage = "A while loop in getWordsToMash exceeded " + MAX_WHILE + " iterations.";
+                errorMessage = "Error: A while loop in getWordsToMash exceeded " + MAX_WHILE + " iterations.";
                 logEntry(errorMessage);
                 throw new IllegalStateException(errorMessage);
             }
         }
         return wordsToMash;
+    }
+
+    /**
+     * Makes a subword according to the program requirements. (See README.)
+     *
+     * @param word The word to use
+     * @param n    Which subword pattern to use
+     * @return     The subword
+     */
+    static String makeSubword(String word, int n) {
+        if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
+            errorMessage = "Error: makeSubword received an illegal 1st argument.";
+            logEntry(errorMessage);
+            // print("makeSubword first if reached.");
+            throw new IllegalStateException(errorMessage);
+        }
+        if(n != 1 && n != 2 && n != 3) {
+            errorMessage = "Error: makeSubword received an illegal 2nd argument. Must be 1, 2, or 3.";
+            logEntry(errorMessage);
+            // print("makeSubword second if reached.");
+            throw new IllegalStateException(errorMessage);
+        }
+
+        switch(n) {
+            case(1): {
+                // print("makeSubword case 1 reached.");
+                int i = getRandomIntInInclusiveRange(1, word.length() - 1);
+                // return word.substring(0, i + 1); // 2nd arg of substring is exclusive.
+                return word.substring(0, i);
+            }
+            case(2): {
+                // todo case 2
+                // print("makeSubword case 2 reached.");
+                break;
+            }
+            case(3): {
+                // todo case 3
+                // print("makeSubword case 3 reached.");
+                break;
+            }
+        }
+
+        // continue...
+
+        // print("makeSubword end of method reached.");
+        return null;
     }
 
     /**
@@ -301,7 +347,7 @@ public class App {
      */
     private static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
-            errorMessage = "Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
+            errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         } else {
@@ -335,7 +381,7 @@ public class App {
                     }
                     out.close();
                 } else {
-                    errorMessage = "App.writeStringListToFile was unable to create a new file.";
+                    errorMessage = "Error: App.writeStringListToFile was unable to create a new file.";
                     logEntry(errorMessage);
                     throw new IllegalStateException(errorMessage);
                 }
@@ -351,7 +397,7 @@ public class App {
             logEntry("createFileWithStringList succesfully printed to " + fileName + ".");
             return file;
         } catch (IOException e) {
-            errorMessage = "App.writeStringListToFile threw an IO exception.";
+            errorMessage = "Error: App.writeStringListToFile threw an IO exception.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
@@ -364,7 +410,7 @@ public class App {
      * @param max The maximum value of the range (inclusive)
      * @return    The chosen pseudorandom number
      */
-    static int getRandomIntInRange(int min, int max) {
+    static int getRandomIntInInclusiveRange(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
@@ -374,8 +420,36 @@ public class App {
      * @param list The list to analyze
      * @return     True if the list is null or empty, false otherwise.
      */
-    static boolean listIsNullOrEmpty(List<String> list) {
+    private static boolean listIsNullOrEmpty(List<String> list) {
         return list == null || list.isEmpty();
+    }
+
+    /**
+     * Helper method to override String.substring, which has indices that are inclusive / exclusive.
+     * This method has indices that are inclusive / inclusive.
+     *
+     * @param word       Word to process
+     * @param beginIndex Beginning index (inclusive)
+     * @param endIndex   Ending index (inclusive)
+     * @return           Substring
+     */
+    // todo: not tested!
+    private static String substringInclusive(String word, int beginIndex, int endIndex) throws IllegalStateException {
+        if(beginIndex < 0 || endIndex < 1 || endIndex <= beginIndex || endIndex > word.length() - 1) {
+            errorMessage = "Error: App.substringInclusive encountered one or more illegal arguments";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        char[] chars = word.toCharArray();
+        List<Character> outputCharList = new ArrayList<>();
+        for(int i = beginIndex; i <= endIndex; i++) {
+            outputCharList.add(chars[i]);
+        }
+        StringBuilder returnString = new StringBuilder("");
+        for(Character c : outputCharList) {
+            returnString.append(c.toString());
+        }
+        return returnString.toString();
     }
 }
 
