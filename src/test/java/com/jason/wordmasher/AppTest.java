@@ -385,15 +385,15 @@ public class AppTest extends TestCase {
      * Asserts App.makeSubword properly implements case 1. (See README.)
      */
     // App.makeSubword is still under construction
-//    public void testMakeSubword_case_1() {
-//        List<String> subWords = new ArrayList<>();
-//        String word = "Universe";
-//        for(int i = 0; i < 100; i++) {
-//            subWords.add(App.makeSubword(word, 1));
-//        }
-//        Set<String> subWordsSet = new HashSet<>(subWords);
-//        assertEquals(subWordsSet.size(), word.length());
-//    }
+    public void testMakeSubword_case_1() {
+        List<String> subWords = new ArrayList<>();
+        String word = "Universe";
+        for(int i = 0; i < 100; i++) {
+            subWords.add(App.makeSubword(word, 1));
+        }
+        Set<String> subWordsSet = new HashSet<>(subWords);
+        assertEquals(subWordsSet.size(), word.length());
+    }
 
 
 

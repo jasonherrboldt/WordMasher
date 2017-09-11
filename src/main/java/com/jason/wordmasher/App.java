@@ -233,9 +233,8 @@ public class App {
         switch(n) {
             case(1): {
                 // print("makeSubword case 1 reached.");
-                int i = getRandomIntInInclusiveRange(1, word.length() - 1);
-                // return word.substring(0, i + 1); // 2nd arg of substring is exclusive.
-                return word.substring(0, i);
+                int i = getRandomIntInInclusiveRange(0, word.length() - 1);
+                return substringInclusive(word, 0, i);
             }
             case(2): {
                 // todo case 2
@@ -435,7 +434,7 @@ public class App {
      */
     // todo: not tested!
     private static String substringInclusive(String word, int beginIndex, int endIndex) throws IllegalStateException {
-        if(beginIndex < 0 || endIndex < 1 || endIndex <= beginIndex || endIndex > word.length() - 1) {
+        if(beginIndex < 0 || endIndex < 0 || endIndex < beginIndex || endIndex > word.length() - 1) {
             errorMessage = "Error: App.substringInclusive encountered one or more illegal arguments";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
