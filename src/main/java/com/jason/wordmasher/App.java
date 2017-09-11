@@ -31,6 +31,7 @@ public class App {
     private static final int MAX_WORDS_TO_MASH = 10;
     private static final int MAX_WHILE = 1000;
     private static final int MAX_FRANKENWORDS = 1000;
+    private static final int ARG_LENGTH_MAX = 50;
     private static List<String> englishWords;
     private static List<String> specialCharacters;
     private static List<String> usedEnglishWords;
@@ -40,7 +41,7 @@ public class App {
         try {
             parseArgs(args);
         } catch (Exception e) {
-            print("Something went wrong. See log for more information.");
+            print("\nSomething went wrong. See log for more information.");
         }
     }
 
@@ -71,12 +72,50 @@ public class App {
         outputFile = new File(args[2]);
      */
 
-    public static void parseArgs(String[] args){
-        if(args.length < 4) {
-            String errorMessage = "Program must have 4 arguments. Number of arguments received: " + args.length + ".";
-            logEntry(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
+    static void parseArgs(String[] args){
+        if(args.length != 4) {
+            logEntry("Error: Program must have 4 arguments. Number of arguments received: "+ args.length + ".");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
         }
+        for (int i = 0; i < 4; i++) {
+            if (args[i].length() > ARG_LENGTH_MAX) {
+                logEntry("Error: One or more program argument exceeds the maximum length of " + ARG_LENGTH_MAX + ".");
+                logEntry("Program terminated");
+                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            }
+        }
+        for (int i = 0; i < 2; i++) {
+            if (!fileExists(args[i])) {
+                logEntry("Error: Unable to verify that file " + args[i] + " exists.");
+                logEntry("Program terminated");
+                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            }
+            File thisFile = new File(args[i]);
+            if(thisFile.length() == 0) {
+                logEntry("Error: File " + args[i] + " appears to be empty.");
+                logEntry("Program terminated");
+                throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            }
+        }
+        try {
+            numberOfFrankenwordsToCreate = Integer.parseInt(args[3]);
+        } catch (NumberFormatException e) {
+            logEntry("Error: Unable to parse number of frankenwords to print. Argument received: " + args[3] + ".");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+        }
+    }
+
+    /**
+     * Verifies specified file exists.
+     *
+     * @param fileName Name of file
+     * @return         True if file can be read, false otherwise.
+     */
+    private static boolean fileExists(String fileName) {
+        File file = new File(fileName);
+        return file.canRead();
     }
 
     /**
