@@ -67,7 +67,7 @@ public class AppTest extends TestCase {
      * Asserts App.parseArts throws an exception for program arguments with length of > 50.
      */
     public void testParseArgs_argsTooLong() {
-        args = createArgsArray("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.txt", "b.txt", "c.txt", "4");
+        args = createArgsArray("a.txt", "b.txt", "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.txt", "4");
         try {
             App.parseArgs(args);
             fail("parseArgs should have thrown an illegal argument exception.");
@@ -121,6 +121,45 @@ public class AppTest extends TestCase {
             fail("parseArgs should have thrown an illegal argument exception.");
         } catch (IllegalArgumentException e) {
             // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.validateArgs throws an exception if 4th program arguments is < 1.
+     */
+    public void testParseArgs_negativeNumberOfFrankenwords() {
+        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "-1");
+        try {
+            App.parseArgs(args);
+            fail("parseArgs should have thrown an illegal argument exception.");
+        } catch (IllegalArgumentException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.validateArgs throws an exception if 4th program arguments is < 1.
+     */
+    public void testParseArgs_tooManyFrankenwords() {
+        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
+        try {
+            App.parseArgs(args);
+            fail("parseArgs should have thrown an illegal argument exception.");
+        } catch (IllegalArgumentException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.validateArgs returns true if arguments array contains an integer string
+     * with a value of > 0 and < 1001.
+     */
+    public void testValidateArgs_allParsableArguments() {
+        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1000");
+        try {
+            App.parseArgs(args);
+        } catch (IllegalArgumentException e) {
+            fail("parseArgs should not have thrown an illegal argument exception.");
         }
     }
 

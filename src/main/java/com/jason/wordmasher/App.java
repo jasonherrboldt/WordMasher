@@ -41,38 +41,20 @@ public class App {
         try {
             parseArgs(args);
         } catch (Exception e) {
-            print("\nSomething went wrong. See log for more information.");
+            String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
+            print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
+                    + " for more information.");
         }
     }
 
-    /*
-    void parseArgs(String[] args)
-        If args.length != 4
-            Log the error
-            Throw an illegal arguments exception
-        for (int i = 0; i < 2; i++) {
-            if (!fileExists(args[i])) {
-                Log the error
-                Throw a new illegal arguments exception
-            File thisFile = new File(args[i]);
-            if(thisFile.length() == 0) {
-                Log the error
-                Throw a new illegal arguments exception
-            try {
-                numberOfFrankenwordsToPrint = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                Log the error
-                Throw a new illegal arguments exception
-            if (numberOfFrankenwordsToPrint < 1
-                || numberOfFrankenwordsToPrint > MAX_FRANKENWORDS) {
-                Log the error
-                Throw a new illegal arguments exception
-        englishWordsFile = new File(args[0]);
-        specialCharactersFile = new File(args[1]);
-        outputFile = new File(args[2]);
+    /**
+     * Validates and parses program arguments.
+     *
+     * @param args Program arguments
      */
+    static void parseArgs(String[] args) throws IllegalArgumentException {
 
-    static void parseArgs(String[] args){
+        // Validate arguments
         if(args.length != 4) {
             logEntry("Error: Program must have 4 arguments. Number of arguments received: "+ args.length + ".");
             logEntry("Program terminated");
@@ -105,6 +87,19 @@ public class App {
             logEntry("Program terminated");
             throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
         }
+        if (numberOfFrankenwordsToCreate < 1 || numberOfFrankenwordsToCreate > MAX_FRANKENWORDS) {
+            logEntry("Error: Number of frankenwords to print must be > 0 and < " + MAX_FRANKENWORDS + ".");
+            logEntry("Argument received " + numberOfFrankenwordsToCreate + ".");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+        }
+
+        // Parse arguments
+        englishWordsFile = new File(args[0]);
+        specialCharactersFile = new File(args[1]);
+        outputFile = new File(args[2]);
+
+        logEntry("Program arguments validated and parsed.");
     }
 
     /**
@@ -162,7 +157,7 @@ public class App {
                 out.close();
             }
         } catch (IOException e) {
-            print("WARN: Main.logEntry encountered an IO exception: " + e.getMessage());
+            throw new IllegalStateException("App.logEntry threw an IO exception: " + e.getMessage());
         }
     }
 
@@ -199,7 +194,7 @@ public class App {
      *
      * @param s String to print
      */
-    static void print(String s) {
+    private static void print(String s) {
         System.out.println(s);
     }
 
