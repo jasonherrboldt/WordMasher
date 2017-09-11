@@ -4,10 +4,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Unit test for simple App.
@@ -209,6 +208,19 @@ public class AppTest extends TestCase {
                 App.print("testReadFileIntoMemory_correctData was unable to delete " + mockFile.getName());
             }
         }
+    }
+
+    /**
+     * Asserts App.getRandomIntInRange generates all random integers in a small inclusive range.
+     */
+    public void testGetRandomIntInRange_correctRange() {
+        Set<Integer> generatedInts = new HashSet<>();
+        int minInclusive = 1;
+        int maxInclusive = 5;
+        for(int i = 0; i < 50; i++) {
+            generatedInts.add(App.getRandomIntInRange(minInclusive, maxInclusive));
+        }
+        assert(generatedInts.size() == 5);
     }
 
 

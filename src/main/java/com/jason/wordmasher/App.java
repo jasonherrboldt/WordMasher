@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
@@ -115,7 +116,6 @@ public class App {
         englishWordsFile = new File(args[0]);
         specialCharactersFile = new File(args[1]);
         outputFile = new File(args[2]);
-
         logEntry("Program arguments validated and parsed.");
     }
 
@@ -221,7 +221,6 @@ public class App {
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1; // months are zero-indexed
         int day = cal.get(Calendar.DAY_OF_MONTH);
-
         String monthStr = "";
         if(month < 10) {
             monthStr = "0" + Integer.toString(month);
@@ -235,7 +234,6 @@ public class App {
         } else {
             dayStr = Integer.toString(day);
         }
-
         return Integer.toString(year) + "-" + monthStr + "-" + dayStr;
     }
 
@@ -304,12 +302,24 @@ public class App {
                 }
                 out.close();
             }
+            logEntry("createFileWithStringList succesfully printed to " + fileName + ".");
             return file;
         } catch (IOException e) {
             errorMessage = "App.writeStringListToFile threw an IO exception.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    /**
+     * Generates a pseudorandom number in a specified range.
+     *
+     * @param min The minimum value of the range (inclusive)
+     * @param max The maximum value of the range (inclusive)
+     * @return    The chosen pseudorandom number
+     */
+    public static int getRandomIntInRange(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 }
 
