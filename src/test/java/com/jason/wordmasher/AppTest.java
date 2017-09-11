@@ -15,10 +15,12 @@ public class AppTest extends TestCase {
 
     private static String[] args;
     private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
+    private static final int MAX_ENGLISH_WORDS_MOCK = 100;
     private static List<String> testRun;
     private static List<String> mockList;
-    private static List<String> englishWordsMock = populateEnglishWordsMock();
-    private static List<String> usedEnglishWordsMock = new ArrayList<>();
+    private static List<String> englishWordsMock;
+    private static List<String> usedEnglishWordsMock;
+    private static List<String> wordsToMash = populateWordsToMash();
 
     /**
      * Create the test case
@@ -228,7 +230,7 @@ public class AppTest extends TestCase {
     /**
      * Asserts that App.getWordsToMash throws an exception for arg int too small.
      */
-    public void testGetWordsToMash_throwsExceptions_intTooSmall() {
+    public void testGetWordsToMash_throwsException_intTooSmall() {
         try {
             App.getWordsToMash(App.MIN_WORDS_TO_MASH - 1, englishWordsMock, usedEnglishWordsMock);
             fail("App.getWordsToMash should have thrown an exception here.");
@@ -240,7 +242,7 @@ public class AppTest extends TestCase {
     /**
      * Asserts that App.getWordsToMash throws an exception for arg int too large.
      */
-    public void testGetWordsToMash_throwsExceptions_intTooLarge() {
+    public void testGetWordsToMash_throwsException_intTooLarge() {
         try {
             App.getWordsToMash(App.MAX_WORDS_TO_MASH + 1, englishWordsMock, usedEnglishWordsMock);
             fail("App.getWordsToMash should have thrown an exception here.");
@@ -250,11 +252,84 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.testGetWordsToMash correctly populates usedEnglishWords
+     * Asserts that App.getWordsToMash throws an exception when first arg is null.
+     */
+    public void testGetWordsToMash_throwsException_argNull_A() {
+        try {
+            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, null, usedEnglishWordsMock);
+            fail("App.getWordsToMash should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts that App.getWordsToMash throws an exception when second arg is null.
+     */
+    public void testGetWordsToMash_throwsException_argNull_B() {
+        try {
+            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, englishWordsMock, null);
+            fail("App.getWordsToMash should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts that App.getWordsToMash throws an exception when first arg is empty.
+     */
+    public void testGetWordsToMash_throwsException_argEmpty() {
+        List<String> emptyList = new ArrayList<>();
+        try {
+            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, emptyList, usedEnglishWordsMock);
+            fail("App.getWordsToMash should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+
+
+    /**
+     * Asserts App.testGetWordsToMash correctly populates usedEnglishWords.
      */
     public void testGetWordsToMash_populatesUsedEnglishWords() {
-        List wordToMash = App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
-        assert(wordToMash.equals(usedEnglishWordsMock));
+        if(wordsToMash == null) {
+            fail("App.getWordsToMash returned a null list.");
+        } else {
+            assert(wordsToMash.equals(usedEnglishWordsMock));
+        }
+    }
+
+    /**
+     * Asserts App.testGetWordsToMash generates a list of distinct words.
+     */
+    public void testGetWordsToMash_generatesDistictWords() {
+        if(wordsToMash == null) {
+            fail("App.getWordsToMash returned a null list.");
+        } else {
+            Set<String> wordsToMashSet = new HashSet<>(wordsToMash);
+            assertEquals(wordsToMashSet.size(), App.MAX_WORDS_TO_MASH);
+        }
+    }
+
+    /**
+     * Asserts App.testGetWordsToMash generates a list of random words.
+     */
+    public void testGetWordsToMash_generatesRandomWords() {
+        boolean matchFound = false;
+        /*
+        Playing with the law of large numbers here; chances of fluke failure are lowered if the number of elements
+        inspected is halved. If it fails, just run it again. Should fail EXTREMELY rarely, when the first 5 elements of
+        wordsToMash (size MAX_WORDS_TO_MASH / 2) are somehow the same as the first five elements of englishWordsMock
+        (size MAX_ENGLISH_WORDS_MOCK).
+        */
+        for(int i = 0; i < (wordsToMash.size() / 2); i++) {
+            if(englishWordsMock.get(i).equals(wordsToMash.get(i))) {
+                matchFound = true;
+            }
+        }
+        assertFalse(matchFound);
     }
 
 
@@ -324,13 +399,22 @@ public class AppTest extends TestCase {
         return list;
     }
 
+    /**
+     * @return a list of 100 distinct strings, e.g. "word_0", "word_1", "word_2", ...
+     */
     private static List<String> populateEnglishWordsMock() {
         List<String> words = new ArrayList<>();
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < MAX_ENGLISH_WORDS_MOCK; i++) {
             StringBuilder word = new StringBuilder("word_");
             words.add(word.append(Integer.toString(i)).toString());
         }
         return words;
+    }
+
+    private static List<String> populateWordsToMash() {
+        englishWordsMock = populateEnglishWordsMock();
+        usedEnglishWordsMock = new ArrayList<>();
+        return App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
     }
 }
 
