@@ -2,10 +2,7 @@ package com.jason.wordmasher;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -33,6 +30,7 @@ public class App {
     private static final int ARG_LENGTH_MAX = 50;
     private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
     private static final int MAX_FRANKENWORDS = 1000;
+    private static final int MAX_ONE_IN_N_CHANCE = 100;
     private static final int MAX_WHILE = 1000;
     public static final int MAX_WORDS_TO_MASH = 10;
     private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
@@ -220,13 +218,11 @@ public class App {
         if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
             errorMessage = "Error: makeSubword received an illegal 1st argument.";
             logEntry(errorMessage);
-            // print("makeSubword first if reached.");
             throw new IllegalStateException(errorMessage);
         }
         if(n != 1 && n != 2 && n != 3) {
             errorMessage = "Error: makeSubword received an illegal 2nd argument. Must be 1, 2, or 3.";
             logEntry(errorMessage);
-            // print("makeSubword second if reached.");
             throw new IllegalStateException(errorMessage);
         }
 
@@ -235,17 +231,14 @@ public class App {
 
         switch(n) {
             case(1): {
-                // print("makeSubword case 1 reached.");
                 i = getRandomIntInInclusiveRange(0, word.length() - 1);
                 return substringInclusive(word, 0, i);
             }
             case(2): {
-                // print("makeSubword case 2 reached.");
                 j = getRandomIntInInclusiveRange(0, word.length() - 1);
                 return substringInclusive(word, j, word.length() - 1);
             }
             case(3): {
-                // print("makeSubword case 3 reached.");
                 int wordLength = word.length();
                 i = getRandomIntInInclusiveRange(0, wordLength - 1);
                 j = getRandomIntInInclusiveRange(i, wordLength - 1);
@@ -253,9 +246,9 @@ public class App {
             }
         }
 
-        // continue...
-
-        return null;
+        errorMessage = "Error: logic fell through App.makeSubword.";
+        logEntry(errorMessage);
+        throw new IllegalStateException(errorMessage);
     }
 
     /**
@@ -348,7 +341,7 @@ public class App {
      * @param listName The name of the list
      * @param n        How many items of the list to print
      */
-    public static void printNStringsFromList(List<String> list, String listName, int n) {
+    static void printNStringsFromList(List<String> list, String listName, int n) {
         if(n > list.size()) {
             errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
             logEntry(errorMessage);
@@ -407,6 +400,32 @@ public class App {
     }
 
     /**
+     * Mash together a list of words.
+     *
+     * @param wordsToMash The list of words to mash
+     * @return            The mashed word
+     */
+    static String mashWords(List<String> wordsToMash) { // *** needs unit tests ***
+        if(wordsToMash == null || wordsToMash.size() < 2) {
+            errorMessage = "Error: mashWords received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        StringBuilder mashedWord = new StringBuilder("");
+        List<Integer> oneTwoThree = new ArrayList<>();
+        for(int i = 1; i < 4; i++) {
+            oneTwoThree.add(i);
+        }
+        for(String s : wordsToMash) {
+            // Let int n be 1, 2, or 3 at random
+            Collections.shuffle(oneTwoThree);
+            int n = oneTwoThree.get(0);
+            mashedWord.append(makeSubword(s, n));
+        }
+        return mashedWord.toString();
+    }
+
+    /**
      * Generates a pseudorandom number in a specified INCLUSIVE range.
      *
      * @param min The minimum value of the range (inclusive)
@@ -453,6 +472,31 @@ public class App {
             returnString.append(c.toString());
         }
         return returnString.toString();
+    }
+
+    /**
+     * Generates a one in N boolean. For example, if N is four, a one in four chance would have a 25% chance of
+     * returning true.
+     *
+     * @param n The chance range.
+     * @return  One in N chance of being true
+     */
+    static boolean oneInNChance(int n) {
+        if(n < 1 || n > MAX_ONE_IN_N_CHANCE) {
+            errorMessage = "Error: oneInNChance received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        List<Boolean> bools = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            if(i == 0) {
+                bools.add(true);
+            } else {
+                bools.add(false);
+            }
+        }
+        Collections.shuffle(bools);
+        return bools.get(0);
     }
 }
 

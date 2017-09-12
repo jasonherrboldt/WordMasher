@@ -3,6 +3,7 @@ package com.jason.wordmasher;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.File;
 import java.io.IOException;
@@ -469,6 +470,39 @@ public class AppTest extends TestCase {
         assertEquals(subWordsSet.size(), 10);
     }
 
+    /**
+     * Asserts App.oneInNChance returns true 100% (or 1 in 1) of the time.
+     */
+    public void testOneInNChance_oneInOne() {
+        List<Boolean> bools = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            bools.add(App.oneInNChance(1));
+        }
+        boolean falseFound = false;
+        for(Boolean b : bools) {
+            if(!b) {
+                falseFound = true;
+            }
+        }
+        assertEquals(falseFound, false);
+    }
+
+    /**
+     * Asserts App.oneInNChance returns true 25% (or 1 in 4) of the time, plus or minus one percent.
+     */
+    public void testOneInNChance_oneInFour() {
+        SummaryStatistics stats = getOneInNStats(100, 4);
+        assert(!(stats.getMean() > (25 + 1)) && !(stats.getMean() < (25 - 1)));
+    }
+
+    /**
+     * Asserts App.oneInNChance returns true 5% (or 1 in 20) of the time, plus or minus one percent.
+     */
+    public void testOneInNChance_oneInTwenty() {
+        SummaryStatistics stats = getOneInNStats(100, 20);
+        assert(!(stats.getMean() > (5 + 1)) && !(stats.getMean() < (5 - 1)));
+    }
+
 
 
     //**************************//
@@ -476,6 +510,45 @@ public class AppTest extends TestCase {
     //**************************//
 
 
+
+    /**
+     * Helper method to generate a SummaryStatistics object for testOneInNChance_oneIn* unit tests.
+     *
+     * Creates (runs)^2 iterations of data for analysis.
+     *
+     * For example, a call to oneInNChance(4) has a 1/4 = 25% chance of returning true. So run that method
+     * runs times (where 'runs' is the first method parameter), and each time record the true / false value
+     * to a boolean list.
+     *
+     * Then step through every item of that boolean list and count each time a true value occurs. For a run of
+     * 100, there should be roughly 25 true elements in that list, plus or minus some standard deviation.
+     *
+     * Do this 100 times for each 100 iterations for a total of 10k data points. Add all of these values to the
+     * SummaryStatistics object for analysis upon return.
+     *
+     * @param runs   Number of runs
+     * @param oneInN Chance, i.e. 1 in 4 = 25%.
+     * @return       SummaryStatistics object
+     */
+    private SummaryStatistics getOneInNStats(int runs, int oneInN) {
+        List<Boolean> bools = new ArrayList<>();
+        SummaryStatistics stats = new SummaryStatistics();
+        int count = 0;
+        for(int i = 0; i < runs; i++) {
+            bools.clear();
+            for(int j = 0; j < runs; j++) {
+                bools.add(App.oneInNChance(oneInN));
+            }
+            for(Boolean b : bools) {
+                if(b) {
+                    count++;
+                }
+            }
+            stats.addValue((double)count);
+            count = 0;
+        }
+        return stats;
+    }
 
     /**
      * Helper method to create a string array of arguments for testing.
