@@ -38,7 +38,7 @@ public class App {
     private static final String PARSE_ARGS_ERROR_MESSAGE = "App.parseArgs encountered one or more " +
             "illegal program arguments.";
     private static List<String> englishWords;
-    private static List<String> specialCharacters;
+    private static char[] specialCharacters;
     private static List<String> usedEnglishWords;
     private static String errorMessage;
 
@@ -46,13 +46,18 @@ public class App {
         startLog();
         try {
             parseArgs(args);
-            englishWords = readFileIntoMemory(englishWordsFile);
-            specialCharacters = readFileIntoMemory(specialCharactersFile);
+            englishWords = readFileIntoListOfStrings(englishWordsFile);
+            specialCharacters = readFileIntoCharArray(specialCharactersFile);
 
             // debug
             printNStringsFromList(englishWords, "englishWords", 10);
+
             // debug
-            printNStringsFromList(specialCharacters, "specialCharacters", 15);
+            List<String> specialCharactersStringList = new ArrayList<>();
+            for(char c : specialCharacters) {
+                specialCharactersStringList.add(Character.toString(c));
+            }
+            printNStringsFromList(specialCharactersStringList, "specialCharactersStringList", 15);
 
             // continue...
 
@@ -135,19 +140,21 @@ public class App {
      * Reads contents of a file into a list of strings.
      *
      * @param  file File to read
-     * @return List of strings or null if exception thrown
+     * @return List of strings from file
      */
-    static List<String> readFileIntoMemory(File file) throws IllegalStateException {
-        if(!fileExists(file.getName())) {
-            errorMessage = "Error: App.readFileIntoMemory received a non-existent file: " + file.getName();
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        if(file.length() == 0) {
-            errorMessage = "Error: App.readFileIntoMemory received an empty file: " + file.getName();
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
+    static List<String> readFileIntoListOfStrings(File file) throws IllegalStateException {
+        // Unnecessary?
+//        if(!fileExists(file.getName())) {
+//            errorMessage = "Error: App.readFileIntoListOfStrings received a non-existent file: " + file.getName();
+//            logEntry(errorMessage);
+//            throw new IllegalStateException(errorMessage);
+//        }
+        // Unnecessary?
+//        if(file.length() == 0) {
+//            errorMessage = "Error: App.readFileIntoListOfStrings received an empty file: " + file.getName();
+//            logEntry(errorMessage);
+//            throw new IllegalStateException(errorMessage);
+//        }
         List<String> returnList = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -156,12 +163,44 @@ public class App {
                 returnList.add(line);
             }
         } catch (IOException e) {
-            errorMessage = "Error: App.readFileIntoMemory threw an IO exception: " + e.getMessage();
+            errorMessage = "Error: App.readFileIntoListOfStrings threw an IO exception: " + e.getMessage();
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
         logEntry("The file " + file.getName() + " has been read into memory.");
         return returnList;
+    }
+
+    /**
+     * Reads contents of a file into a char array. Blows up if any of the lines in the file have length > 1.
+     *
+     * @param  file File to read
+     * @return Char array from file
+     */
+    static char[] readFileIntoCharArray(File file) throws IllegalStateException {
+        List<String> fileStringList = readFileIntoListOfStrings(file); // Already vetted for empty files.
+        char[] returnArray = new char[fileStringList.size()];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            int i = 0;
+            while((line = br.readLine()) != null) {
+                if(line.length() > 1) {
+                    errorMessage = "Error: App.readFileIntoCharArray encountered a string in specialCharactersFile " +
+                            "with a length of > 1";
+                    logEntry(errorMessage);
+                    throw new IllegalStateException(errorMessage);
+                }
+                returnArray[i] = line.charAt(0);
+                i++;
+            }
+        } catch (IOException e) {
+            errorMessage = "Error: App.readFileIntoCharArray threw an IO exception: " + e.getMessage();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        logEntry("The file " + file.getName() + " has been read into memory.");
+        return returnArray;
     }
 
     /**
@@ -399,6 +438,8 @@ public class App {
         }
     }
 
+
+
     /*
     **********************************************************************************************
     mashWords sometimes returns null, which breaks AppTest.testMashWords_returnsUniqueString. Why?
@@ -463,6 +504,10 @@ public class App {
         }
 
         // Select non-distinct special characters at random.
+        /*
+         **** THIS BLOCK NEEDS TO BE REWRITTEN; specialCharacters SHOULD BE READ INTO MEMORY AS A CHAR ARRAY
+         **** WHEN ARGS ARE FIRST PARSED.
+         */
         char[] randChars = new char[charsToUse];
         char[] specialCharactersCharArray = convertStringListToCharArray(specialCharacters);
         for(int i = 0; i < charsToUse; i++) {
