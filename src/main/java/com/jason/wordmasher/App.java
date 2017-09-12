@@ -482,10 +482,10 @@ public class App {
      * @param specialCharacters The special characters to use
      * @return                  The augmented frankenword
      */
-    static String addSpecialCharacters(String frankenWord, List<String> specialCharacters)
+    static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
             throws IllegalStateException {
         if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
-                || specialCharacters.isEmpty()) {
+                || specialCharacters.length == 0) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -504,14 +504,9 @@ public class App {
         }
 
         // Select non-distinct special characters at random.
-        /*
-         **** THIS BLOCK NEEDS TO BE REWRITTEN; specialCharacters SHOULD BE READ INTO MEMORY AS A CHAR ARRAY
-         **** WHEN ARGS ARE FIRST PARSED.
-         */
         char[] randChars = new char[charsToUse];
-        char[] specialCharactersCharArray = convertStringListToCharArray(specialCharacters);
         for(int i = 0; i < charsToUse; i++) {
-            randChars[i] = specialCharactersCharArray[getRandomIntInInclusiveRange(0, specialCharacters.size() - 1)];
+            randChars[i] = specialCharacters[getRandomIntInInclusiveRange(0, specialCharacters.length - 1)];
         }
 
         // Insert special characters into random and distinct indices of the frankenword.
@@ -561,7 +556,7 @@ public class App {
      * @param list List of single-character strings
      * @return     Converted char array
      */
-    public static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException {
+    static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException {
         if(list == null || list.isEmpty()) {
             errorMessage = "Error: App.convertStringListToCharArray received a null or empty list argument.";
             logEntry(errorMessage);
