@@ -561,6 +561,15 @@ public class AppTest extends TestCase {
         assertEquals(mashWordSet.size(), 15);
     }
 
+    /*
+    static String addSpecialCharacters(String frankenWord, List<String> specialCharacters) {
+        if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
+                || specialCharacters.isEmpty()) {
+     */
+    public void testAddSpecialCharacters() {
+
+    }
+
 
 
     //**************************//

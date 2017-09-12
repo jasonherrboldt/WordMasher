@@ -426,6 +426,88 @@ public class App {
     }
 
     /**
+     * Adds random and indistinct special characters to random and distinct indices of a frankenword.
+     *
+     * @param frankenWord       The frankenword to process
+     * @param specialCharacters The special characters to use
+     * @return                  The augmented frankenword
+     */
+    static String addSpecialCharacters(String frankenWord, List<String> specialCharacters) {
+        if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
+                || specialCharacters.isEmpty()) {
+            errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        int charsToUse = 0;
+        if(frankenWord.length() < 6) {
+            charsToUse = 1;
+        } else {
+            if(oneInNChance(2)) {
+                charsToUse = 1;
+            } else {
+                charsToUse = 2;
+            }
+        }
+        // List<String> randChars = new ArrayList<>();
+        // copy specialCharacters to a char array?
+        char[] randChars = new char[charsToUse];
+        char[] specialCharactersCharArray = new char[specialCharacters.size()];
+        // char c = s.charAt(0);
+        for(int i = 0; i < specialCharacters.size(); i++) {
+            String thisStr = specialCharacters.get(i);
+            if(thisStr.length() > 1) {
+                errorMessage = "Error: App.addSpecialCharacters tried to turn a string with length > 1 into a char. " +
+                        "The offending string is " + thisStr;
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
+            specialCharactersCharArray[i] = specialCharacters.get(i).charAt(0);
+        }
+        for(int i = 0; i < charsToUse; i++) {
+            randChars[i] = specialCharactersCharArray[getRandomIntInInclusiveRange(0, specialCharacters.size() - 1)];
+        }
+        // Let indicesUsed be an empty int list
+        List<Integer> usedIndices = new ArrayList<>();
+        // Let int i = 0
+        int i = 0;
+        // Let int whileCount = 0
+        int whileCount = 0;
+        StringBuilder frankenBuilder = new StringBuilder(frankenWord);
+        // While i < charsToUse
+        while(i < charsToUse) {
+            // If whileCount > MAX_WHILE
+            if(whileCount > MAX_WHILE) {
+                // Log the error
+                // Throw an illegal state exception
+                errorMessage = "Error: App.addSpecialCharacters while loop exceeded " + MAX_WHILE + " iterations.";
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
+            // Let j be a random int in the range [0, frankenword.size - 1]
+            int j = getRandomIntInInclusiveRange(0, frankenWord.length() - 1);
+            // If j is not in indicesUsed
+            if(!usedIndices.contains(j)) {
+                // If i > randChars.size or if j > frankenword.length
+                if(i > randChars.length || j > frankenWord.length()) {
+                    // Log the error
+                    // Throw an illegal state exception
+                    errorMessage = "Error: App.addSpecialCharacters obtained illegal values for either i or j.";
+                    logEntry(errorMessage);
+                    throw new IllegalStateException(errorMessage);
+                }
+                // Let the jth index of frankenword be randChars.get(i)
+                frankenBuilder.setCharAt(j, randChars[i]);
+                // Add j to indicesUsed
+                usedIndices.add(j);
+                i++;
+            }
+            whileCount++;
+        }
+        return frankenBuilder.toString();
+    }
+
+    /**
      * Generates a pseudorandom number in a specified INCLUSIVE range.
      *
      * @param min The minimum value of the range (inclusive)
