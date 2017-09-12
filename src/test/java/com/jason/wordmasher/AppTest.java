@@ -315,19 +315,22 @@ public class AppTest extends TestCase {
      * Asserts App.testGetWordsToMash generates a list of random words.
      */
     public void testGetWordsToMash_generatesRandomWords() {
-        App.print("Hello from the top of testGetWordsToMash_generatesRandomWords.");
         boolean matchFound = false;
         /*
-        Playing with the law of large numbers here; chances of fluke failure are lowered if the number of elements
-        inspected is halved. If it fails, just run it again. Should fail EXTREMELY rarely, when the first 5 elements of
-        wordsToMash (size MAX_WORDS_TO_MASH / 2) are somehow the same as the first five elements of englishWordsMock
-        (size MAX_ENGLISH_WORDS_MOCK).
+            Playing with the law of large numbers here; chances of fluke failure are lowered if the number of elements
+            inspected is halved. If it fails, just run it again. Should fail EXTREMELY rarely, when the first 5 elements
+            of wordsToMash (size MAX_WORDS_TO_MASH / 2) are somehow the same as the first five elements of
+            englishWordsMock (size MAX_ENGLISH_WORDS_MOCK).
         */
         for(int i = 0; i < (wordsToMash.size() / 2); i++) {
             if(englishWordsMock.get(i).equals(wordsToMash.get(i))) {
                 matchFound = true;
             }
         }
+        /*
+            Sometimes this test fails when other tests are run on their own. No idea why.
+            When this happens this console output should put your mind to rest. The failure is a fail.
+         */
         if(matchFound) {
             App.print("testGetWordsToMash_generatesRandomWords failed. Here's why:");
             App.print("wordsToMash.size() / 2 = " + wordsToMash.size() / 2);
@@ -393,11 +396,23 @@ public class AppTest extends TestCase {
      */
     public void testMakeSubword_case_1() {
         List<String> subWords = new ArrayList<>();
-        String word = "Universe";
+        String word = "UNIVERSE";
         for(int i = 0; i < 100; i++) {
             subWords.add(App.makeSubword(word, 1));
         }
+        // Copy the list elements to a set to count all generated subwords.
         Set<String> subWordsSet = new HashSet<>(subWords);
+        /*
+            Number of possible subwords is same as word length:
+            1: U
+            2: UN
+            3: UNI
+            4: UNIV
+            5: UNIVE
+            6: UNIVER
+            7: UNIVERS
+            8: UNIVERSE
+        */
         assertEquals(subWordsSet.size(), word.length());
     }
 
@@ -406,11 +421,22 @@ public class AppTest extends TestCase {
      */
     public void testMakeSubword_case_2() {
         List<String> subWords = new ArrayList<>();
-        String word = "Universe";
+        String word = "UNIVERSE";
         for(int i = 0; i < 100; i++) {
             subWords.add(App.makeSubword(word, 2));
         }
         Set<String> subWordsSet = new HashSet<>(subWords);
+        /*
+            Same principle applies as in case 1, but this time in reverse.
+            1: UNIVERSE
+            2:  NIVERSE
+            3:   IVERSE
+            4:    VERSE
+            5:     ERSE
+            6:      RSE
+            7:       SE
+            8:        E
+         */
         assertEquals(subWordsSet.size(), word.length());
     }
 
@@ -419,13 +445,28 @@ public class AppTest extends TestCase {
      */
     public void testMakeSubword_case_3() {
         List<String> subWords = new ArrayList<>();
-        String word = "Universe";
-        for(int i = 0; i < 1000; i++) {
+        // String word = "Universe";
+        String word = "CODE";
+        for(int i = 0; i < 200; i++) { // Pulled 200 out of the air. Seemed right.
             subWords.add(App.makeSubword(word, 3));
         }
         Set<String> subWordsSet = new HashSet<>(subWords);
-        // There are 35 distinct subwords in "UNIVERSE"
-        assertEquals(subWordsSet.size(), 35);
+        /*
+            This time the subwords can be created by moving both the left AND right indices.
+            There are 35 distinct subwords in "UNIVERSE", so for this case I picked something a little easier.
+            There are only 10 possible distinct subwords in "CODE":
+            1: CODE
+            2:  ODE
+            3:   DE
+            4:    E
+            5: COD
+            6: CO
+            7: C
+            8:  OD
+            9:  O
+            10:  D
+         */
+        assertEquals(subWordsSet.size(), 10);
     }
 
 
