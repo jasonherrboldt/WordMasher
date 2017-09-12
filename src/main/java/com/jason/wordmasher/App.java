@@ -214,7 +214,7 @@ public class App {
      * @param n    Which subword pattern to use
      * @return     The subword
      */
-    static String makeSubword(String word, int n) {
+    static String makeSubword(String word, int n) throws IllegalStateException {
         if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
             errorMessage = "Error: makeSubword received an illegal 1st argument.";
             logEntry(errorMessage);
@@ -269,7 +269,7 @@ public class App {
      *
      * @param log the log entry
      */
-    private static void logEntry(String log) {
+    private static void logEntry(String log) throws IllegalStateException {
         try {
             FileWriter fw;
             BufferedWriter bw;
@@ -341,7 +341,7 @@ public class App {
      * @param listName The name of the list
      * @param n        How many items of the list to print
      */
-    static void printNStringsFromList(List<String> list, String listName, int n) {
+    static void printNStringsFromList(List<String> list, String listName, int n) throws IllegalStateException {
         if(n > list.size()) {
             errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
             logEntry(errorMessage);
@@ -399,13 +399,22 @@ public class App {
         }
     }
 
+    /*
+    **********************************************************************************************
+    mashWords sometimes returns null, which breaks AppTest.testMashWords_returnsUniqueString. Why?
+    **********************************************************************************************
+
+    (App.substringInclusive hasn't been tested yet. That might resolve the issue.)
+
+     */
+
     /**
      * Mash together a list of words.
      *
      * @param wordsToMash The list of words to mash
      * @return            The mashed word
      */
-    static String mashWords(List<String> wordsToMash) {
+    static String mashWords(List<String> wordsToMash) throws IllegalStateException {
         if(wordsToMash == null || (wordsToMash.size() != 2 && wordsToMash.size() != 3)) {
             errorMessage = "Error: App.mashWords received an illegal argument.";
             logEntry(errorMessage);
@@ -420,7 +429,7 @@ public class App {
             // Let int n be 1, 2, or 3 at random
             Collections.shuffle(oneTwoThree);
             int n = oneTwoThree.get(0);
-            mashedWord.append(makeSubword(s, n));
+            mashedWord.append(makeSubword(s, n)); // *** THIS MIGHT BE THE CULPRIT THAT'S RETURNING EMPTY STRINGS ***
         }
         return mashedWord.toString();
     }
@@ -432,13 +441,16 @@ public class App {
      * @param specialCharacters The special characters to use
      * @return                  The augmented frankenword
      */
-    static String addSpecialCharacters(String frankenWord, List<String> specialCharacters) {
+    static String addSpecialCharacters(String frankenWord, List<String> specialCharacters)
+            throws IllegalStateException {
         if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
                 || specialCharacters.isEmpty()) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+
+        // Decide how many special characters to insert.
         int charsToUse = 0;
         if(frankenWord.length() < 6) {
             charsToUse = 1;
@@ -449,25 +461,16 @@ public class App {
                 charsToUse = 2;
             }
         }
-        // List<String> randChars = new ArrayList<>();
-        // copy specialCharacters to a char array?
+
+        // Select non-distinct special characters at random.
         char[] randChars = new char[charsToUse];
-        char[] specialCharactersCharArray = new char[specialCharacters.size()];
-        // char c = s.charAt(0);
-        for(int i = 0; i < specialCharacters.size(); i++) {
-            String thisStr = specialCharacters.get(i);
-            if(thisStr.length() > 1) {
-                errorMessage = "Error: App.addSpecialCharacters tried to turn a string with length > 1 into a char. " +
-                        "The offending string is " + thisStr;
-                logEntry(errorMessage);
-                throw new IllegalStateException(errorMessage);
-            }
-            specialCharactersCharArray[i] = specialCharacters.get(i).charAt(0);
-        }
+        char[] specialCharactersCharArray = convertStringListToCharArray(specialCharacters);
         for(int i = 0; i < charsToUse; i++) {
             randChars[i] = specialCharactersCharArray[getRandomIntInInclusiveRange(0, specialCharacters.size() - 1)];
         }
-        // Let indicesUsed be an empty int list
+
+        // Insert special characters into random and distinct indices of the frankenword.
+        // Let usedIndices be an empty int list
         List<Integer> usedIndices = new ArrayList<>();
         // Let int i = 0
         int i = 0;
@@ -486,7 +489,7 @@ public class App {
             }
             // Let j be a random int in the range [0, frankenword.size - 1]
             int j = getRandomIntInInclusiveRange(0, frankenWord.length() - 1);
-            // If j is not in indicesUsed
+            // If j is not in usedIndices
             if(!usedIndices.contains(j)) {
                 // If i > randChars.size or if j > frankenword.length
                 if(i > randChars.length || j > frankenWord.length()) {
@@ -498,13 +501,43 @@ public class App {
                 }
                 // Let the jth index of frankenword be randChars.get(i)
                 frankenBuilder.setCharAt(j, randChars[i]);
-                // Add j to indicesUsed
+                // Add j to usedIndices
                 usedIndices.add(j);
                 i++;
             }
             whileCount++;
         }
         return frankenBuilder.toString();
+    }
+
+    /**
+     * Convert a list of strings to a char array. Strings in list must have a length of exactly 1.
+     *
+     * @param list List of single-character strings
+     * @return     Converted char array
+     */
+    public static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException {
+        if(list == null || list.isEmpty()) {
+            errorMessage = "Error: App.convertStringListToCharArray received a null or empty list argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        char[] charArray = new char[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            String thisStr = list.get(i);
+            if(thisStr.length() != 1) {
+                errorMessage = "Error: App.convertStringListToCharArray received a list with a string of " +
+                        "length != 1: " + thisStr;
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
+            /*
+            The above if statement forbids list.get(i) from returning anything other than a string of length 1.
+            So no index out of bounds exceptions are possible below.
+             */
+            charArray[i] = list.get(i).charAt(0);
+        }
+        return charArray;
     }
 
     /**
@@ -563,7 +596,7 @@ public class App {
      * @param n The chance range.
      * @return  One in N chance of being true
      */
-    static boolean oneInNChance(int n) {
+    static boolean oneInNChance(int n) throws IllegalStateException {
         if(n < 1 || n > MAX_ONE_IN_N_CHANCE) {
             errorMessage = "Error: oneInNChance received an illegal argument.";
             logEntry(errorMessage);
