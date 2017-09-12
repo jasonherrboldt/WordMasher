@@ -503,6 +503,64 @@ public class AppTest extends TestCase {
         assert(!(stats.getMean() > (5 + 1)) && !(stats.getMean() < (5 - 1)));
     }
 
+    /**
+     * Asserts App.mashWords throws an exception for a null arg.
+     */
+    public void testMashWords_throwsException_nullArg() {
+        try {
+            App.mashWords(null);
+            fail("App.mashWords should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.mashWords throws an exception for a too-small arg.
+     */
+    public void testMashWords_throwsException_tooSmallList() {
+        List<String> mockList = new ArrayList<>();
+        mockList.add("one");
+        try {
+            App.mashWords(mockList);
+            fail("App.mashWords should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.mashWords throws an exception for a too-large arg.
+     */
+    public void testMashWords_throwsException_tooLargeList() {
+        List<String> mockList = new ArrayList<>();
+        mockList.add("one");
+        mockList.add("two");
+        mockList.add("three");
+        mockList.add("four");
+        try {
+            App.mashWords(mockList);
+            fail("App.mashWords should have thrown an exception here.");
+        } catch (IllegalStateException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
+
+    /**
+     * Asserts App.mashWords generates unique strings for the same input list over many iterations.
+     */
+    public void testMashWords_returnsUniqueString() {
+        List<String> mockList = new ArrayList<>();
+        mockList.add("one");
+        mockList.add("two");
+        mockList.add("three");
+        Set<String> mashWordSet = new HashSet<>();
+        for(int i = 0; i < 15; i++) {
+            mashWordSet.add(App.mashWords(mockList));
+        }
+        assertEquals(mashWordSet.size(), 15);
+    }
+
 
 
     //**************************//

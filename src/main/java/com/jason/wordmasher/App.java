@@ -405,9 +405,9 @@ public class App {
      * @param wordsToMash The list of words to mash
      * @return            The mashed word
      */
-    static String mashWords(List<String> wordsToMash) { // *** needs unit tests ***
-        if(wordsToMash == null || wordsToMash.size() < 2) {
-            errorMessage = "Error: mashWords received an illegal argument.";
+    static String mashWords(List<String> wordsToMash) {
+        if(wordsToMash == null || (wordsToMash.size() != 2 && wordsToMash.size() != 3)) {
+            errorMessage = "Error: App.mashWords received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
