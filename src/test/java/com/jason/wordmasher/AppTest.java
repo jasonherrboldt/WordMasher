@@ -458,8 +458,25 @@ public class AppTest extends TestCase {
         }
     }
 
-    // Asserts App.addSpecialCharacters successfully adds special characters to a word
-    // in all possible char positions over several runs.
+    /**
+     * Asserts App.addSpecialCharacters successfully adds special characters to a word in all possible char positions
+     * over several runs.
+     */
+    public void testAddSpecialCharacters_convertsAllPossibleCharsToSpecial() {
+        Set<Integer> specialCharIndices = new HashSet<>();
+        String frankenword = "level";
+        for(int i = 0; i < 100; i++) {
+            String methodCall = App.addSpecialCharacters(frankenword, specialCharactersMock);
+            char[] methodCallChars = methodCall.toCharArray();
+            for (int j = 0; j < methodCallChars.length; j++) {
+                char thisChar = methodCallChars[j];
+                if (!isAthruZ(Character.toString(thisChar))) {
+                    specialCharIndices.add(j);
+                }
+            }
+        }
+        assertEquals(specialCharIndices.size(), frankenword.length());
+    }
 
     /**
      * Asserts AppTest.isAThruZ is working properly.
