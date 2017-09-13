@@ -430,12 +430,36 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.addSpecialCharacters
+     * Asserts App.addSpecialCharacters returns a modified word of the same length over several runs.
      */
-    // static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
-    public void testAddSpecialCharacters() {
-
+    public void testAddSpecialCharacters_returnsWordOfSameLength() {
+        String frankenword = "scrappy";
+        for(int i = 0; i < 100; i++) {
+            String methodCall = App.addSpecialCharacters(frankenword, specialCharactersMock);
+            assert(!frankenword.equals(methodCall));
+            assertEquals(frankenword.length(), methodCall.length());
+        }
     }
+
+    /**
+     * Asserts App.addSpecialCharacters successfully adds 1 or 2 special characters to a word over several runs.
+     */
+    public void testAddSpecialCharacters_adds1or2chars() {
+        for(int i = 0; i < 100; i++) {
+            String methodCall = App.addSpecialCharacters("scrappy", specialCharactersMock);
+            char[] methodCallChars = methodCall.toCharArray();
+            int specialCharCount = 0;
+            for (char c : methodCallChars) {
+                if (!isAthruZ(Character.toString(c))) {
+                    specialCharCount++;
+                }
+            }
+            assert (specialCharCount == 1 || specialCharCount == 2);
+        }
+    }
+
+    // Asserts App.addSpecialCharacters successfully adds special characters to a word
+    // in all possible char positions over several runs.
 
     /**
      * Asserts AppTest.isAThruZ is working properly.
