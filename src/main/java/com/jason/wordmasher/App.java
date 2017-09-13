@@ -463,7 +463,7 @@ public class App {
      * @return                  The augmented frankenword
      */
     static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
-            throws IllegalStateException { // testing in progress
+            throws IllegalStateException { // todo: not tested
         if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
                 || specialCharacters.length == 0) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";

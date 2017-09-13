@@ -253,30 +253,13 @@ public class AppTest extends TestCase {
      * Asserts App.testGetWordsToMash generates a list of random words.
      */
     public void testGetWordsToMash_generatesRandomWords() {
-        boolean matchFound = false;
-        /*
-            Playing with the law of large numbers here; chances of fluke failure are lowered if the number of elements
-            inspected is halved. If it fails, just run it again. Should fail EXTREMELY rarely, when the first 5 elements
-            of wordsToMash (size MAX_WORDS_TO_MASH / 2) are somehow the same as the first five elements of
-            englishWordsMock (size MAX_ENGLISH_WORDS_MOCK).
-        */
-        for(int i = 0; i < (wordsToMash.size() / 2); i++) {
-            if(englishWordsMock.get(i).equals(wordsToMash.get(i))) {
-                matchFound = true;
-            }
+        if(usedEnglishWordsMock != null) {
+            usedEnglishWordsMock.clear();
         }
-        /*
-            Sometimes this test fails when other tests are run on their own. No idea why.
-            When this happens this console output should put your mind to rest. The failure is a fail.
-         */
-        if(matchFound) {
-            App.print("testGetWordsToMash_generatesRandomWords failed, probably when it shouldn't have. " +
-                    "Here's the deets:");
-            App.print("wordsToMash.size() / 2 = " + wordsToMash.size() / 2);
-            App.printNStringsFromList(englishWordsMock, "englishWordsMock", wordsToMash.size() / 2);
-            App.printNStringsFromList(wordsToMash, "wordsToMash", wordsToMash.size() / 2);
-        }
-        assertFalse(matchFound);
+        List<String> thisWordsToMash = App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
+        List<String> englishWordMockSub = new ArrayList<>(englishWordsMock.subList(0, 5));
+        List<String> thisWordsToMashSub = new ArrayList<>(thisWordsToMash.subList(0, 5));
+        assertFalse(englishWordMockSub.equals(thisWordsToMashSub));
     }
 
     /**
@@ -564,9 +547,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Static method to populate the global wordsToMash variable.
-     *
-     * @return
+     * @return a populated wordsToMash variable
      */
     private static List<String> populateWordsToMash() {
         englishWordsMock = populateEnglishWordsMock();
