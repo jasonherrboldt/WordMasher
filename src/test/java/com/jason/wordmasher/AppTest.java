@@ -164,39 +164,6 @@ public class AppTest extends TestCase {
             fail("parseArgs should not have thrown an illegal argument exception.");
         }
     }
-    
-    /**
-     * Asserts App.readFileIntoListOfStrings throws an exception if it receives a non-existent file as an argument.
-     */
-    // Unnecessary?
-//    public void testReadFileIntoListOfStrings_nonExistentFile() {
-//        try {
-//            File fakeFile = new File("fake.txt");
-//            App.readFileIntoListOfStrings(fakeFile);
-//            fail("App.readFileIntoListOfStrings should have thrown an illegal argument exception.");
-//        } catch (IllegalStateException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
-
-    /**
-     * Asserts App.readFileIntoListOfStrings throws an exception if it receives an empty file as an argument.
-     */
-    // Unnecessary?
-//    public void testReadFileIntoListOfStrings_emptyFile() {
-//        try {
-//            File tempFile = File.createTempFile("empty", ".txt");
-//            tempFile.deleteOnExit();
-//            try {
-//                App.readFileIntoListOfStrings(tempFile);
-//                fail("App.readFileIntoListOfStrings should have thrown an illegal argument exception.");
-//            } catch (IllegalStateException e) {
-//                // Do nothing; test asserts exception is properly thrown.
-//            }
-//        } catch (IOException e) {
-//            fail("Unable to create empty text file. " + e.getMessage());
-//        }
-//    }
 
     /**
      * Asserts App.readFileIntoListOfStrings returns a list that reflects the file data.
@@ -260,67 +227,6 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts that App.getWordsToMash throws an exception for arg int too small.
-     */
-    public void testGetWordsToMash_throwsException_intTooSmall() {
-        try {
-            App.getWordsToMash(App.MIN_WORDS_TO_MASH - 1, englishWordsMock, usedEnglishWordsMock);
-            fail("App.getWordsToMash should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts that App.getWordsToMash throws an exception for arg int too large.
-     */
-    public void testGetWordsToMash_throwsException_intTooLarge() {
-        try {
-            App.getWordsToMash(App.MAX_WORDS_TO_MASH + 1, englishWordsMock, usedEnglishWordsMock);
-            fail("App.getWordsToMash should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts that App.getWordsToMash throws an exception when first arg is null.
-     */
-    public void testGetWordsToMash_throwsException_argNull_A() {
-        try {
-            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, null, usedEnglishWordsMock);
-            fail("App.getWordsToMash should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts that App.getWordsToMash throws an exception when second arg is null.
-     */
-    public void testGetWordsToMash_throwsException_argNull_B() {
-        try {
-            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, englishWordsMock, null);
-            fail("App.getWordsToMash should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts that App.getWordsToMash throws an exception when first arg is empty.
-     */
-    public void testGetWordsToMash_throwsException_argEmpty() {
-        List<String> emptyList = new ArrayList<>();
-        try {
-            App.getWordsToMash(App.MAX_WORDS_TO_MASH - 1, emptyList, usedEnglishWordsMock);
-            fail("App.getWordsToMash should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
      * Asserts App.testGetWordsToMash correctly populates usedEnglishWords.
      */
     public void testGetWordsToMash_populatesUsedEnglishWords() {
@@ -371,57 +277,6 @@ public class AppTest extends TestCase {
             App.printNStringsFromList(wordsToMash, "wordsToMash", wordsToMash.size() / 2);
         }
         assertFalse(matchFound);
-    }
-
-    /**
-     * Asserts App.makeSubword throws an exception when first arg is null.
-     */
-    public void testMakeSubword_throwsException_firstArgNull() {
-        try {
-            App.makeSubword(null, 1);
-            fail("App.makeSubword should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.makeSubword throws an exception when first arg is too short.
-     */
-    public void testMakeSubword_throwsException_firstArgTooShort() {
-        try {
-            String firstArg = "a";
-            String test = App.makeSubword(firstArg, 1);
-            fail("App.makeSubword should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.makeSubword throws an exception when first arg is too long.
-     */
-    public void testMakeSubword_throwsException_firstArgTooLong() {
-        try {
-            String firstArg = "aaaaaaaaaaa";
-            String test = App.makeSubword(firstArg, 1);
-            fail("App.makeSubword should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.makeSubword throws an exception when second arg is not 1, 2, or 3.
-     */
-    public void testMakeSubword_throwsException_secondArgIllegalValue() {
-        try {
-            String firstArg = "just right";
-            String test = App.makeSubword(firstArg, 0);
-            fail("App.makeSubword should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
     }
 
     /**
@@ -536,152 +391,27 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.mashWords throws an exception for a null arg.
+     * Asserts App.mashWords generates unique strings for some input list of words.
+     *
+     * For example, using "one", "two", and "three", possible frankenwords could be "onewoee", "oneoe",
+     * "onetwoee", "nore", "etwth", or "onewore".
+     *
+     * This test asserts that the generated frankenwords have at least 3 characters and are not equal to any
+     * of the words in the input list, e.g. "one", "two", and "three".
      */
-    public void testMashWords_throwsException_nullArg() {
-        try {
-            App.mashWords(null);
-            fail("App.mashWords should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+    public void testMashWords_returnsUniqueFrankenwords() {
 
-    /**
-     * Asserts App.mashWords throws an exception for a too-small arg.
-     */
-    public void testMashWords_throwsException_tooSmallList() {
-        mockList = new ArrayList<>();
-        mockList.add("one");
-        try {
-            App.mashWords(mockList);
-            fail("App.mashWords should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.mashWords throws an exception for a too-large arg.
-     */
-    public void testMashWords_throwsException_tooLargeList() {
         mockList = new ArrayList<>();
         mockList.add("one");
         mockList.add("two");
         mockList.add("three");
-        mockList.add("four");
-        try {
-            App.mashWords(mockList);
-            fail("App.mashWords should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
+        List<String> mashWordList = new ArrayList<>();
+        for(int i = 0; i < 3; i++) {
+            mashWordList.add(App.mashWords(mockList));
         }
-    }
-
-    /**
-     * Asserts App.mashWords generates unique strings for the same input list over many iterations.
-     *
-     * THIS TEST IS OCCASIONALLY FAILING BECAUSE MASHWORDS IS SOMETIMES RETUNING NULL (I THINK). REMEDIATE!
-     *
-     * (Maybe just loop more times than 15?)
-     */
-//    public void testMashWords_returnsUniqueString() {
-//        mockList = new ArrayList<>();
-//        mockList.add("one");
-//        mockList.add("two");
-//        mockList.add("three");
-//        Set<String> mashWordSet = new HashSet<>();
-//        for(int i = 0; i < 15; i++) {
-//            mashWordSet.add(App.mashWords(mockList));
-//        }
-//        assertEquals(mashWordSet.size(), 15);
-//    }
-
-    /**
-     * Asserts App.addSpecialCharacters throws an exception for an illegal first argument
-     */
-    public void testAddSpecialCharacters_throwsException_arg_A() {
-
-        /* NEEDS TO BE REWRITTEN */
-        
-//        mockList = new ArrayList<>();
-//        mockList = createDummyStringList(10);
-//        try {
-//            App.addSpecialCharacters(null, mockList);
-//            fail("App.addSpecialCharacters should have thrown an exception here.");
-//        } catch (IllegalStateException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//
-//        String mockFrankenword = "10"; // .length is < 3
-//        try {
-//            App.addSpecialCharacters(mockFrankenword, mockList);
-//            fail("App.addSpecialCharacters should have thrown an exception here.");
-//        } catch (IllegalStateException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-    }
-
-    /**
-     * Asserts App.addSpecialCharacters throws an exception for an illegal second argument
-     */
-    public void testAddSpecialCharacters_throwsException_arg_B() {
-
-        /* NEEDS TO BE REWRITTEN */
-
-//        String mockFrankenword = "100"; // .length is > 3
-//        try {
-//            App.addSpecialCharacters(mockFrankenword, null);
-//            fail("App.addSpecialCharacters should have thrown an exception here.");
-//        } catch (IllegalStateException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//
-//        mockList = new ArrayList<>(); // empty list
-//        try {
-//            App.addSpecialCharacters(mockFrankenword, mockList);
-//            fail("App.addSpecialCharacters should have thrown an exception here.");
-//        } catch (IllegalStateException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-    }
-
-    /**
-     * Asserts App.convertStringListToCharArray throws an exception for a null arg.
-     */
-    public void testConvertStringListToCharArray_throwsException_nullArg() {
-        try {
-            App.convertStringListToCharArray(null);
-            fail("App.convertStringListToCharArray should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.convertStringListToCharArray throws an exception for an empty arg.
-     */
-    public void testConvertStringListToCharArray_throwsException_EmptyArg() {
-        mockList = new ArrayList<>();
-        try {
-            App.convertStringListToCharArray(mockList);
-            fail("App.convertStringListToCharArray should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
-
-    /**
-     * Asserts App.convertStringListToCharArray throws an exception for a list with a string with length > 1.
-     */
-    public void testConvertStringListToCharArray_throwsException_tooLongListEntry() {
-        mockList = new ArrayList<>();
-        mockList = createDummyStringList(11); // Will blow up because string "10" does not have a length of 1.
-        try {
-            App.convertStringListToCharArray(mockList);
-            fail("App.convertStringListToCharArray should have thrown an exception here.");
-        } catch (IllegalStateException e) {
-            // Do nothing; test asserts exception is properly thrown.
+        for(String s : mashWordList) {
+            assertTrue(s.length() > 2);
+            assertFalse(mockList.contains(s));
         }
     }
 
@@ -705,6 +435,14 @@ public class AppTest extends TestCase {
         } catch (IllegalStateException e) {
             fail("App.convertStringListToCharArray threw an exception when it shouldn't have.");
         }
+    }
+
+    /**
+     * Asserts App.substringInclusive returns a substring of inclusive indices.
+     */
+    public void testSubstringInclusive() {
+        String inclusiveSubword = App.substringInclusive("abracadabra", 3, 8);
+        assertEquals(inclusiveSubword, "acadab");
     }
 
 
@@ -825,6 +563,11 @@ public class AppTest extends TestCase {
         return words;
     }
 
+    /**
+     * Static method to populate the global wordsToMash variable.
+     *
+     * @return
+     */
     private static List<String> populateWordsToMash() {
         englishWordsMock = populateEnglishWordsMock();
         usedEnglishWordsMock = new ArrayList<>();

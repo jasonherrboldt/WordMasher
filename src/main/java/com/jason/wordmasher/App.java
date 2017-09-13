@@ -76,7 +76,7 @@ public class App {
      *
      * @param args Program arguments
      */
-    static void parseArgs(String[] args) throws IllegalArgumentException {
+    static void parseArgs(String[] args) throws IllegalArgumentException { // tested
 
         // Validate arguments
         if(args.length != 4) {
@@ -131,7 +131,7 @@ public class App {
      * @param fileName Name of file
      * @return         True if file can be read, false otherwise.
      */
-    private static boolean fileExists(String fileName) {
+    private static boolean fileExists(String fileName) { // not tested
         File file = new File(fileName);
         return file.exists();
     }
@@ -142,19 +142,7 @@ public class App {
      * @param  file File to read
      * @return List of strings from file
      */
-    static List<String> readFileIntoListOfStrings(File file) throws IllegalStateException {
-        // Unnecessary?
-//        if(!fileExists(file.getName())) {
-//            errorMessage = "Error: App.readFileIntoListOfStrings received a non-existent file: " + file.getName();
-//            logEntry(errorMessage);
-//            throw new IllegalStateException(errorMessage);
-//        }
-        // Unnecessary?
-//        if(file.length() == 0) {
-//            errorMessage = "Error: App.readFileIntoListOfStrings received an empty file: " + file.getName();
-//            logEntry(errorMessage);
-//            throw new IllegalStateException(errorMessage);
-//        }
+    static List<String> readFileIntoListOfStrings(File file) throws IllegalStateException { // tested
         List<String> returnList = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -177,7 +165,7 @@ public class App {
      * @param  file File to read
      * @return Char array from file
      */
-    static char[] readFileIntoCharArray(File file) throws IllegalStateException {
+    static char[] readFileIntoCharArray(File file) throws IllegalStateException { // tested
         List<String> fileStringList = readFileIntoListOfStrings(file); // Already vetted for empty files.
         char[] returnArray = new char[fileStringList.size()];
         try {
@@ -253,7 +241,7 @@ public class App {
      * @param n    Which subword pattern to use
      * @return     The subword
      */
-    static String makeSubword(String word, int n) throws IllegalStateException {
+    static String makeSubword(String word, int n) throws IllegalStateException { // tested
         if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
             errorMessage = "Error: makeSubword received an illegal 1st argument.";
             logEntry(errorMessage);
@@ -293,7 +281,7 @@ public class App {
     /**
      * Open a new logging session. Create a new /log directory as needed.
      */
-    private static void startLog() {
+    private static void startLog() { // not tested
         File dir = new File("logs");
         if(!dir.exists()) {
             if(!dir.mkdir()) {
@@ -308,7 +296,7 @@ public class App {
      *
      * @param log the log entry
      */
-    private static void logEntry(String log) throws IllegalStateException {
+    private static void logEntry(String log) throws IllegalStateException { // not tested
         try {
             FileWriter fw;
             BufferedWriter bw;
@@ -341,7 +329,7 @@ public class App {
     /**
      * @return today's date in the format YYYY-MM-DD
      */
-    private static String getTodaysDate() {
+    private static String getTodaysDate() { // not tested
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -369,7 +357,7 @@ public class App {
      *
      * @param s String to print
      */
-    static void print(String s) {
+    static void print(String s) { // not tested
         System.out.println(s);
     }
 
@@ -380,7 +368,8 @@ public class App {
      * @param listName The name of the list
      * @param n        How many items of the list to print
      */
-    static void printNStringsFromList(List<String> list, String listName, int n) throws IllegalStateException {
+    static void printNStringsFromList(List<String> list, String listName, int n)
+            throws IllegalStateException { // not tested
         if(n > list.size()) {
             errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
             logEntry(errorMessage);
@@ -400,7 +389,8 @@ public class App {
      * @param fileName Name of file to create
      * @return         Newly-created file
      */
-    static File createFileWithStringList(List<String> list, String fileName) throws IllegalStateException {
+    static File createFileWithStringList(List<String> list, String fileName)
+            throws IllegalStateException { // not tested
         try {
             FileWriter fw;
             BufferedWriter bw;
@@ -438,24 +428,13 @@ public class App {
         }
     }
 
-
-
-    /*
-    **********************************************************************************************
-    mashWords sometimes returns null, which breaks AppTest.testMashWords_returnsUniqueString. Why?
-    **********************************************************************************************
-
-    (App.substringInclusive hasn't been tested yet. That might resolve the issue.)
-
-     */
-
     /**
      * Mash together a list of words.
      *
      * @param wordsToMash The list of words to mash
      * @return            The mashed word
      */
-    static String mashWords(List<String> wordsToMash) throws IllegalStateException {
+    static String mashWords(List<String> wordsToMash) throws IllegalStateException { // tested
         if(wordsToMash == null || (wordsToMash.size() != 2 && wordsToMash.size() != 3)) {
             errorMessage = "Error: App.mashWords received an illegal argument.";
             logEntry(errorMessage);
@@ -466,6 +445,7 @@ public class App {
         for(int i = 1; i < 4; i++) {
             oneTwoThree.add(i);
         }
+        Collections.shuffle(wordsToMash);
         for(String s : wordsToMash) {
             // Let int n be 1, 2, or 3 at random
             Collections.shuffle(oneTwoThree);
@@ -483,7 +463,7 @@ public class App {
      * @return                  The augmented frankenword
      */
     static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
-            throws IllegalStateException {
+            throws IllegalStateException { // testing in progress
         if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
                 || specialCharacters.length == 0) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
@@ -556,7 +536,7 @@ public class App {
      * @param list List of single-character strings
      * @return     Converted char array
      */
-    static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException {
+    static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException { // tested
         if(list == null || list.isEmpty()) {
             errorMessage = "Error: App.convertStringListToCharArray received a null or empty list argument.";
             logEntry(errorMessage);
@@ -597,7 +577,7 @@ public class App {
      * @param list The list to analyze
      * @return     True if the list is null or empty, false otherwise.
      */
-    private static boolean listIsNullOrEmpty(List<String> list) {
+    private static boolean listIsNullOrEmpty(List<String> list) { // not tested
         return list == null || list.isEmpty();
     }
 
@@ -610,8 +590,8 @@ public class App {
      * @param endIndex   Ending index (inclusive)
      * @return           Substring
      */
-    // todo: not tested!
-    private static String substringInclusive(String word, int beginIndex, int endIndex) throws IllegalStateException {
+    static String substringInclusive(String word, int beginIndex, int endIndex)
+            throws IllegalStateException { // tested
         if(beginIndex < 0 || endIndex < 0 || endIndex < beginIndex || endIndex > word.length() - 1) {
             errorMessage = "Error: App.substringInclusive encountered one or more illegal arguments";
             logEntry(errorMessage);
@@ -636,7 +616,7 @@ public class App {
      * @param n The chance range.
      * @return  One in N chance of being true
      */
-    static boolean oneInNChance(int n) throws IllegalStateException {
+    static boolean oneInNChance(int n) throws IllegalStateException { // tested
         if(n < 1 || n > MAX_ONE_IN_N_CHANCE) {
             errorMessage = "Error: oneInNChance received an illegal argument.";
             logEntry(errorMessage);
