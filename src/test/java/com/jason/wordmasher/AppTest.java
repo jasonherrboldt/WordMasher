@@ -20,6 +20,7 @@ public class AppTest extends TestCase {
     private static List<String> englishWordsMock;
     private static List<String> usedEnglishWordsMock;
     private static List<String> wordsToMash = populateWordsToMash();
+    private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
     /**
      * Create the test case
@@ -428,6 +429,31 @@ public class AppTest extends TestCase {
         assertEquals(inclusiveSubword, "acadab");
     }
 
+    /**
+     * Asserts App.addSpecialCharacters
+     */
+    // static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
+    public void testAddSpecialCharacters() {
+
+    }
+
+    /**
+     * Asserts AppTest.isAThruZ is working properly.
+     */
+    public void testIsAthruZ() {
+        List<String> strings = new ArrayList<>();
+        strings.add("aBc");
+        strings.add("bcD");
+        strings.add("cde");
+        strings.add("DEf");
+
+        for(String s : strings) {
+            assert(isAthruZ(s));
+        }
+
+        assertFalse(isAthruZ("^6r"));
+    }
+
 
 
     //**************************//
@@ -553,6 +579,34 @@ public class AppTest extends TestCase {
         englishWordsMock = populateEnglishWordsMock();
         usedEnglishWordsMock = new ArrayList<>();
         return App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
+    }
+
+    /**
+     * @return a populated char array of special characters
+     */
+    private static char[] populateSpecialCharactersMock() {
+        char[] returnArr = new char[10];
+        returnArr[0] = ';';
+        returnArr[1] = '!';
+        returnArr[2] = '#';
+        returnArr[3] = '$';
+        returnArr[4] = '%';
+        returnArr[5] = '^';
+        returnArr[6] = '&';
+        returnArr[7] = '*';
+        returnArr[8] = '(';
+        returnArr[9] = ')';
+        return returnArr;
+    }
+
+    /**
+     * Determines if a string is a-z or A-Z.
+     *
+     * @param s String to analyze
+     * @return True if string contains only a-z, false otherwise.
+     */
+    private boolean isAthruZ(String s) {
+        return s.matches("^[a-zA-Z]+$");
     }
 }
 
