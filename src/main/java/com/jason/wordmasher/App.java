@@ -6,9 +6,11 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * A simple Java / Maven coding exercise that mashes random words together in interesting ways.
+ * A Java / Maven coding exercise that mashes random words together in interesting ways.
  *
- * See README for usage rules. Sample program args: "english_words.txt" "special_characters.txt" "output.txt" 10
+ * See README for usage rules, how to run, and output examples.
+ *
+ * Sample program args: "english_words.txt" "special_characters.txt" "output.txt" 10
  *
  * Created September 2017 by Jason Herrboldt (intothefuture@gmail.com, github.com/jasonherrboldt).
  */
@@ -241,18 +243,16 @@ public class App {
         logEntry("Program arguments validated and parsed.");
     }
 
-
     /**
      * Verifies specified file exists.
      *
      * @param fileName Name of file
      * @return         True if file can be read, false otherwise.
      */
-    private static boolean fileExists(String fileName) { // not tested
+    private static boolean fileExists(String fileName) { // can be functionally tested
         File file = new File(fileName);
         return file.exists();
     }
-
 
     /**
      * Reads contents of a file into a list of strings.
@@ -276,7 +276,6 @@ public class App {
         logEntry("The file " + file.getName() + " has been read into a string list.");
         return returnList;
     }
-
 
     /**
      * Reads contents of a file into a char array. Blows up if any of the lines in the file have length > 1.
@@ -304,8 +303,34 @@ public class App {
     }
 
 
+    //*******************************//
+    //***** MAKING FRANKENWORDS *****//
+    //*******************************//
 
 
+    /**
+     * Make a list of frankenwords using getWordsToMash.
+     *
+     * @return a list of frankenwords
+     */
+    private static List<String> makeFrankenwords() { // can be functionally tested
+        List<String> outputList = new ArrayList<>();
+        int numberOfWordsToMash;
+        List<String> wordsToMash;
+        String frankenword;
+        for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
+            numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
+            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
+            frankenword = makeFrankenword(wordsToMash);
+            if(frankenword == null || frankenword.isEmpty()) {
+                errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
+            outputList.add(frankenword);
+        }
+        return outputList;
+    }
 
     /**
      * Prints a list of frankenwords to the output file. (Will overwrite existing file of the same name.)
@@ -329,6 +354,36 @@ public class App {
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+    }
+
+    /**
+     * Make a frankenword from a list of words to mash.
+     *
+     * @param wordsToMash The words to mash
+     * @return            The frankenword
+     */
+    private static String makeFrankenword(List<String> wordsToMash) { // can be functionally tested
+        if(wordsToMash == null || wordsToMash.size() < 2) {
+            errorMessage = "Error: App.makeFrankenword received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        String frankenword = mashWords(wordsToMash);
+        if(frankenword.length() < 3) {
+            frankenword += getRandomCharacter();
+        }
+        if(oneInNChance(2)) {
+            frankenword = addStandardCapitalization(frankenword);
+        } else {
+            frankenword = addWeirdCapitalization(frankenword);
+        }
+        if(oneInNChance(5)) {
+            frankenword = addSpecialCharacters(frankenword, specialCharacters);
+        }
+        if(oneInNChance(6)) {
+            frankenword = breakInTwo(frankenword);
+        }
+        return frankenword;
     }
 
     /**
@@ -386,140 +441,6 @@ public class App {
             usedEnglishWords = localUsedEnglishWords;
         }
         return wordsToMash;
-    }
-
-    /**
-     * Makes a subword according to the program requirements. (See README.)
-     *
-     * @param word The word to use
-     * @param n    Which subword pattern to use
-     * @return     The subword
-     */
-    static String makeSubword(String word, int n) throws IllegalStateException { // tested
-        if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
-            errorMessage = "Error: makeSubword received an illegal 1st argument.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        if(n != 1 && n != 2 && n != 3) {
-            errorMessage = "Error: makeSubword received an illegal 2nd argument. Must be 1, 2, or 3.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-
-        int i = 0;
-        int j = 0;
-
-        switch(n) {
-            case(1): {
-                i = getRandomIntInInclusiveRange(0, word.length() - 1);
-                return substringInclusive(word, 0, i);
-            }
-            case(2): {
-                j = getRandomIntInInclusiveRange(0, word.length() - 1);
-                return substringInclusive(word, j, word.length() - 1);
-            }
-            case(3): {
-                int wordLength = word.length();
-                i = getRandomIntInInclusiveRange(0, wordLength - 1);
-                j = getRandomIntInInclusiveRange(i, wordLength - 1);
-                return substringInclusive(word, i, j);
-            }
-        }
-
-        errorMessage = "Error: logic fell through App.makeSubword.";
-        logEntry(errorMessage);
-        throw new IllegalStateException(errorMessage);
-    }
-
-    /**
-     * Make a list of frankenwords using getWordsToMash.
-     *
-     * @return a list of frankenwords
-     */
-    private static List<String> makeFrankenwords() { // can be functionally tested
-        List<String> outputList = new ArrayList<>();
-        int numberOfWordsToMash;
-        List<String> wordsToMash;
-        String frankenword;
-        for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
-            numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
-            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
-            frankenword = makeFrankenword(wordsToMash);
-            if(frankenword == null || frankenword.isEmpty()) {
-                errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
-                logEntry(errorMessage);
-                throw new IllegalStateException(errorMessage);
-            }
-            outputList.add(frankenword);
-        }
-        return outputList;
-    }
-
-    /**
-     * Make a frankenword from a list of words to mash.
-     *
-     * @param wordsToMash The words to mash
-     * @return            The frankenword
-     */
-    private static String makeFrankenword(List<String> wordsToMash) { // can be functionally tested
-        if(wordsToMash == null || wordsToMash.size() < 2) {
-            errorMessage = "Error: App.makeFrankenword received an illegal argument.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        String frankenword = mashWords(wordsToMash);
-        if(frankenword.length() < 3) {
-            frankenword += getRandomCharacter();
-        }
-        if(oneInNChance(2)) {
-            frankenword = addStandardCapitalization(frankenword);
-        } else {
-            frankenword = addWeirdCapitalization(frankenword);
-        }
-        if(oneInNChance(5)) {
-            frankenword = addSpecialCharacters(frankenword, specialCharacters);
-        }
-        if(oneInNChance(6)) {
-            frankenword = breakInTwo(frankenword);
-        }
-        return frankenword;
-    }
-
-    /**
-     * Inserts a space int a random index of a frankenword, effectively breaking it into two different words.
-     *
-     * @param frankenword the word to break
-     * @return            the broken word
-     */
-    static String breakInTwo(String frankenword) { // tested
-        int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
-        String substring_A = frankenword.substring(0, randInt);
-        String substring_B = frankenword.substring(randInt, frankenword.length());
-
-        return substring_A + " " + substring_B;
-    }
-
-    /**
-     * Generate a random string character.
-     *
-     * @return a random string character.
-     */
-    static String getRandomCharacter() { // tested
-        String alphabet = "abcdefghijklmnopqrstuvwxyz";
-        int N = alphabet.length();
-        Random r = new Random();
-        char randChar = alphabet.charAt(r.nextInt(N));
-        return Character.toString(randChar);
-    }
-
-    /**
-     * Shortcut to System.out.println
-     *
-     * @param s String to print
-     */
-    static void print(String s) {
-        System.out.println(s);
     }
 
     /**
@@ -657,15 +578,54 @@ public class App {
     }
 
     /**
-     * Generates a pseudorandom number in a specified INCLUSIVE range.
+     * Makes a subword according to the program requirements. (See README.)
      *
-     * @param min The minimum value of the range (inclusive)
-     * @param max The maximum value of the range (inclusive)
-     * @return    The chosen pseudorandom number
+     * @param word The word to use
+     * @param n    Which subword pattern to use
+     * @return     The subword
      */
-    static int getRandomIntInInclusiveRange(int min, int max) { // tested
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    static String makeSubword(String word, int n) throws IllegalStateException { // tested
+        if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
+            errorMessage = "Error: makeSubword received an illegal 1st argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        if(n != 1 && n != 2 && n != 3) {
+            errorMessage = "Error: makeSubword received an illegal 2nd argument. Must be 1, 2, or 3.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+
+        int i = 0;
+        int j = 0;
+
+        switch(n) {
+            case(1): {
+                i = getRandomIntInInclusiveRange(0, word.length() - 1);
+                return substringInclusive(word, 0, i);
+            }
+            case(2): {
+                j = getRandomIntInInclusiveRange(0, word.length() - 1);
+                return substringInclusive(word, j, word.length() - 1);
+            }
+            case(3): {
+                int wordLength = word.length();
+                i = getRandomIntInInclusiveRange(0, wordLength - 1);
+                j = getRandomIntInInclusiveRange(i, wordLength - 1);
+                return substringInclusive(word, i, j);
+            }
+        }
+
+        errorMessage = "Error: logic fell through App.makeSubword.";
+        logEntry(errorMessage);
+        throw new IllegalStateException(errorMessage);
     }
+
+
+    //**************************//
+    //***** HELPER METHODS *****//
+    //**************************//
+
 
     /**
      * Helper method to override String.substring, which has indices that are inclusive / exclusive.
@@ -719,43 +679,51 @@ public class App {
         Collections.shuffle(bools);
         return bools.get(0);
     }
+
+    /**
+     * Generate a random string character.
+     *
+     * @return a random string character.
+     */
+    static String getRandomCharacter() { // tested
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        int N = alphabet.length();
+        Random r = new Random();
+        char randChar = alphabet.charAt(r.nextInt(N));
+        return Character.toString(randChar);
+    }
+
+    /**
+     * Inserts a space int a random index of a frankenword, effectively breaking it into two different words.
+     *
+     * @param frankenword the word to break
+     * @return            the broken word
+     */
+    static String breakInTwo(String frankenword) { // tested
+        int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
+        String substring_A = frankenword.substring(0, randInt);
+        String substring_B = frankenword.substring(randInt, frankenword.length());
+
+        return substring_A + " " + substring_B;
+    }
+
+    /**
+     * Shortcut to System.out.println
+     *
+     * @param s String to print
+     */
+    static void print(String s) {
+        System.out.println(s);
+    }
+
+    /**
+     * Generates a pseudorandom number in a specified INCLUSIVE range.
+     *
+     * @param min The minimum value of the range (inclusive)
+     * @param max The maximum value of the range (inclusive)
+     * @return    The chosen pseudorandom number
+     */
+    static int getRandomIntInInclusiveRange(int min, int max) { // tested
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,8 +1,6 @@
 package com.jason.wordmasher;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.*;
@@ -21,24 +19,6 @@ public class AppTest extends TestCase {
     private static List<String> usedEnglishWordsMock;
     private static List<String> wordsToMash = populateWordsToMash();
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
-
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
 
     /**
      * Asserts App.parseArgs throws an exception for an illegal number of string array elements.
@@ -675,7 +655,6 @@ public class AppTest extends TestCase {
         return stats;
     }
 
-
     /**
      * @return a populated char array of special characters
      */
@@ -784,28 +763,3 @@ public class AppTest extends TestCase {
         return s.matches("^[a-zA-Z]+$");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
