@@ -525,7 +525,7 @@ public class App {
             // Let int n be 1, 2, or 3 at random
             Collections.shuffle(oneTwoThree);
             int n = oneTwoThree.get(0);
-            mashedWord.append(makeSubword(s, n)); // *** THIS MIGHT BE THE CULPRIT THAT'S RETURNING EMPTY STRINGS ***
+            mashedWord.append(makeSubword(s, n));
         }
         return mashedWord.toString();
     }

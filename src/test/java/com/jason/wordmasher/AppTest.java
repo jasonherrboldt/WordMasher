@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Unit test for simple App.
+ * Unit test suite for WordMasher App.
  */
 public class AppTest extends TestCase {
 
@@ -571,6 +571,47 @@ public class AppTest extends TestCase {
 
 
     /**
+     * Writes a list of strings to a newly-created file. Writes over files if they already exist.
+     *
+     * @param list     List of strings to print
+     * @param fileName Name of file to create
+     * @return         Newly-created file
+     */
+    private File createFileWithStringList(List<String> list, String fileName)
+            throws IllegalStateException {
+        try {
+            FileWriter fw;
+            BufferedWriter bw;
+            PrintWriter out;
+            File file = new File(fileName);
+            if(!file.exists()) {
+                if(file.createNewFile()) {
+                    fw = new FileWriter(file);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    for(String s : list) {
+                        out.println(s);
+                    }
+                    out.close();
+                } else {
+                    throw new IllegalStateException("Error: App.writeStringListToFile was unable to create a new file.");
+                }
+            } else {
+                fw = new FileWriter(file, true);
+                bw = new BufferedWriter(fw);
+                out = new PrintWriter(bw);
+                for(String s : list) {
+                    out.println(s);
+                }
+                out.close();
+            }
+            return file;
+        } catch (IOException e) {
+            throw new IllegalStateException("Error: App.writeStringListToFile threw an IO exception.");
+        }
+    }
+
+    /**
      * Helper method to generate a SummaryStatistics object for testOneInNChance_oneIn* unit tests.
      *
      * Creates (runs)^2 iterations of data for analysis.
@@ -607,6 +648,25 @@ public class AppTest extends TestCase {
             count = 0;
         }
         return stats;
+    }
+
+
+    /**
+     * @return a populated char array of special characters
+     */
+    private static char[] populateSpecialCharactersMock() {
+        char[] returnArr = new char[10];
+        returnArr[0] = ';';
+        returnArr[1] = '!';
+        returnArr[2] = '#';
+        returnArr[3] = '$';
+        returnArr[4] = '%';
+        returnArr[5] = '^';
+        returnArr[6] = '&';
+        returnArr[7] = '*';
+        returnArr[8] = '(';
+        returnArr[9] = ')';
+        return returnArr;
     }
 
     /**
@@ -690,24 +750,6 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * @return a populated char array of special characters
-     */
-    private static char[] populateSpecialCharactersMock() {
-        char[] returnArr = new char[10];
-        returnArr[0] = ';';
-        returnArr[1] = '!';
-        returnArr[2] = '#';
-        returnArr[3] = '$';
-        returnArr[4] = '%';
-        returnArr[5] = '^';
-        returnArr[6] = '&';
-        returnArr[7] = '*';
-        returnArr[8] = '(';
-        returnArr[9] = ')';
-        return returnArr;
-    }
-
-    /**
      * Determines if a string is a-z or A-Z.
      *
      * @param s String to analyze
@@ -715,47 +757,6 @@ public class AppTest extends TestCase {
      */
     private boolean isAthruZ(String s) {
         return s.matches("^[a-zA-Z]+$");
-    }
-
-    /**
-     * Writes a list of strings to a newly-created file. Writes over files if they already exist.
-     *
-     * @param list     List of strings to print
-     * @param fileName Name of file to create
-     * @return         Newly-created file
-     */
-    static File createFileWithStringList(List<String> list, String fileName)
-            throws IllegalStateException { // not tested
-        try {
-            FileWriter fw;
-            BufferedWriter bw;
-            PrintWriter out;
-            File file = new File(fileName);
-            if(!file.exists()) {
-                if(file.createNewFile()) {
-                    fw = new FileWriter(file);
-                    bw = new BufferedWriter(fw);
-                    out = new PrintWriter(bw);
-                    for(String s : list) {
-                        out.println(s);
-                    }
-                    out.close();
-                } else {
-                    throw new IllegalStateException("Error: App.writeStringListToFile was unable to create a new file.");
-                }
-            } else {
-                fw = new FileWriter(file, true);
-                bw = new BufferedWriter(fw);
-                out = new PrintWriter(bw);
-                for(String s : list) {
-                    out.println(s);
-                }
-                out.close();
-            }
-            return file;
-        } catch (IOException e) {
-            throw new IllegalStateException("Error: App.writeStringListToFile threw an IO exception.");
-        }
     }
 }
 
