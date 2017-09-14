@@ -32,9 +32,9 @@ public class App {
     private static final int MAX_FRANKENWORDS = 1000;
     private static final int MAX_ONE_IN_N_CHANCE = 100;
     private static final int MAX_WHILE = 1000;
-    public static final int MAX_WORDS_TO_MASH = 10;
+    static final int MAX_WORDS_TO_MASH = 10;
     private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
-    public static final int MIN_WORDS_TO_MASH = 1;
+    private static final int MIN_WORDS_TO_MASH = 1;
     private static final String PARSE_ARGS_ERROR_MESSAGE = "App.parseArgs encountered one or more " +
             "illegal program arguments.";
     private static List<String> englishWords;
@@ -50,23 +50,46 @@ public class App {
             specialCharacters = readFileIntoCharArray(specialCharactersFile);
 
             // debug
-            printNStringsFromList(englishWords, "englishWords", 10);
+            // printNStringsFromList(englishWords, "englishWords", 10);
 
             // debug
+            /*
             List<String> specialCharactersStringList = new ArrayList<>();
             for(char c : specialCharacters) {
                 specialCharactersStringList.add(Character.toString(c));
             }
             printNStringsFromList(specialCharactersStringList, "specialCharactersStringList", 15);
+            */
+
+            // smoke test
+            List<String> frankenwords = makeFrankenwords();
+            printNStringsFromList(frankenwords, "frankenwords", frankenwords.size());
 
             // continue...
 
             logEntry("Program finished.");
         } catch (Exception e) {
-            String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
-            print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
-                    + " for more information.");
+            handleMainException(e);
         }
+    }
+
+    /**
+     * Handle an exception thrown from main.
+     *
+     * @param e the exception
+     */
+    private static void handleMainException(Exception e) {
+        if(errorMessage != null && !errorMessage.isEmpty()) {
+            logEntry(errorMessage);
+        }
+        String exceptionMessage = e.getMessage();
+        if(exceptionMessage != null && !exceptionMessage.isEmpty()) {
+            logEntry(exceptionMessage);
+        }
+        logEntry(e.getMessage());
+        String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
+        print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
+                + " for more information.");
     }
 
     /**
@@ -155,7 +178,7 @@ public class App {
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        logEntry("The file " + file.getName() + " has been read into memory.");
+        logEntry("The file " + file.getName() + " has been read into a string list.");
         return returnList;
     }
 
@@ -187,7 +210,7 @@ public class App {
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        logEntry("The file " + file.getName() + " has been read into memory.");
+        logEntry("The file " + file.getName() + " has been read into a char array.");
         return returnArray;
     }
 
@@ -313,10 +336,10 @@ public class App {
     private static List<String> makeFrankenwords() { // can only be functionally tested
         // Let outputList be an empty list of strings
         List<String> outputList = new ArrayList<>();
-        // For numberOfFrankenwordsToCreate
         int numberOfWordsToMash = 0;
         List<String> wordsToMash;
         String frankenword;
+        // For numberOfFrankenwordsToCreate
         for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
             // Let numberOfWordsToMash be either 2 or 3 (even chance)
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
@@ -394,32 +417,34 @@ public class App {
      * @param log the log entry
      */
     private static void logEntry(String log) throws IllegalStateException { // not tested
-        try {
-            FileWriter fw;
-            BufferedWriter bw;
-            PrintWriter out;
-            String time;
-            if (!LOG_FILE.exists()){
-                if(LOG_FILE.createNewFile()) {
-                    fw = new FileWriter(LOG_FILE);
+        if(log != null && !log.isEmpty()) {
+            try {
+                FileWriter fw;
+                BufferedWriter bw;
+                PrintWriter out;
+                String time;
+                if (!LOG_FILE.exists()){
+                    if(LOG_FILE.createNewFile()) {
+                        fw = new FileWriter(LOG_FILE);
+                        bw = new BufferedWriter(fw);
+                        out = new PrintWriter(bw);
+                        time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
+                        out.println(time + " " + log);
+                        out.close();
+                    } else {
+                        print("WARN: Main.logEntry unable to create new log file.");
+                    }
+                } else {
+                    fw = new FileWriter(LOG_FILENAME, true);
                     bw = new BufferedWriter(fw);
                     out = new PrintWriter(bw);
                     time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
                     out.println(time + " " + log);
                     out.close();
-                } else {
-                    print("WARN: Main.logEntry unable to create new log file.");
                 }
-            } else {
-                fw = new FileWriter(LOG_FILENAME, true);
-                bw = new BufferedWriter(fw);
-                out = new PrintWriter(bw);
-                time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
-                out.println(time + " " + log);
-                out.close();
+            } catch (IOException e) {
+                throw new IllegalStateException("App.logEntry threw an IO exception: " + e.getMessage());
             }
-        } catch (IOException e) {
-            throw new IllegalStateException("App.logEntry threw an IO exception: " + e.getMessage());
         }
     }
 
