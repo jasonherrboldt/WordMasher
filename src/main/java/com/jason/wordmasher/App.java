@@ -102,7 +102,7 @@ public class App {
      *
      * @param frankenwords The list of frankenwords to print.
      */
-    static void printFrankenwords(List<String> frankenwords) { // can only be functionally tested
+    private static void printFrankenwords(List<String> frankenwords) { // can only be functionally tested
         if(frankenwords == null || frankenwords.isEmpty()) {
             errorMessage = "Error: App.printFrankenwords received a null or empty list.";
             logEntry(errorMessage);
@@ -410,23 +410,8 @@ public class App {
      * @param frankenword the word to break
      * @return            the broken word
      */
-    public static String breakInTwo(String frankenword) {
+    static String breakInTwo(String frankenword) {
         int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
-
-        /*
-             Example:
-           String str= new String("quick brown fox jumps over the lazy dog");
-           System.out.println("Substring starting from index 15:");
-           System.out.println(str.substring(15));
-           System.out.println("Substring starting from index 15 and ending at 20:");
-           System.out.println(str.substring(15, 20));
-
-            Substring starting from index 15:
-             jumps over the lazy dog
-            Substring starting from index 15 and ending at 20:
-             jump
-         */
-
         String substring_A = frankenword.substring(0, randInt);
         String substring_B = frankenword.substring(randInt, frankenword.length());
 
