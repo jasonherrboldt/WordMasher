@@ -292,6 +292,49 @@ public class App {
     }
 
     /**
+     *
+     *
+     * @param wordsToMash
+     * @return
+     */
+    String makeFrankenword(List<String> wordsToMash) {
+        if(wordsToMash == null || wordsToMash.size() < 2) {
+            errorMessage = "Error: App.makeFrankenword received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        // Let frankenword be mashWords(wordsToMash)
+        String frankenword = mashWords(wordsToMash);
+        // If frankenword has length < 3
+        if(frankenword.length() < 3) {
+            // Append one random letter to the end of frankenword
+
+        }
+        // If 1 in 6 random boolean
+            // Let frankenword be addSpecialCharacters(frankenword)
+        // If 1 in 2 random boolean
+            // Let frankenword be addStandardCapitalization(frankenword)
+        // Else
+            // Let frankenword be addWeirdCapitalization(frankenword)
+        // Return frankenword
+
+        return null;
+    }
+
+    /**
+     * Generate a random string character.
+     *
+     * @return a random string character.
+     */
+    public static String getRandomCharacter() {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        int N = alphabet.length();
+        Random r = new Random();
+        char randChar = alphabet.charAt(r.nextInt(N));
+        return Character.toString(randChar);
+    }
+
+    /**
      * Add a new log entry. Create a new document as needed, or append to an existing one.
      *
      * @param log the log entry

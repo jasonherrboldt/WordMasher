@@ -530,6 +530,17 @@ public class AppTest extends TestCase {
         assert(mismatchFound);
     }
 
+    /**
+     * Assert App.getRandomCharacter returns all possible random letters of the alphabet over several iterations.
+     */
+    public void testGetRandomCharacter() {
+        Set<String> letters = new HashSet<>();
+        for(int i = 0; i < 500; i++) {
+            letters.add(App.getRandomCharacter());
+        }
+        assertEquals(letters.size(), 26);
+    }
+
 
 
 
