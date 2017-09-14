@@ -156,9 +156,11 @@ public class AppTest extends TestCase {
 
     /**
      * Asserts App.validateArgs does not throw an exception when given valid program arguments.
+     *
+     * WILL FAIL IF THE FIRST TWO STRINGS IN ARGS DO NOT EXIST IN PROJECT HOME DIRECTORY.
      */
     public void testParseArgs_allParsableArguments() {
-        args = createArgsArray("english_words.txt", "special_characters_02_just_right.txt", "output.txt", "500");
+        args = createArgsArray("english_words.txt", "special_characters_02_short.txt", "output.txt", "500");
         try {
             App.parseArgs(args);
         } catch (IllegalArgumentException e) {
