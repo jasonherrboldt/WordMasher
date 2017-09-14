@@ -195,9 +195,9 @@ public class App {
      * Get a list of words to mash from englishWords.
      *
      * @param numberOfWordsToMash The number of words to mash
-     * @param englishWords englishWords mock
-     * @param usedEnglishWords_ usedEnglishWords mock
-     * @return A list of words to mash
+     * @param englishWords        englishWords mock
+     * @param usedEnglishWords_   usedEnglishWords mock (can be null if not unit testing)
+     * @return                    A list of words to mash
      */
     static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
                                        List<String> usedEnglishWords_) throws IllegalStateException {
@@ -213,8 +213,8 @@ public class App {
             throw new IllegalStateException(errorMessage);
         }
 
-        // Allow unit test to inject its own copy of usedEnglishWords. Otherwise use App class member variable.
-        List<String> localUsedEnglishWords = new ArrayList<>();
+        // Allow unit test to inject its own copy of usedEnglishWords. Otherwise use App's class member variable.
+        List<String> localUsedEnglishWords;
         if(usedEnglishWords_ != null) {
             localUsedEnglishWords = usedEnglishWords_;
         } else {
@@ -241,7 +241,7 @@ public class App {
             }
         }
 
-        // Java is pass by value. Update the class member variable with the local copy to maintain state.
+        // Java is pass by value. Update App's class member variable with the local copy to maintain state.
         if(usedEnglishWords_ == null) {
             usedEnglishWords = localUsedEnglishWords;
         }
@@ -310,27 +310,30 @@ public class App {
      *
      * @return a list of frankenwords
      */
-    private static List<String> makeFrankenwords() {
-
+    private static List<String> makeFrankenwords() { // can only be functionally tested
         // Let outputList be an empty list of strings
         List<String> outputList = new ArrayList<>();
         // For numberOfFrankenwordsToCreate
         int numberOfWordsToMash = 0;
-        List<String> wordsToMash = new ArrayList<>();
+        List<String> wordsToMash;
+        String frankenword;
         for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
             // Let numberOfWordsToMash be either 2 or 3 (even chance)
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
             // Let wordsToMash be getWordsToMash(numberOfWordsToMash)
-            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, usedEnglishWords); // oops; java is pass by value
+            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, usedEnglishWords);
             // Let frankenword be makeFrankenword(wordsToMash)
+            frankenword = makeFrankenword(wordsToMash);
             // If frankenword is null or empty
-                // Log the error
-                // Throw an illegal state exception
+            if(frankenword == null || frankenword.isEmpty()) {
+                errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
+            }
             // Add frankenword to outputList
-            // Return outputList
+            outputList.add(frankenword);
         }
-
-
+        // Return outputList
         return outputList;
     }
 
@@ -340,7 +343,7 @@ public class App {
      * @param wordsToMash The words to mash
      * @return            The frankenword
      */
-    private String makeFrankenword(List<String> wordsToMash) { // can only be functionally tested
+    private static String makeFrankenword(List<String> wordsToMash) { // can only be functionally tested
         if(wordsToMash == null || wordsToMash.size() < 2) {
             errorMessage = "Error: App.makeFrankenword received an illegal argument.";
             logEntry(errorMessage);
