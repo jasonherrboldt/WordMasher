@@ -102,7 +102,7 @@ public class App {
      *
      * @param frankenwords The list of frankenwords to print.
      */
-    private static void printFrankenwords(List<String> frankenwords) { // can only be functionally tested
+    private static void printFrankenwords(List<String> frankenwords) { // can be functionally tested
         if(frankenwords == null || frankenwords.isEmpty()) {
             errorMessage = "Error: App.printFrankenwords received a null or empty list.";
             logEntry(errorMessage);
@@ -245,14 +245,14 @@ public class App {
      * @return                    A list of words to mash
      */
     static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
-                                       List<String> usedEnglishWords_) throws IllegalStateException {
+                                       List<String> usedEnglishWords_) throws IllegalStateException { // tested
         if(numberOfWordsToMash < MIN_WORDS_TO_MASH || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
             errorMessage = "Error: App.getWordsToMash received an illegal int: "
                     + numberOfWordsToMash + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        if(listIsNullOrEmpty(englishWords)) {
+        if(englishWords == null || englishWords.isEmpty()) {
             errorMessage = "Error: getWordsToMash received a null or empty list of English words.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -340,7 +340,7 @@ public class App {
     /**
      * Open a new logging session. Create a new /log directory as needed.
      */
-    private static void startLog() { // not tested
+    private static void startLog() { // can be functionally tested
         File dir = new File("logs");
         if(!dir.exists()) {
             if(!dir.mkdir()) {
@@ -355,7 +355,7 @@ public class App {
      *
      * @return a list of frankenwords
      */
-    private static List<String> makeFrankenwords() { // can only be functionally tested
+    private static List<String> makeFrankenwords() { // can be functionally tested
         List<String> outputList = new ArrayList<>();
         int numberOfWordsToMash;
         List<String> wordsToMash;
@@ -380,7 +380,7 @@ public class App {
      * @param wordsToMash The words to mash
      * @return            The frankenword
      */
-    private static String makeFrankenword(List<String> wordsToMash) { // can only be functionally tested
+    private static String makeFrankenword(List<String> wordsToMash) { // can be functionally tested
         if(wordsToMash == null || wordsToMash.size() < 2) {
             errorMessage = "Error: App.makeFrankenword received an illegal argument.";
             logEntry(errorMessage);
@@ -410,7 +410,7 @@ public class App {
      * @param frankenword the word to break
      * @return            the broken word
      */
-    static String breakInTwo(String frankenword) {
+    static String breakInTwo(String frankenword) { // tested
         int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
         String substring_A = frankenword.substring(0, randInt);
         String substring_B = frankenword.substring(randInt, frankenword.length());
@@ -436,7 +436,7 @@ public class App {
      *
      * @param log the log entry
      */
-    private static void logEntry(String log) throws IllegalStateException { // not tested
+    private static void logEntry(String log) throws IllegalStateException { // can be functionally tested
         if(log != null && !log.isEmpty()) {
             try {
                 FileWriter fw;
@@ -471,7 +471,7 @@ public class App {
     /**
      * @return today's date in the format YYYY-MM-DD
      */
-    private static String getTodaysDate() { // not tested
+    private static String getTodaysDate() { // can be functionally tested
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -499,7 +499,7 @@ public class App {
      *
      * @param s String to print
      */
-    static void print(String s) { // not tested
+    static void print(String s) {
         System.out.println(s);
     }
 
@@ -674,18 +674,8 @@ public class App {
      * @param max The maximum value of the range (inclusive)
      * @return    The chosen pseudorandom number
      */
-    static int getRandomIntInInclusiveRange(int min, int max) {
+    static int getRandomIntInInclusiveRange(int min, int max) { // tested
         return ThreadLocalRandom.current().nextInt(min, max + 1);
-    }
-
-    /**
-     * Checks to see if a list of objects is null or empty.
-     *
-     * @param list The list to analyze
-     * @return     True if the list is null or empty, false otherwise.
-     */
-    private static boolean listIsNullOrEmpty(List<String> list) { // not tested
-        return list == null || list.isEmpty();
     }
 
     /**
