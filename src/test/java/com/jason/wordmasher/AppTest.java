@@ -505,6 +505,32 @@ public class AppTest extends TestCase {
         assertEquals(capitalized, methodCall);
     }
 
+    /**
+     * Assert App.addWeirdCapitalization returns a string of the correct length.
+     */
+    public void testAddWeirdCapitalization_correctLength() {
+        String test = "universal";
+        String methodCall = App.addWeirdCapitalization(test);
+        assertEquals(test.length(), methodCall.length());
+    }
+
+    /**
+     * Assert App.addWeirdCapitalization returns at least one unique string over a few short iterations.
+     */
+    public void testAddWeirdCapitalization_returnsUniqueString() {
+        boolean mismatchFound = false;
+        String frankenword = "spaceship";
+        String methodCall = "";
+        for(int i = 0; i < 5; i++) {
+            methodCall = App.addWeirdCapitalization(frankenword);
+            if(!methodCall.equals(frankenword)) {
+                mismatchFound = true;
+            }
+        }
+        assert(mismatchFound);
+    }
+
+
 
 
     //**************************//

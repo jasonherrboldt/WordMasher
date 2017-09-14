@@ -534,6 +534,31 @@ public class App {
     }
 
     /**
+     * Adds random capitalization to frankenword.
+     *
+     * @param frankenword The word to analyze
+     * @return            The processed word
+     */
+    static String addWeirdCapitalization(String frankenword) {
+        if(frankenword == null || frankenword.length() < 3) {
+            errorMessage = "Error: App.addWeirdCapitalization received an illegal string.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        frankenword = frankenword.toLowerCase();
+        char[] frankenwordCharArray = frankenword.toCharArray();
+        char[] returnArray = new char[frankenwordCharArray.length];
+        for(int i = 0; i < frankenwordCharArray.length; i++) {
+            if(oneInNChance(4)) {
+                returnArray[i] = Character.toUpperCase(frankenwordCharArray[i]);
+            } else {
+                returnArray[i] = Character.toLowerCase(frankenwordCharArray[i]);
+            }
+        }
+        return String.valueOf(returnArray);
+    }
+
+    /**
      * Convert a list of strings to a char array. Strings in list must have a length of exactly 1.
      *
      * @param list List of single-character strings
