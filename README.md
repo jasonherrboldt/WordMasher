@@ -15,6 +15,13 @@ The program requires 4 arguments at runtime. Arguments must be received in the f
 * Name of output file (see OUTPUT section below)
 * Number of frankenwords to generate {int n | 1 > n < 1001}
 
+## Test-Driven Development
+Test-driven development is very near and dear to my heart. Every method in this project is rigorously unit tested. My approach is to create a rough draft of a method to discover its required inputs and outputs and true intended functionality. Then I create a series of unit tests for the method, which often results in changing the method signature to accept additional parameters for injection. This helps me figure out how to mock any necessary objects, which for the purposes of this exercise consist largely of data structures from Java's util package. 
+
+Of course these tests often fail right out of the gate, which leads me to refine the methods until the tests pass. There are a number of methods that employ the use of pseudorandom number generators, for example how to decide which English words to select or how they should be split up. For these kinds of methods I wrapped the unit tests in a loop and made sure all possible method outcomes are captured, usually in a Set object. 
+
+My favorite thing about test-driven development is that, once I'm done rigorously testing all my methods, I can simply click them together and watch the whole thing run smoothly the first time! (Well, or close to the first time.) 
+
 ## High Level Design
 The program starts by opening a file containing a large number of English words and reading them into memory. It will then select an integer at random that is either 2 or 3.
 
