@@ -97,29 +97,93 @@ public class App {
                 + " for more information.");
     }
 
+
+    //*******************//
+    //***** LOGGING *****//
+    //*******************//
+
+
     /**
-     * Prints a list of frankenwords to the output file. (Will overwrite existing file of the same name.)
-     *
-     * @param frankenwords The list of frankenwords to print.
+     * Open a new logging session. Create a new /log directory as needed.
      */
-    private static void printFrankenwords(List<String> frankenwords) { // can be functionally tested
-        if(frankenwords == null || frankenwords.isEmpty()) {
-            errorMessage = "Error: App.printFrankenwords received a null or empty list.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        try {
-            PrintWriter out = new PrintWriter(outputFile);
-            for(String s : frankenwords) {
-                out.println(s);
+    private static void startLog() { // can be functionally tested
+        File dir = new File("logs");
+        if(!dir.exists()) {
+            if(!dir.mkdir()) {
+                print("WARN: unable to create directory 'logs'.");
             }
-            out.close();
-        } catch (IOException e) {
-            errorMessage = "Error: App.printFrankenwords threw an IO exception: " + e.getMessage();
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
+        }
+        logEntry("New log started.");
+    }
+
+    /**
+     * Add a new log entry. Create a new document as needed, or append to an existing one.
+     *
+     * @param log the log entry
+     */
+    private static void logEntry(String log) throws IllegalStateException { // can be functionally tested
+        if(log != null && !log.isEmpty()) {
+            try {
+                FileWriter fw;
+                BufferedWriter bw;
+                PrintWriter out;
+                String time;
+                if (!LOG_FILE.exists()){
+                    if(LOG_FILE.createNewFile()) {
+                        fw = new FileWriter(LOG_FILE);
+                        bw = new BufferedWriter(fw);
+                        out = new PrintWriter(bw);
+                        time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
+                        out.println(time + " " + log);
+                        out.close();
+                    } else {
+                        print("WARN: Main.logEntry unable to create new log file.");
+                    }
+                } else {
+                    fw = new FileWriter(LOG_FILENAME, true);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
+                    out.println(time + " " + log);
+                    out.close();
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException("App.logEntry threw an IO exception: " + e.getMessage());
+            }
         }
     }
+
+    /**
+     * @return today's date in the format YYYY-MM-DD
+     */
+    private static String getTodaysDate() { // can be functionally tested
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1; // months are zero-indexed
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String monthStr = "";
+        if(month < 10) {
+            monthStr = "0" + Integer.toString(month);
+        } else {
+            monthStr = Integer.toString(month);
+        }
+
+        String dayStr = "";
+        if(day < 10) {
+            dayStr = "0" + Integer.toString(day);
+        } else {
+            dayStr = Integer.toString(day);
+        }
+        return Integer.toString(year) + "-" + monthStr + "-" + dayStr;
+    }
+
+
+    //********************************//
+    //***** PARSING PROGRAM ARGS *****//
+    //********************************//
+
 
     /**
      * Validates and parses program arguments.
@@ -177,6 +241,7 @@ public class App {
         logEntry("Program arguments validated and parsed.");
     }
 
+
     /**
      * Verifies specified file exists.
      *
@@ -187,6 +252,7 @@ public class App {
         File file = new File(fileName);
         return file.exists();
     }
+
 
     /**
      * Reads contents of a file into a list of strings.
@@ -211,6 +277,7 @@ public class App {
         return returnList;
     }
 
+
     /**
      * Reads contents of a file into a char array. Blows up if any of the lines in the file have length > 1.
      *
@@ -234,6 +301,34 @@ public class App {
         }
         logEntry("The file " + file.getName() + " has been read into a char array.");
         return returnArray;
+    }
+
+
+
+
+
+    /**
+     * Prints a list of frankenwords to the output file. (Will overwrite existing file of the same name.)
+     *
+     * @param frankenwords The list of frankenwords to print.
+     */
+    private static void printFrankenwords(List<String> frankenwords) { // can be functionally tested
+        if(frankenwords == null || frankenwords.isEmpty()) {
+            errorMessage = "Error: App.printFrankenwords received a null or empty list.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        try {
+            PrintWriter out = new PrintWriter(outputFile);
+            for(String s : frankenwords) {
+                out.println(s);
+            }
+            out.close();
+        } catch (IOException e) {
+            errorMessage = "Error: App.printFrankenwords threw an IO exception: " + e.getMessage();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
     }
 
     /**
@@ -338,19 +433,6 @@ public class App {
     }
 
     /**
-     * Open a new logging session. Create a new /log directory as needed.
-     */
-    private static void startLog() { // can be functionally tested
-        File dir = new File("logs");
-        if(!dir.exists()) {
-            if(!dir.mkdir()) {
-                print("WARN: unable to create directory 'logs'.");
-            }
-        }
-        logEntry("New log started.");
-    }
-
-    /**
      * Make a list of frankenwords using getWordsToMash.
      *
      * @return a list of frankenwords
@@ -429,69 +511,6 @@ public class App {
         Random r = new Random();
         char randChar = alphabet.charAt(r.nextInt(N));
         return Character.toString(randChar);
-    }
-
-    /**
-     * Add a new log entry. Create a new document as needed, or append to an existing one.
-     *
-     * @param log the log entry
-     */
-    private static void logEntry(String log) throws IllegalStateException { // can be functionally tested
-        if(log != null && !log.isEmpty()) {
-            try {
-                FileWriter fw;
-                BufferedWriter bw;
-                PrintWriter out;
-                String time;
-                if (!LOG_FILE.exists()){
-                    if(LOG_FILE.createNewFile()) {
-                        fw = new FileWriter(LOG_FILE);
-                        bw = new BufferedWriter(fw);
-                        out = new PrintWriter(bw);
-                        time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
-                        out.println(time + " " + log);
-                        out.close();
-                    } else {
-                        print("WARN: Main.logEntry unable to create new log file.");
-                    }
-                } else {
-                    fw = new FileWriter(LOG_FILENAME, true);
-                    bw = new BufferedWriter(fw);
-                    out = new PrintWriter(bw);
-                    time = new SimpleDateFormat("kk:mm:ss:SSS").format(new Date());
-                    out.println(time + " " + log);
-                    out.close();
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("App.logEntry threw an IO exception: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * @return today's date in the format YYYY-MM-DD
-     */
-    private static String getTodaysDate() { // can be functionally tested
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1; // months are zero-indexed
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String monthStr = "";
-        if(month < 10) {
-            monthStr = "0" + Integer.toString(month);
-        } else {
-            monthStr = Integer.toString(month);
-        }
-
-        String dayStr = "";
-        if(day < 10) {
-            dayStr = "0" + Integer.toString(day);
-        } else {
-            dayStr = Integer.toString(day);
-        }
-        return Integer.toString(year) + "-" + monthStr + "-" + dayStr;
     }
 
     /**

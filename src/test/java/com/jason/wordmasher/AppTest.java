@@ -563,11 +563,9 @@ public class AppTest extends TestCase {
     }
 
 
-
     //**************************//
     //***** HELPER METHODS *****//
     //**************************//
-
 
 
     /**
