@@ -180,7 +180,7 @@ public class AppTest extends TestCase {
             fail("testReadFileIntoCharArray was unable to populate mockList.");
         } else {
             File mockFile = createFileWithStringList(mockList, "mock.txt");
-            char[] mockListCharArray = App.convertStringListToCharArray(mockList);
+            char[] mockListCharArray = convertStringListToCharArray(mockList);
             char[] methodCall = App.readFileIntoCharArray(mockFile);
             if(mockListCharArray.length != methodCall.length) {
                 if (!mockFile.delete()) {
@@ -393,7 +393,7 @@ public class AppTest extends TestCase {
     public void testConvertStringListToCharArray() {
         mockList = createDummyStringList(10); // "1", "2", "3", ...
         try {
-            char[] testRun = App.convertStringListToCharArray(mockList);
+            char[] testRun = convertStringListToCharArray(mockList);
             if(testRun.length != mockList.size()) {
                 fail("testRun.length != mockList.size(). Cannot proceed.");
             }
@@ -607,6 +607,33 @@ public class AppTest extends TestCase {
         } catch (IOException e) {
             throw new IllegalStateException("Error: App.writeStringListToFile threw an IO exception.");
         }
+    }
+
+    /**
+     * Convert a list of strings to a char array. Strings in list must have a length of exactly 1.
+     *
+     * @param list List of single-character strings
+     * @return     Converted char array
+     */
+    private char[] convertStringListToCharArray(List<String> list) throws IllegalStateException { // tested
+        if(list == null || list.isEmpty()) {
+            throw new IllegalStateException("Error: App.convertStringListToCharArray received a null or empty " +
+                    "list argument.");
+        }
+        char[] charArray = new char[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            String thisStr = list.get(i);
+            if(thisStr.length() != 1) {
+                throw new IllegalStateException("Error: App.convertStringListToCharArray received a list with a " +
+                        "string of length != 1: " + thisStr);
+            }
+            /*
+            The above if statement forbids list.get(i) from returning anything other than a string of length 1.
+            So no index out of bounds exceptions are possible below.
+             */
+            charArray[i] = list.get(i).charAt(0);
+        }
+        return charArray;
     }
 
     /**

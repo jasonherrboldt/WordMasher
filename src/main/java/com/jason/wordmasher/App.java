@@ -657,36 +657,6 @@ public class App {
     }
 
     /**
-     * Convert a list of strings to a char array. Strings in list must have a length of exactly 1.
-     *
-     * @param list List of single-character strings
-     * @return     Converted char array
-     */
-    static char[] convertStringListToCharArray(List<String> list) throws IllegalStateException { // tested
-        if(list == null || list.isEmpty()) {
-            errorMessage = "Error: App.convertStringListToCharArray received a null or empty list argument.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        char[] charArray = new char[list.size()];
-        for(int i = 0; i < list.size(); i++) {
-            String thisStr = list.get(i);
-            if(thisStr.length() != 1) {
-                errorMessage = "Error: App.convertStringListToCharArray received a list with a string of " +
-                        "length != 1: " + thisStr;
-                logEntry(errorMessage);
-                throw new IllegalStateException(errorMessage);
-            }
-            /*
-            The above if statement forbids list.get(i) from returning anything other than a string of length 1.
-            So no index out of bounds exceptions are possible below.
-             */
-            charArray[i] = list.get(i).charAt(0);
-        }
-        return charArray;
-    }
-
-    /**
      * Generates a pseudorandom number in a specified INCLUSIVE range.
      *
      * @param min The minimum value of the range (inclusive)
