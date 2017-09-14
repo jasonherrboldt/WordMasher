@@ -463,7 +463,7 @@ public class App {
      * @return                  The augmented frankenword
      */
     static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
-            throws IllegalStateException { // todo: not tested
+            throws IllegalStateException { // tested
         if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
                 || specialCharacters.length == 0) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
@@ -490,44 +490,47 @@ public class App {
         }
 
         // Insert special characters into random and distinct indices of the frankenword.
-        // Let usedIndices be an empty int list
         List<Integer> usedIndices = new ArrayList<>();
-        // Let int i = 0
         int i = 0;
-        // Let int whileCount = 0
         int whileCount = 0;
         StringBuilder frankenBuilder = new StringBuilder(frankenWord);
-        // While i < charsToUse
         while(i < charsToUse) {
-            // If whileCount > MAX_WHILE
             if(whileCount > MAX_WHILE) {
-                // Log the error
-                // Throw an illegal state exception
                 errorMessage = "Error: App.addSpecialCharacters while loop exceeded " + MAX_WHILE + " iterations.";
                 logEntry(errorMessage);
                 throw new IllegalStateException(errorMessage);
             }
-            // Let j be a random int in the range [0, frankenword.size - 1]
             int j = getRandomIntInInclusiveRange(0, frankenWord.length() - 1);
-            // If j is not in usedIndices
             if(!usedIndices.contains(j)) {
-                // If i > randChars.size or if j > frankenword.length
                 if(i > randChars.length || j > frankenWord.length()) {
-                    // Log the error
-                    // Throw an illegal state exception
                     errorMessage = "Error: App.addSpecialCharacters obtained illegal values for either i or j.";
                     logEntry(errorMessage);
                     throw new IllegalStateException(errorMessage);
                 }
-                // Let the jth index of frankenword be randChars.get(i)
                 frankenBuilder.setCharAt(j, randChars[i]);
-                // Add j to usedIndices
                 usedIndices.add(j);
                 i++;
             }
             whileCount++;
         }
         return frankenBuilder.toString();
+    }
+
+    /**
+     * Adds standard capitalization to frankenword, e.g. "eclipse" --> "Eclipse".
+     *
+     * @param frankenword The word to process
+     * @return            The capitalized word
+     */
+    static String addStandardCapitalization(String frankenword) {
+        if(frankenword == null || frankenword.length() < 3) {
+            errorMessage = "Error: App.addStandardCapitalization received an illegal string.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        String firstLetter = frankenword.substring(0, 1).toUpperCase();
+        String restOfLetters = frankenword.substring(1).toLowerCase();
+        return firstLetter + restOfLetters;
     }
 
     /**

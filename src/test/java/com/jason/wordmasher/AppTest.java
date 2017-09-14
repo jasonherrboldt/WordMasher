@@ -495,6 +495,16 @@ public class AppTest extends TestCase {
         assertFalse(isAthruZ("^6r"));
     }
 
+    /**
+     * Asserts App.addStandardCapitalization correctly capitalizes words.
+     */
+    public void testAddStandardCapitalization() {
+        String allLower = "cosmos";
+        String capitalized = "Cosmos";
+        String methodCall = App.addStandardCapitalization(allLower);
+        assertEquals(capitalized, methodCall);
+    }
+
 
 
     //**************************//
