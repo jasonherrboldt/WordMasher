@@ -39,7 +39,7 @@ public class App {
             "illegal program arguments.";
     private static List<String> englishWords;
     private static char[] specialCharacters;
-    private static List<String> usedEnglishWords;
+    private static List<String> usedEnglishWords = new ArrayList<>();
     private static String errorMessage;
 
     public static void main(String[] args) {
@@ -85,6 +85,19 @@ public class App {
         String exceptionMessage = e.getMessage();
         if(exceptionMessage != null && !exceptionMessage.isEmpty()) {
             logEntry(exceptionMessage);
+        }
+        Throwable cause = e.getCause();
+        if(cause != null) {
+            logEntry(cause.toString());
+            logEntry(cause.getMessage());
+        }
+        StackTraceElement[] stacktrace = e.getStackTrace();
+        if(stacktrace != null && stacktrace.length > 0) {
+            logEntry("*** BEGIN STACKTRACE ***");
+            for(StackTraceElement s : stacktrace) {
+                logEntry(s.toString());
+            }
+            logEntry("*** END STACKTRACE ***");
         }
         logEntry(e.getMessage());
         String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
@@ -336,7 +349,7 @@ public class App {
     private static List<String> makeFrankenwords() { // can only be functionally tested
         // Let outputList be an empty list of strings
         List<String> outputList = new ArrayList<>();
-        int numberOfWordsToMash = 0;
+        int numberOfWordsToMash;
         List<String> wordsToMash;
         String frankenword;
         // For numberOfFrankenwordsToCreate
@@ -344,7 +357,7 @@ public class App {
             // Let numberOfWordsToMash be either 2 or 3 (even chance)
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
             // Let wordsToMash be getWordsToMash(numberOfWordsToMash)
-            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, usedEnglishWords);
+            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
             // Let frankenword be makeFrankenword(wordsToMash)
             frankenword = makeFrankenword(wordsToMash);
             // If frankenword is null or empty
