@@ -1,5 +1,5 @@
 # WordMasher
-A Java coding exercise that mashes parts of different words together in a random fashion.
+A Java coding exercise that mashes parts of different words together in a random fashion to create interesting "frankenwords".
 
 The basic idea is to write a program that generates a list of frankenwords. A frankenword is parts of two or three different words squashed together, with a possible mix of special characters like underscore, numbers, hashtag, etc. 
 
