@@ -196,32 +196,41 @@ public class App {
      *
      * @param numberOfWordsToMash The number of words to mash
      * @param englishWords englishWords mock
-     * @param usedEnglishWords usedEnglishWords mock
+     * @param usedEnglishWords_ usedEnglishWords mock
      * @return A list of words to mash
      */
     static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
-                                       List<String> usedEnglishWords) throws IllegalStateException {
+                                       List<String> usedEnglishWords_) throws IllegalStateException {
         if(numberOfWordsToMash < MIN_WORDS_TO_MASH || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
             errorMessage = "Error: App.getWordsToMash received an illegal int: "
                     + numberOfWordsToMash + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        if(listIsNullOrEmpty(englishWords) || usedEnglishWords == null) {
-            errorMessage = "Error: getWordsToMash received at least one string list that is null or empty.";
+        if(listIsNullOrEmpty(englishWords)) {
+            errorMessage = "Error: getWordsToMash received a null or empty list of English words.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
+
+        // Allow unit test to inject its own copy of usedEnglishWords. Otherwise use App class member variable.
+        List<String> localUsedEnglishWords = new ArrayList<>();
+        if(usedEnglishWords_ != null) {
+            localUsedEnglishWords = usedEnglishWords_;
+        } else {
+            localUsedEnglishWords = usedEnglishWords;
+        }
+
         List<String> wordsToMash = new ArrayList<>();
         int i = 0;
         while(wordsToMash.size() < numberOfWordsToMash) {
             int randInt = getRandomIntInInclusiveRange(0, englishWords.size() - 1);
             String candidateWord = englishWords.get(randInt);
-            if(!usedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
+            if(!localUsedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
                 if(candidateWord.length() > MIN_CANDIDATE_WORD_LENGTH && candidateWord.length()
                         < MAX_CANDIDATE_WORD_LENGTH) {
                     wordsToMash.add(candidateWord);
-                    usedEnglishWords.add(candidateWord);
+                    localUsedEnglishWords.add(candidateWord);
                 }
             }
             i++;
@@ -230,6 +239,11 @@ public class App {
                 logEntry(errorMessage);
                 throw new IllegalStateException(errorMessage);
             }
+        }
+
+        // Java is pass by value. Update the class member variable with the local copy to maintain state.
+        if(usedEnglishWords_ == null) {
+            usedEnglishWords = localUsedEnglishWords;
         }
         return wordsToMash;
     }
@@ -292,12 +306,41 @@ public class App {
     }
 
     /**
+     * Make a list of frankenwords using getWordsToMash.
      *
-     *
-     * @param wordsToMash
-     * @return
+     * @return a list of frankenwords
      */
-    String makeFrankenword(List<String> wordsToMash) {
+    private static List<String> makeFrankenwords() {
+
+        // Let outputList be an empty list of strings
+        List<String> outputList = new ArrayList<>();
+        // For numberOfFrankenwordsToCreate
+        int numberOfWordsToMash = 0;
+        List<String> wordsToMash = new ArrayList<>();
+        for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
+            // Let numberOfWordsToMash be either 2 or 3 (even chance)
+            numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
+            // Let wordsToMash be getWordsToMash(numberOfWordsToMash)
+            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, usedEnglishWords); // oops; java is pass by value
+            // Let frankenword be makeFrankenword(wordsToMash)
+            // If frankenword is null or empty
+                // Log the error
+                // Throw an illegal state exception
+            // Add frankenword to outputList
+            // Return outputList
+        }
+
+
+        return outputList;
+    }
+
+    /**
+     * Make a frankenword from a list of words to mash.
+     *
+     * @param wordsToMash The words to mash
+     * @return            The frankenword
+     */
+    private String makeFrankenword(List<String> wordsToMash) { // can only be functionally tested
         if(wordsToMash == null || wordsToMash.size() < 2) {
             errorMessage = "Error: App.makeFrankenword received an illegal argument.";
             logEntry(errorMessage);
@@ -308,17 +351,25 @@ public class App {
         // If frankenword has length < 3
         if(frankenword.length() < 3) {
             // Append one random letter to the end of frankenword
+            frankenword += getRandomCharacter();
 
         }
         // If 1 in 6 random boolean
+        if(oneInNChance(6)) {
             // Let frankenword be addSpecialCharacters(frankenword)
+            frankenword = addSpecialCharacters(frankenword, specialCharacters);
+        }
         // If 1 in 2 random boolean
+        if(oneInNChance(2)) {
             // Let frankenword be addStandardCapitalization(frankenword)
+            frankenword = addStandardCapitalization(frankenword);
         // Else
+        } else {
             // Let frankenword be addWeirdCapitalization(frankenword)
+            frankenword = addWeirdCapitalization(frankenword);
+        }
         // Return frankenword
-
-        return null;
+        return frankenword;
     }
 
     /**
@@ -326,7 +377,7 @@ public class App {
      *
      * @return a random string character.
      */
-    public static String getRandomCharacter() {
+    public static String getRandomCharacter() { // tested
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
         int N = alphabet.length();
         Random r = new Random();
@@ -411,7 +462,7 @@ public class App {
      * @param listName The name of the list
      * @param n        How many items of the list to print
      */
-    static void printNStringsFromList(List<String> list, String listName, int n)
+    private static void printNStringsFromList(List<String> list, String listName, int n)
             throws IllegalStateException { // not tested
         if(n > list.size()) {
             errorMessage = "Error: Unable to print list. List has " + list.size() + " elements, and n = " + n + ".";
@@ -565,7 +616,7 @@ public class App {
      * @param frankenword The word to process
      * @return            The capitalized word
      */
-    static String addStandardCapitalization(String frankenword) {
+    static String addStandardCapitalization(String frankenword) { // tested
         if(frankenword == null || frankenword.length() < 3) {
             errorMessage = "Error: App.addStandardCapitalization received an illegal string.";
             logEntry(errorMessage);
@@ -582,7 +633,7 @@ public class App {
      * @param frankenword The word to analyze
      * @return            The processed word
      */
-    static String addWeirdCapitalization(String frankenword) {
+    static String addWeirdCapitalization(String frankenword) { // tested
         if(frankenword == null || frankenword.length() < 3) {
             errorMessage = "Error: App.addWeirdCapitalization received an illegal string.";
             logEntry(errorMessage);
