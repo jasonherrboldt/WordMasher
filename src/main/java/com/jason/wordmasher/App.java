@@ -398,7 +398,39 @@ public class App {
         if(oneInNChance(5)) {
             frankenword = addSpecialCharacters(frankenword, specialCharacters);
         }
+        if(oneInNChance(6)) {
+            frankenword = breakInTwo(frankenword);
+        }
         return frankenword;
+    }
+
+    /**
+     * Inserts a space int a random index of a frankenword, effectively breaking it into two different words.
+     *
+     * @param frankenword the word to break
+     * @return            the broken word
+     */
+    public static String breakInTwo(String frankenword) {
+        int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
+
+        /*
+             Example:
+           String str= new String("quick brown fox jumps over the lazy dog");
+           System.out.println("Substring starting from index 15:");
+           System.out.println(str.substring(15));
+           System.out.println("Substring starting from index 15 and ending at 20:");
+           System.out.println(str.substring(15, 20));
+
+            Substring starting from index 15:
+             jumps over the lazy dog
+            Substring starting from index 15 and ending at 20:
+             jump
+         */
+
+        String substring_A = frankenword.substring(0, randInt);
+        String substring_B = frankenword.substring(randInt, frankenword.length());
+
+        return substring_A + " " + substring_B;
     }
 
     /**
@@ -406,7 +438,7 @@ public class App {
      *
      * @return a random string character.
      */
-    public static String getRandomCharacter() { // tested
+    static String getRandomCharacter() { // tested
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
         int N = alphabet.length();
         Random r = new Random();

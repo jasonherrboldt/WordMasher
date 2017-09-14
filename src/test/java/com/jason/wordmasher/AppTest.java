@@ -510,7 +510,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Assert App.addWeirdCapitalization returns a string of the correct length.
+     * Asserts App.addWeirdCapitalization returns a string of the correct length.
      */
     public void testAddWeirdCapitalization_correctLength() {
         String test = "universal";
@@ -519,7 +519,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Assert App.addWeirdCapitalization returns at least one unique string over a few short iterations.
+     * Asserts App.addWeirdCapitalization returns at least one unique string over a few short iterations.
      */
     public void testAddWeirdCapitalization_returnsUniqueString() {
         boolean mismatchFound = false;
@@ -535,7 +535,7 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Assert App.getRandomCharacter returns all possible random letters of the alphabet over several iterations.
+     * Asserts App.getRandomCharacter returns all possible random letters of the alphabet over several iterations.
      */
     public void testGetRandomCharacter() {
         Set<String> letters = new HashSet<>();
@@ -545,6 +545,34 @@ public class AppTest extends TestCase {
         assertEquals(letters.size(), 26);
     }
 
+    /**
+     * Asserts App.breakInTwo returns a word of the same length + 1 over several iterations.
+     */
+    public void testBreakInTwo_plusOneLength() {
+        for(int i = 0; i < 100; i++) {
+            String testWord = "laser";
+            String methodCall = App.breakInTwo(testWord);
+            assertEquals(testWord.length() + 1, methodCall.length());
+        }
+    }
+
+    /**
+     * Asserts App.breakInTwo returns a word with exactly one space (" ") over several iterations.
+     */
+    public void testBreakInTwo_spaceCharFound() {
+        for(int i = 0; i < 100; i++) {
+            String testWord = "laser";
+            String methodCall = App.breakInTwo(testWord);
+            char[] ch = methodCall.toCharArray();
+            int spacesFound = 0;
+            for(int j = 0; j < ch.length; j++) {
+                if(ch[j] == ' ') {
+                    spacesFound++;
+                }
+            }
+            assertEquals(spacesFound, 1);
+        }
+    }
 
 
 
