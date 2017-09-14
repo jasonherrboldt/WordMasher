@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -99,7 +99,7 @@ public class AppTest extends TestCase {
     public void testParseArgs_emptyArgFiles() {
         String emptyFileName = "empty.txt";
         List<String> emptyList = new ArrayList<>();
-        File tempFile = App.createFileWithStringList(emptyList, emptyFileName);
+        File tempFile = createFileWithStringList(emptyList, emptyFileName);
         if(!tempFile.canRead()) {
             fail("Unable to read temporary test file " + tempFile.getName());
         }
@@ -155,20 +155,6 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.validateArgs does not throw an exception when given valid program arguments.
-     *
-     * WILL FAIL IF THE FIRST TWO STRINGS IN ARGS DO NOT EXIST IN PROJECT HOME DIRECTORY.
-     */
-    public void testParseArgs_allParsableArguments() {
-        args = createArgsArray("english_words.txt", "special_characters_02_short.txt", "output.txt", "500");
-        try {
-            App.parseArgs(args);
-        } catch (IllegalArgumentException e) {
-            fail("parseArgs should not have thrown an illegal argument exception.");
-        }
-    }
-
-    /**
      * Asserts App.readFileIntoListOfStrings returns a list that reflects the file data.
      */
     public void testReadFileIntoListOfStrings_correctData() {
@@ -176,7 +162,7 @@ public class AppTest extends TestCase {
         if (mockList == null || mockList.isEmpty()) {
             fail("testReadFileIntoListOfStrings_correctData was unable to populate mockList.");
         } else {
-            File mockFile = App.createFileWithStringList(mockList, "mock.txt");
+            File mockFile = createFileWithStringList(mockList, "mock.txt");
             List<String> methodCall = App.readFileIntoListOfStrings(mockFile);
             assertEquals(methodCall, mockList);
             if (!mockFile.delete()) {
@@ -193,7 +179,7 @@ public class AppTest extends TestCase {
         if (mockList == null || mockList.isEmpty()) {
             fail("testReadFileIntoCharArray was unable to populate mockList.");
         } else {
-            File mockFile = App.createFileWithStringList(mockList, "mock.txt");
+            File mockFile = createFileWithStringList(mockList, "mock.txt");
             char[] mockListCharArray = App.convertStringListToCharArray(mockList);
             char[] methodCall = App.readFileIntoCharArray(mockFile);
             if(mockListCharArray.length != methodCall.length) {
@@ -729,6 +715,47 @@ public class AppTest extends TestCase {
      */
     private boolean isAthruZ(String s) {
         return s.matches("^[a-zA-Z]+$");
+    }
+
+    /**
+     * Writes a list of strings to a newly-created file. Writes over files if they already exist.
+     *
+     * @param list     List of strings to print
+     * @param fileName Name of file to create
+     * @return         Newly-created file
+     */
+    static File createFileWithStringList(List<String> list, String fileName)
+            throws IllegalStateException { // not tested
+        try {
+            FileWriter fw;
+            BufferedWriter bw;
+            PrintWriter out;
+            File file = new File(fileName);
+            if(!file.exists()) {
+                if(file.createNewFile()) {
+                    fw = new FileWriter(file);
+                    bw = new BufferedWriter(fw);
+                    out = new PrintWriter(bw);
+                    for(String s : list) {
+                        out.println(s);
+                    }
+                    out.close();
+                } else {
+                    throw new IllegalStateException("Error: App.writeStringListToFile was unable to create a new file.");
+                }
+            } else {
+                fw = new FileWriter(file, true);
+                bw = new BufferedWriter(fw);
+                out = new PrintWriter(bw);
+                for(String s : list) {
+                    out.println(s);
+                }
+                out.close();
+            }
+            return file;
+        } catch (IOException e) {
+            throw new IllegalStateException("Error: App.writeStringListToFile threw an IO exception.");
+        }
     }
 }
 
