@@ -695,7 +695,7 @@ public class App {
         char[] frankenwordCharArray = frankenword.toCharArray();
         char[] returnArray = new char[frankenwordCharArray.length];
         for(int i = 0; i < frankenwordCharArray.length; i++) {
-            if(oneInNChance(4)) {
+            if(oneInNChance(7)) {
                 returnArray[i] = Character.toUpperCase(frankenwordCharArray[i]);
             } else {
                 returnArray[i] = Character.toLowerCase(frankenwordCharArray[i]);
