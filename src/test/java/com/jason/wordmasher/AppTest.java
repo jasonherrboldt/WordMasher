@@ -158,7 +158,7 @@ public class AppTest extends TestCase {
      * Asserts App.validateArgs does not throw an exception when given valid program arguments.
      */
     public void testParseArgs_allParsableArguments() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "500");
+        args = createArgsArray("english_words.txt", "special_characters_02_just_right.txt", "output.txt", "500");
         try {
             App.parseArgs(args);
         } catch (IllegalArgumentException e) {
@@ -496,13 +496,17 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.addStandardCapitalization correctly capitalizes words.
+     * Asserts App.addStandardCapitalization turns "coSMos" into both "Cosmos" and "cosmos".
      */
     public void testAddStandardCapitalization() {
-        String allLower = "cosmos";
-        String capitalized = "Cosmos";
-        String methodCall = App.addStandardCapitalization(allLower);
-        assertEquals(capitalized, methodCall);
+        String allLower = "coSMos";
+        Set<String> words = new HashSet<>();
+        for(int i = 0; i < 10; i++) {
+            words.add(App.addStandardCapitalization(allLower));
+        }
+        assertEquals(words.size(), 2);
+        assert(words.contains("Cosmos"));
+        assert(words.contains("cosmos"));
     }
 
     /**

@@ -35,38 +35,27 @@ public class App {
     static final int MAX_WORDS_TO_MASH = 10;
     private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
     private static final int MIN_WORDS_TO_MASH = 1;
-    private static final String PARSE_ARGS_ERROR_MESSAGE = "App.parseArgs encountered one or more " +
-            "illegal program arguments.";
+    private static final String PARSE_ARGS_ERROR_MESSAGE =
+            "App.parseArgs encountered one or more illegal program arguments.";
     private static List<String> englishWords;
     private static char[] specialCharacters;
     private static List<String> usedEnglishWords = new ArrayList<>();
     private static String errorMessage;
 
+    /**
+     * Main program method.
+     *
+     * @param args Program arguments.
+     */
     public static void main(String[] args) {
         startLog();
         try {
             parseArgs(args);
             englishWords = readFileIntoListOfStrings(englishWordsFile);
             specialCharacters = readFileIntoCharArray(specialCharactersFile);
-
-            // debug
-            // printNStringsFromList(englishWords, "englishWords", 10);
-
-            // debug
-            /*
-            List<String> specialCharactersStringList = new ArrayList<>();
-            for(char c : specialCharacters) {
-                specialCharactersStringList.add(Character.toString(c));
-            }
-            printNStringsFromList(specialCharactersStringList, "specialCharactersStringList", 15);
-            */
-
-            // smoke test
             List<String> frankenwords = makeFrankenwords();
-            printNStringsFromList(frankenwords, "frankenwords", frankenwords.size());
-
-            // continue...
-
+            printFrankenwords(frankenwords);
+            print("\nThe output file has been populated!");
             logEntry("Program finished.");
         } catch (Exception e) {
             handleMainException(e);
@@ -79,6 +68,8 @@ public class App {
      * @param e the exception
      */
     private static void handleMainException(Exception e) {
+
+        // Try to print something meaningful to the log.
         if(errorMessage != null && !errorMessage.isEmpty()) {
             logEntry(errorMessage);
         }
@@ -99,10 +90,35 @@ public class App {
             }
             logEntry("*** END STACKTRACE ***");
         }
-        logEntry(e.getMessage());
+
+        // Break the news to the user.
         String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
         print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
                 + " for more information.");
+    }
+
+    /**
+     * Prints a list of frankenwords to the output file. (Will overwrite existing file of the same name.)
+     *
+     * @param frankenwords The list of frankenwords to print.
+     */
+    static void printFrankenwords(List<String> frankenwords) { // can only be functionally tested
+        if(frankenwords == null || frankenwords.isEmpty()) {
+            errorMessage = "Error: App.printFrankenwords received a null or empty list.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        try {
+            PrintWriter out = new PrintWriter(outputFile);
+            for(String s : frankenwords) {
+                out.println(s);
+            }
+            out.close();
+        } catch (IOException e) {
+            errorMessage = "Error: App.printFrankenwords threw an IO exception: " + e.getMessage();
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
     }
 
     /**
@@ -203,25 +219,18 @@ public class App {
      */
     static char[] readFileIntoCharArray(File file) throws IllegalStateException { // tested
         List<String> fileStringList = readFileIntoListOfStrings(file); // Already vetted for empty files.
-        char[] returnArray = new char[fileStringList.size()];
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            int i = 0;
-            while((line = br.readLine()) != null) {
-                if(line.length() > 1) {
-                    errorMessage = "Error: App.readFileIntoCharArray encountered a string in specialCharactersFile " +
-                            "with a length of > 1";
-                    logEntry(errorMessage);
-                    throw new IllegalStateException(errorMessage);
-                }
-                returnArray[i] = line.charAt(0);
-                i++;
+        int fileLength = fileStringList.size();
+        char[] returnArray = new char[fileLength];
+
+        for(int i = 0; i < fileLength; i++) {
+            String s = fileStringList.get(i);
+            if(s.length() != 1 || s.equals("")) {
+                errorMessage = "Error: App.readFileIntoCharArray encountered an illegal string in " +
+                        "specialCharactersFile.";
+                logEntry(errorMessage);
+                throw new IllegalStateException(errorMessage);
             }
-        } catch (IOException e) {
-            errorMessage = "Error: App.readFileIntoCharArray threw an IO exception: " + e.getMessage();
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
+            returnArray[i] = s.charAt(0);
         }
         logEntry("The file " + file.getName() + " has been read into a char array.");
         return returnArray;
@@ -347,29 +356,21 @@ public class App {
      * @return a list of frankenwords
      */
     private static List<String> makeFrankenwords() { // can only be functionally tested
-        // Let outputList be an empty list of strings
         List<String> outputList = new ArrayList<>();
         int numberOfWordsToMash;
         List<String> wordsToMash;
         String frankenword;
-        // For numberOfFrankenwordsToCreate
         for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
-            // Let numberOfWordsToMash be either 2 or 3 (even chance)
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
-            // Let wordsToMash be getWordsToMash(numberOfWordsToMash)
             wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
-            // Let frankenword be makeFrankenword(wordsToMash)
             frankenword = makeFrankenword(wordsToMash);
-            // If frankenword is null or empty
             if(frankenword == null || frankenword.isEmpty()) {
                 errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
                 logEntry(errorMessage);
                 throw new IllegalStateException(errorMessage);
             }
-            // Add frankenword to outputList
             outputList.add(frankenword);
         }
-        // Return outputList
         return outputList;
     }
 
@@ -385,29 +386,18 @@ public class App {
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        // Let frankenword be mashWords(wordsToMash)
         String frankenword = mashWords(wordsToMash);
-        // If frankenword has length < 3
         if(frankenword.length() < 3) {
-            // Append one random letter to the end of frankenword
             frankenword += getRandomCharacter();
-
         }
-        // If 1 in 6 random boolean
-        if(oneInNChance(6)) {
-            // Let frankenword be addSpecialCharacters(frankenword)
-            frankenword = addSpecialCharacters(frankenword, specialCharacters);
-        }
-        // If 1 in 2 random boolean
         if(oneInNChance(2)) {
-            // Let frankenword be addStandardCapitalization(frankenword)
             frankenword = addStandardCapitalization(frankenword);
-        // Else
         } else {
-            // Let frankenword be addWeirdCapitalization(frankenword)
             frankenword = addWeirdCapitalization(frankenword);
         }
-        // Return frankenword
+        if(oneInNChance(5)) {
+            frankenword = addSpecialCharacters(frankenword, specialCharacters);
+        }
         return frankenword;
     }
 
@@ -663,9 +653,13 @@ public class App {
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        String firstLetter = frankenword.substring(0, 1).toUpperCase();
-        String restOfLetters = frankenword.substring(1).toLowerCase();
-        return firstLetter + restOfLetters;
+        if(oneInNChance(2)) {
+            String firstLetter = frankenword.substring(0, 1).toUpperCase();
+            String restOfLetters = frankenword.substring(1).toLowerCase();
+            return firstLetter + restOfLetters;
+        } else {
+            return frankenword.toLowerCase();
+        }
     }
 
     /**
