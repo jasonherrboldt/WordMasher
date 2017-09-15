@@ -542,6 +542,35 @@ public class AppTest extends TestCase {
         }
     }
 
+    /**
+     * Asserts App.breakInThree returns a word of the same length + 2 over several iterations.
+     */
+    public void testBreakInThree_plusOneLength() {
+        for(int i = 0; i < 100; i++) {
+            String testWord = "basement";
+            String methodCall = App.breakInThree(testWord);
+            assertEquals(testWord.length() + 2, methodCall.length());
+        }
+    }
+
+    /**
+     * Asserts App.breakInThree returns a word with exactly two spaces (" ") over several iterations.
+     */
+    public void testBreakInThree_spaceCharFound() {
+        for(int i = 0; i < 100; i++) {
+            String testWord = "basement";
+            String methodCall = App.breakInThree(testWord);
+            char[] ch = methodCall.toCharArray();
+            int spacesFound = 0;
+            for(int j = 0; j < ch.length; j++) {
+                if(ch[j] == ' ') {
+                    spacesFound++;
+                }
+            }
+            assertEquals(spacesFound, 2);
+        }
+    }
+
 
     //**************************//
     //***** HELPER METHODS *****//

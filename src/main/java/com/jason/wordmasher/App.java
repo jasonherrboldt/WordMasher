@@ -380,8 +380,12 @@ public class App {
         if(oneInNChance(5)) {
             frankenword = addSpecialCharacters(frankenword, specialCharacters);
         }
-        if(oneInNChance(6)) {
-            frankenword = breakInTwo(frankenword);
+        if(oneInNChance(4)) {
+            if(frankenword.length() > 6) {
+                frankenword = breakInThree(frankenword);
+            } else {
+                frankenword = breakInTwo(frankenword);
+            }
         }
         return frankenword;
     }
@@ -568,7 +572,7 @@ public class App {
         char[] frankenwordCharArray = frankenword.toCharArray();
         char[] returnArray = new char[frankenwordCharArray.length];
         for(int i = 0; i < frankenwordCharArray.length; i++) {
-            if(oneInNChance(7)) {
+            if(oneInNChance(10)) {
                 returnArray[i] = Character.toUpperCase(frankenwordCharArray[i]);
             } else {
                 returnArray[i] = Character.toLowerCase(frankenwordCharArray[i]);
@@ -694,17 +698,54 @@ public class App {
     }
 
     /**
-     * Inserts a space int a random index of a frankenword, effectively breaking it into two different words.
+     * Inserts a space into a random index of a frankenword, effectively breaking it into two different words.
      *
      * @param frankenword the word to break
      * @return            the broken word
      */
     static String breakInTwo(String frankenword) { // tested
+        if(frankenword == null || frankenword.length() > 6) {
+            errorMessage = "Error: App.breakInTwo received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
         int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
         String substring_A = frankenword.substring(0, randInt);
         String substring_B = frankenword.substring(randInt, frankenword.length());
 
         return substring_A + " " + substring_B;
+    }
+
+    /**
+     * Inserts two spaces into a random index of a frankenword, effectively breaking it into three different words.
+     *
+     * @param frankenword the word to break
+     * @return            the broken word
+     */
+    static String breakInThree(String frankenword) { // todo NOT TESTED
+        if(frankenword == null || frankenword.length() < 7) {
+            errorMessage = "Error: App.breakInThree received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+
+        // A word with 11 letters:
+
+        // | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+        // | L | U | M | B | E | R | J | A | C | K | S |
+
+        // A word with 8 letters:
+
+        // | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+        // | B | A | C | K | S | P | I | N |
+
+        // Split the word somewhere near the middle.
+        int split = getRandomIntInInclusiveRange(3, frankenword.length() - 4);
+
+        String substring_A = breakInTwo(frankenword.substring(0, split));
+        String substring_B = breakInTwo(frankenword.substring(split, frankenword.length()));
+
+        return substring_A + substring_B;
     }
 
     /**
