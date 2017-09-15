@@ -382,7 +382,11 @@ public class App {
         }
         if(oneInNChance(4)) {
             if(frankenword.length() > 6) {
-                frankenword = breakInThree(frankenword);
+                if(oneInNChance(2)) {
+                    frankenword = breakInTwo(frankenword);
+                } else {
+                    frankenword = breakInThree(frankenword);
+                }
             } else {
                 frankenword = breakInTwo(frankenword);
             }
@@ -632,6 +636,51 @@ public class App {
 
 
     /**
+     * Inserts a space into a random index of a frankenword, effectively breaking it into two different words.
+     *
+     * The longest possible mashed word is 9 * 3 = 27.
+     *
+     * @param frankenword the word to break
+     * @return            the broken word
+     */
+    static String breakInTwo(String frankenword) { // tested
+        if(frankenword == null || frankenword.length() < 3 || frankenword.length() > 27) {
+            errorMessage = "Error: App.breakInTwo received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+        int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
+        String substring_A = frankenword.substring(0, randInt);
+        String substring_B = frankenword.substring(randInt, frankenword.length());
+
+        return substring_A + " " + substring_B;
+    }
+
+    /**
+     * Utilizes App.breakInTwo two insert two spaces into a random index of a frankenword, effectively breaking it
+     * into three different words. The smallest possible word sent to breakInTwo has a length of 3, and the longest
+     * has a length of 18.
+     *
+     * @param frankenword the word to break -- must be between 8 and 27 characters long, inclusive.
+     * @return            the broken word
+     */
+    static String breakInThree(String frankenword) { // tested
+        if(frankenword == null || frankenword.length() < 7 || frankenword.length() > 27) {
+            errorMessage = "Error: App.breakInThree received an illegal argument.";
+            logEntry(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+
+        // Split the word somewhere near the middle (tested to be safe).
+        int split = getRandomIntInInclusiveRange(3, frankenword.length() - 4);
+
+        // Send each half of the frankenword to breakInTwo and return the concatenated result.
+        String substring_A = breakInTwo(frankenword.substring(0, split));
+        String substring_B = breakInTwo(frankenword.substring(split, frankenword.length()));
+        return substring_A + substring_B;
+    }
+
+    /**
      * Helper method to override String.substring, which has indices that are inclusive / exclusive.
      * This method has indices that are inclusive / inclusive.
      *
@@ -695,47 +744,6 @@ public class App {
         Random r = new Random();
         char randChar = alphabet.charAt(r.nextInt(N));
         return Character.toString(randChar);
-    }
-
-    /**
-     * Inserts a space into a random index of a frankenword, effectively breaking it into two different words.
-     *
-     * @param frankenword the word to break
-     * @return            the broken word
-     */
-    static String breakInTwo(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() > 6) {
-            errorMessage = "Error: App.breakInTwo received an illegal argument.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        int randInt = getRandomIntInInclusiveRange(1, frankenword.length() - 1);
-        String substring_A = frankenword.substring(0, randInt);
-        String substring_B = frankenword.substring(randInt, frankenword.length());
-
-        return substring_A + " " + substring_B;
-    }
-
-    /**
-     * Inserts two spaces into a random index of a frankenword, effectively breaking it into three different words.
-     *
-     * @param frankenword the word to break
-     * @return            the broken word
-     */
-    static String breakInThree(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() < 7) {
-            errorMessage = "Error: App.breakInThree received an illegal argument.";
-            logEntry(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-
-        // Split the word somewhere near the middle.
-        int split = getRandomIntInInclusiveRange(3, frankenword.length() - 4);
-
-        String substring_A = breakInTwo(frankenword.substring(0, split));
-        String substring_B = breakInTwo(frankenword.substring(split, frankenword.length()));
-
-        return substring_A + substring_B;
     }
 
     /**
