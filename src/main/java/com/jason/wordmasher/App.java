@@ -377,7 +377,7 @@ public class App {
         } else {
             frankenword = addWeirdCapitalization(frankenword);
         }
-        if(oneInNChance(5)) {
+        if(oneInNChance(4)) {
             frankenword = addSpecialCharacters(frankenword, specialCharacters);
         }
         if(oneInNChance(4)) {
@@ -576,7 +576,7 @@ public class App {
         char[] frankenwordCharArray = frankenword.toCharArray();
         char[] returnArray = new char[frankenwordCharArray.length];
         for(int i = 0; i < frankenwordCharArray.length; i++) {
-            if(oneInNChance(10)) {
+            if(oneInNChance(11)) {
                 returnArray[i] = Character.toUpperCase(frankenwordCharArray[i]);
             } else {
                 returnArray[i] = Character.toLowerCase(frankenwordCharArray[i]);
