@@ -722,22 +722,12 @@ public class App {
      * @param frankenword the word to break
      * @return            the broken word
      */
-    static String breakInThree(String frankenword) { // todo NOT TESTED
+    static String breakInThree(String frankenword) { // tested
         if(frankenword == null || frankenword.length() < 7) {
             errorMessage = "Error: App.breakInThree received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-
-        // A word with 11 letters:
-
-        // | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-        // | L | U | M | B | E | R | J | A | C | K | S |
-
-        // A word with 8 letters:
-
-        // | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-        // | B | A | C | K | S | P | I | N |
 
         // Split the word somewhere near the middle.
         int split = getRandomIntInInclusiveRange(3, frankenword.length() - 4);
