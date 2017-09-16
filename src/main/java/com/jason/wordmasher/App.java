@@ -49,6 +49,8 @@ public class App {
     private static final String NUM_TO_PRINT_ARG = "-numtoprint";
     private static final String SPACES_ARG = "-spaces";
     private static boolean SPACES_REQUESTED = false;
+    private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
+            "Please see README for program usage.";
 
     /**
      * Main program method.
@@ -57,16 +59,17 @@ public class App {
      */
     public static void main(String[] args) {
         startLog();
-        try {
-            parseArgs(args);
-            englishWords = readFileIntoListOfStrings(wordsFile);
-            specialCharacters = readFileIntoCharArray(specialCharactersFile);
-            List<String> frankenwords = makeFrankenwords();
-            printFrankenwords(frankenwords);
-            print("\nThe output file has been populated!");
-            logEntry("Program finished.");
-        } catch (Exception e) {
-            handleMainException(e);
+        if(parseArgs(args)) {
+            try {
+                englishWords = readFileIntoListOfStrings(wordsFile);
+                specialCharacters = readFileIntoCharArray(specialCharactersFile);
+                List<String> frankenwords = makeFrankenwords();
+                printFrankenwords(frankenwords);
+                print("\nThe output file has been populated!");
+                logEntry("Program finished.");
+            } catch (Exception e) {
+                handleMainException(e);
+            }
         }
     }
 
@@ -199,7 +202,7 @@ public class App {
      *
      * @param args Program arguments
      */
-    static void parseArgs(String[] args) throws IllegalArgumentException { // todo: testing in progress
+    static boolean parseArgs(String[] args) { // todo: testing in progress
 
         // prepare data structures
         List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
@@ -213,34 +216,41 @@ public class App {
 
         // Make sure a legal number of arguments were received.
         if(!acceptableArgCount.contains(argsList.size())) { // tested
-            logEntry("Error (App.parseArgs): Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
-                    + args.length + ".");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException("App.parseArgs determined that an illegal number of arguments were " +
-                    "received.");
+            errorMessage = "Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
+                    + args.length + ".";
+            logEntry(errorMessage);
+            print(errorMessage);
+//            logEntry("Program terminated");
+//            throw new IllegalArgumentException("App.parseArgs determined that an illegal number of arguments were " +
+//                    "received.");
+            return false;
         }
 
         // Check for illegal arguments.
         if(illegalArgsReceived(argsList)) { // testing handled by illegalArgsReceived
-            logEntry("Error (App.parseArgs): One or more illegal arguments were received.");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            errorMessage = "One or more illegal arguments were received. Please see README for usage.";
+            logEntry(errorMessage);
+            print(errorMessage);
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            return false;
         }
 
         // Make sure minimum required args were received.
         if(!(argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) { // todo: needs testing
-            logEntry("Error (App.parseArgs): The minimum args " + WORDS_FILE_ARG + " and " + NUM_TO_PRINT_ARG +
-                    " were not both found.");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            errorMessage = "The minimum required program arguments " + WORDS_FILE_ARG + " and " + NUM_TO_PRINT_ARG +
+                    " were not both found.";
+            logEntry(errorMessage);
+            print(errorMessage);
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            return false;
         }
 
         // Make sure args appear to be in good order.
         if(!argsAreInGoodOrder(argsList)) { // testing is handled by argsAreInGoodOrder
-            logEntry("Error (App.parseArgs): The args do not appear to be in good order. Please see README for " +
-                    "program usage.");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            logEntry(NIGO_MESSAGE);
+            print(NIGO_MESSAGE);
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            return false;
         }
 
         // Populate class member variables.
@@ -249,10 +259,11 @@ public class App {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
                 wordsFile = makeNewFile(argsList.get(i + 1)); // testing is handled by makeNewFile
                 if(wordsFile == null) {
-                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
-                            "wordsFile.");
+                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate wordsFile.");
                     logEntry("Program terminated");
-                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    print(NIGO_MESSAGE);
+//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    return false;
                 }
             }
             if(argsList.get(i).equals(SPECIAL_CHARS_FILE_ARG)) {
@@ -261,7 +272,9 @@ public class App {
                     logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
                             "specialCharactersFile.");
                     logEntry("Program terminated");
-                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    print(NIGO_MESSAGE);
+//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    return false;
                 }
             }
             if(argsList.get(i).equals(NUM_TO_PRINT_ARG)) {
@@ -270,7 +283,9 @@ public class App {
                 if(numberOfFrankenwordsToCreate == -1) {
                     logEntry("Error (App.parseArgs): App.getNumberOfFrankenwordsToCreate returned -1.");
                     logEntry("Program terminated");
-                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    print(NIGO_MESSAGE);
+//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                    return false;
                 }
             }
             if(argsList.get(i).equals(SPACES_ARG)) {
@@ -278,6 +293,7 @@ public class App {
             }
         }
         logEntry("Program arguments parsed and validated.");
+        return true;
     }
 
     /**
@@ -303,7 +319,8 @@ public class App {
         if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
             logEntry("Error: App.argsAreInGoodOrder found that the last arg is a dash arg, and it is not " +
                     SPACES_ARG + ": " + lastArg);
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            return false;
         }
         return true;
     }
