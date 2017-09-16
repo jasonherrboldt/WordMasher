@@ -23,116 +23,116 @@ public class AppTest extends TestCase {
     /**
      * Asserts App.parseArgs throws an exception for an illegal number of string array elements.
      */
-    public void testParseArgs_invalidNumberOfArgs() {
-
-        // Test for 0, 1, 2, and 3 dummy args.
-        for(int i = 0; i < 4; i++) {
-            args = createDummyArray(i);
-            try {
-                App.parseArgs(args);
-                fail("parseArgs should have thrown an illegal argument exception.");
-            } catch (IllegalArgumentException e) {
-                // Do nothing; test asserts exception is properly thrown.
-            }
-        }
-
-        // No test is needed for the correct number of args (4); happy path is validated in another test.
-
-        args = createDummyArray(5);
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_invalidNumberOfArgs() {
+//
+//        // Test for 0, 1, 2, and 3 dummy args.
+//        for(int i = 0; i < 4; i++) {
+//            args = createDummyArray(i);
+//            try {
+//                App.parseArgs(args);
+//                fail("parseArgs should have thrown an illegal argument exception.");
+//            } catch (IllegalArgumentException e) {
+//                // Do nothing; test asserts exception is properly thrown.
+//            }
+//        }
+//
+//        // No test is needed for the correct number of args (4); happy path is validated in another test.
+//
+//        args = createDummyArray(5);
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.parseArts throws an exception for program arguments with length of > 50.
      */
-    public void testParseArgs_argsTooLong() {
-        args = createArgsArray("a.txt", "b.txt", "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.txt", "4");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_argsTooLong() {
+//        args = createArgsArray("a.txt", "b.txt", "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.txt", "4");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.parseArgs throws an exception if arguments array contains nonexistent files.
      */
-    public void testParseArgs_nonExistentFiles() {
-        args = createArgsArray("a.txt", "b.txt", "c.txt", "4");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_nonExistentFiles() {
+//        args = createArgsArray("a.txt", "b.txt", "c.txt", "4");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.parseArgs throws an exception if arguments array contains empty files.
      */
-    public void testParseArgs_emptyArgFiles() {
-        String emptyFileName = "empty.txt";
-        List<String> emptyList = new ArrayList<>();
-        File tempFile = createFileWithStringList(emptyList, emptyFileName);
-        if(!tempFile.canRead()) {
-            fail("Unable to read temporary test file " + tempFile.getName());
-        }
-        String[] args = createArgsArray(emptyFileName, "charList.txt", "output.txt", "4");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-            if(!tempFile.delete()) {
-                fail("testParseArgs_emptyArgFiles was unable to delete " + tempFile.getName());
-            }
-        }
-    }
+//    public void testParseArgs_emptyArgFiles() {
+//        String emptyFileName = "empty.txt";
+//        List<String> emptyList = new ArrayList<>();
+//        File tempFile = createFileWithStringList(emptyList, emptyFileName);
+//        if(!tempFile.canRead()) {
+//            fail("Unable to read temporary test file " + tempFile.getName());
+//        }
+//        String[] args = createArgsArray(emptyFileName, "charList.txt", "output.txt", "4");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//            if(!tempFile.delete()) {
+//                fail("testParseArgs_emptyArgFiles was unable to delete " + tempFile.getName());
+//            }
+//        }
+//    }
 
     /**
      * Asserts App.parseArgs throws an exception if arguments array contains an un-parsable integer string.
      */
-    public void testParseArgs_unparsableNumberOfFrankenwords() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "x");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_unparsableNumberOfFrankenwords() {
+//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "x");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.validateArgs throws an exception if 4th program arguments is < 1.
      */
-    public void testParseArgs_negativeNumberOfFrankenwords() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "-1");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_negativeNumberOfFrankenwords() {
+//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "-1");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.validateArgs throws an exception if 4th program arguments is > 1000.
      */
-    public void testParseArgs_tooManyFrankenwords() {
-        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
-        try {
-            App.parseArgs(args);
-            fail("parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
-        }
-    }
+//    public void testParseArgs_tooManyFrankenwords() {
+//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
+//        try {
+//            App.parseArgs(args);
+//            fail("parseArgs should have thrown an illegal argument exception.");
+//        } catch (IllegalArgumentException e) {
+//            // Do nothing; test asserts exception is properly thrown.
+//        }
+//    }
 
     /**
      * Asserts App.readFileIntoListOfStrings returns a list that reflects the file data.

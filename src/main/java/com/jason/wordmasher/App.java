@@ -1,5 +1,7 @@
 package com.jason.wordmasher;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class App {
 
     // Program arguments
-    private static File englishWordsFile;
+    private static File wordsFile;
     private static File specialCharactersFile;
     private static File outputFile;
     private static int numberOfFrankenwordsToCreate = 0;
@@ -29,7 +31,6 @@ public class App {
     private static final File LOG_FILE = new File(LOG_FILENAME);
 
     // Misc variables
-    private static final int ARG_LENGTH_MAX = 50;
     private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
     private static final int MAX_FRANKENWORDS = 1000;
     private static final int MAX_ONE_IN_N_CHANCE = 100;
@@ -43,6 +44,10 @@ public class App {
     private static char[] specialCharacters;
     private static List<String> usedEnglishWords = new ArrayList<>();
     private static String errorMessage;
+    private static final String WORDS_FILE_ARG = "-wordsfile";
+    private static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
+    private static final String NUM_TO_PRINT_ARG = "-numtoprint";
+    private static final String SPACES_ARG = "-spaces";
 
     /**
      * Main program method.
@@ -53,7 +58,7 @@ public class App {
         startLog();
         try {
             parseArgs(args);
-            englishWords = readFileIntoListOfStrings(englishWordsFile);
+            englishWords = readFileIntoListOfStrings(wordsFile);
             specialCharacters = readFileIntoCharArray(specialCharactersFile);
             List<String> frankenwords = makeFrankenwords();
             printFrankenwords(frankenwords);
@@ -186,61 +191,187 @@ public class App {
     //***** PARSING PROGRAM ARGS *****//
     //********************************//
 
+    // -words “english_words.txt” -specialchars “special_characters_A_shortest.txt” -spaces -numtoprint 1000
 
     /**
      * Validates and parses program arguments.
      *
-     * (This method prints un-escaped user input to the logs. Not addressed because this is a toy program.)
+     * (This method prints un-escaped user input to the logs, which is normally not allowed. But this is a toy program.)
      *
      * @param args Program arguments
      */
-    static void parseArgs(String[] args) throws IllegalArgumentException { // tested
+    static void parseArgs(String[] args) throws IllegalArgumentException { // todo: not tested
+
+        // prepare data structures
+        List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
+        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+        ListIterator<String> iterator = argsList.listIterator();
+        while (iterator.hasNext()) {
+            iterator.set(iterator.next().toLowerCase());
+        }
 
         // Validate arguments
-        if(args.length != 4) {
-            logEntry("Error: Program must have 4 arguments. Number of arguments received: "+ args.length + ".");
+
+        // Make sure a legal number of arguments were received.
+        if(!acceptableArgCount.contains(argsList.size())) {
+            logEntry("Error: Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
+                    + args.length + ".");
             logEntry("Program terminated");
             throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
         }
-        for (int i = 0; i < 4; i++) {
-            if (args[i].length() > ARG_LENGTH_MAX) {
-                logEntry("Error: One or more program argument exceeds the maximum length of " + ARG_LENGTH_MAX + ".");
+
+        // Make sure dash args are followed by non-dash args, e.g. -wordsfile "words.txt"
+        for(int i = 0; i < argsList.size(); i++) {
+            if(argsList.get(i).charAt(0) == '-' && (argsList.get(i + 1) == null ||
+                    argsList.get(i + 1).charAt(0) == '-')) {
+                logEntry("Error: A program arg begins with '-' and is either followed by another '-' " +
+                        "arg or no arg at all: " + args[i]);
                 logEntry("Program terminated");
                 throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             }
         }
-        for (int i = 0; i < 2; i++) {
-            if (!fileExists(args[i])) {
-                logEntry("Error: Unable to verify that file " + args[i] + " exists.");
-                logEntry("Program terminated");
-                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-            }
-            File thisFile = new File(args[i]);
-            if(thisFile.length() == 0) {
-                logEntry("Error: File " + args[i] + " appears to be empty.");
-                logEntry("Program terminated");
-                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-            }
-        }
-        try {
-            numberOfFrankenwordsToCreate = Integer.parseInt(args[3]);
-        } catch (NumberFormatException e) {
-            logEntry("Error: Unable to parse number of frankenwords to print. Argument received: " + args[3] + ".");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-        }
-        if (numberOfFrankenwordsToCreate < 1 || numberOfFrankenwordsToCreate > MAX_FRANKENWORDS) {
-            logEntry("Error: Number of frankenwords to print must be > 0 and < " + MAX_FRANKENWORDS + ".");
-            logEntry("Argument received " + numberOfFrankenwordsToCreate + ".");
+
+        // Check for illegal arguments.
+        if(illegalArgsReceived(argsList)) {
+            logEntry("Error: One or more illegal arguments were received.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
-        // Parse arguments
-        englishWordsFile = new File(args[0]);
-        specialCharactersFile = new File(args[1]);
-        outputFile = new File(args[2]);
+        // Make sure minimum required args were received.
+        if((!argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) {
+            logEntry("Error: The minimum args '-wordsfile' and '-numtoprint' were not both found.");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+        }
+
+        // Populate class member variables.
+        for(int i = 0; i < argsList.size(); i++) {
+            if(argsList.get(i).equals(WORDS_FILE_ARG)) {
+                wordsFile = makeNewFile(argsList.get(i + 1));
+                if(wordsFile == null) {
+                    logEntry("Error: App.makeNewFile returned null when attempting to populate wordsFile.");
+                    logEntry("Program terminated");
+                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                }
+            }
+            if(argsList.get(i).equals(SPECIAL_CHARS_FILE_ARG)) {
+                specialCharactersFile = makeNewFile(argsList.get(i + 1));
+                if(specialCharactersFile == null) {
+                    logEntry("Error: App.makeNewFile returned null when attempting to populate specialCharactersFile.");
+                    logEntry("Program terminated");
+                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                }
+            }
+            if(argsList.get(i).equals(NUM_TO_PRINT_ARG)) {
+                numberOfFrankenwordsToCreate = getNumberOfFrankenwordsToCreate(argsList.get(i + 1));
+                if(numberOfFrankenwordsToCreate == -1) {
+                    logEntry("Error: App.getNumberOfFrankenwordsToCreate returned -1.");
+                    logEntry("Program terminated");
+                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+                }
+            }
+        }
+
+
+
+        outputFile = new File("output.txt");
+
+
+
+
+//        for (int i = 0; i < 2; i++) {
+//            if (!fileExists(args[i])) {
+//                logEntry("Error: Unable to verify that file " + args[i] + " exists.");
+//                logEntry("Program terminated");
+//                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//            }
+//            File thisFile = new File(args[i]);
+//            if(thisFile.length() == 0) {
+//                logEntry("Error: File " + args[i] + " appears to be empty.");
+//                logEntry("Program terminated");
+//                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//            }
+//        }
+//        try {
+//            numberOfFrankenwordsToCreate = Integer.parseInt(args[3]);
+//        } catch (NumberFormatException e) {
+//            logEntry("Error: Unable to parse number of frankenwords to print. Argument received: " + args[3] + ".");
+//            logEntry("Program terminated");
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//        }
+//        if (numberOfFrankenwordsToCreate < 1 || numberOfFrankenwordsToCreate > MAX_FRANKENWORDS) {
+//            logEntry("Error: Number of frankenwords to print must be > 0 and < " + MAX_FRANKENWORDS + ".");
+//            logEntry("Argument received " + numberOfFrankenwordsToCreate + ".");
+//            logEntry("Program terminated");
+//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//        }
+//
+//        // Parse arguments
+//        wordsFile = new File(args[0]);
+//        specialCharactersFile = new File(args[1]);
+//        outputFile = new File(args[2]);
+
+
+
         logEntry("Program arguments validated and parsed.");
+    }
+
+    /**
+     * @param argsList the args to analyze
+     * @return         true if the args are legal, false otherwise
+     */
+    public static boolean illegalArgsReceived(List<String> argsList) {
+        List<String> acceptableArgs = new ArrayList<>(Arrays.asList(WORDS_FILE_ARG, SPECIAL_CHARS_FILE_ARG,
+                NUM_TO_PRINT_ARG, SPACES_ARG));
+        for(String s : argsList) {
+            if(s.charAt(0) == '-') {
+                if(!acceptableArgs.contains(s)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Create and validate a new File object.
+     *
+     * @param fileName Name of file to analyze
+     * @return         The file, if it exists and is not empty. Null otherwise.
+     */
+    public static File makeNewFile(String fileName) { // todo: not tested
+        if(StringUtils.isNotBlank(fileName)) {
+            return null;
+        }
+        File file = new File(fileName);
+        if (!file.exists()) {
+            return null;
+        }
+        if(file.length() == 0) {
+            return null;
+        }
+        return file;
+    }
+
+    /**
+     * Parse the number of frankenwords to create.
+     *
+     * @param frankenwordArg the program arg to parse
+     * @return               the successfully converted int, -1 otherwise.
+     */
+    public static int getNumberOfFrankenwordsToCreate(String frankenwordArg) { // todo: not tested
+        int returnInt;
+        try {
+            returnInt = Integer.parseInt(frankenwordArg);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+        if (returnInt < 1 || returnInt > MAX_FRANKENWORDS) {
+            return -1;
+        }
+        return returnInt;
     }
 
     /**
@@ -249,10 +380,10 @@ public class App {
      * @param fileName Name of file
      * @return         True if file can be read, false otherwise.
      */
-    private static boolean fileExists(String fileName) { // can be functionally tested
-        File file = new File(fileName);
-        return file.exists();
-    }
+//    private static boolean fileExists(String fileName) { // can be functionally tested
+//        File file = new File(fileName);
+//        return file.exists();
+//    }
 
     /**
      * Reads contents of a file into a list of strings.
@@ -377,9 +508,11 @@ public class App {
         } else {
             frankenword = addWeirdCapitalization(frankenword);
         }
+        // todo: if specialcharsfile exists...
         if(oneInNChance(4)) {
             frankenword = addSpecialCharacters(frankenword, specialCharacters);
         }
+        // todo: if -space arg received...
         if(oneInNChance(4)) {
             if(frankenword.length() > 6) {
                 if(oneInNChance(2)) {
