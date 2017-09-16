@@ -220,16 +220,25 @@ public class App {
             throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
         }
 
-        // Make sure dash args are followed by non-dash args, e.g. -wordsfile "words.txt"
-        for(int i = 0; i < argsList.size(); i++) {
-            if(argsList.get(i).charAt(0) == '-' && (argsList.get(i + 1) == null ||
-                    argsList.get(i + 1).charAt(0) == '-')) {
-                logEntry("Error: A program arg begins with '-' and is either followed by another '-' " +
-                        "arg or no arg at all: " + args[i]);
-                logEntry("Program terminated");
-                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-            }
+        if(!argsAreInGoodOrder(argsList)) {
+            logEntry("The args do not appear to be in good order.");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
+
+
+
+
+//        for(int i = 0; i < argsList.size(); i++) {
+//            String arg = argsList.get(i);
+//            if(arg.charAt(0) == '-') {
+//                if(i == argsList.size() - 1 && !arg.equals(SPACES_ARG)) {
+//                    logEntry("Error: The last program arg begins with '-' and it is not " + SPACES_ARG);
+//                    logEntry("Program terminated");
+//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+//                }
+//            }
+//        }
 
         // Check for illegal arguments.
         if(illegalArgsReceived(argsList)) {
@@ -318,6 +327,32 @@ public class App {
     }
 
     /**
+     * Determines whether or not the args appear to be in good order. Specifically,
+     *
+     * @param argsList the list of args to analyze
+     * @return         true if the args appear to be in good order, false otherwise.
+     */
+    public static boolean argsAreInGoodOrder(List<String> argsList) {
+        for(int i = 0; i < argsList.size() - 1; i++) {
+            String thisArg = argsList.get(i);
+            // Will not cause index out of bounds exceptions because for loop stops 1 short of end.
+            if(thisArg.charAt(0) == '-' && (argsList.get(i + 1).charAt(0) == '-')) {
+                if(!thisArg.equals(SPACES_ARG)) {
+                    logEntry("A dash arg is followed by another dash arg, and the first dash arg is not " +
+                            SPACES_ARG + ": " + thisArg);
+                    return false;
+                }
+            }
+        }
+        String lastArg = argsList.get(argsList.size() - 1);
+        if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
+            logEntry("The last arg is a dash arg, and it is not " + SPACES_ARG + ": " + lastArg);
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+        }
+        return true;
+    }
+
+    /**
      * @param argsList the args to analyze
      * @return         true if the args are legal, false otherwise
      */
@@ -327,6 +362,7 @@ public class App {
         for(String s : argsList) {
             if(s.charAt(0) == '-') {
                 if(!acceptableArgs.contains(s)) {
+                    logEntry("Error: App.illegalArgsReceived determined that arg " + s + " is illegal.");
                     return false;
                 }
             }
@@ -343,13 +379,16 @@ public class App {
      */
     public static File makeNewFile(String fileName) { // todo: not tested
         if(StringUtils.isNotBlank(fileName)) {
+            logEntry("Error: App.makeNewFile received a blank arg.");
             return null;
         }
         File file = new File(fileName);
         if (!file.exists()) {
+            logEntry("Error: App.makeNewFile was unable to determine that the file " + fileName + " exists.");
             return null;
         }
         if(file.length() == 0) {
+            logEntry("Error: App.makeNewFile was unable to determine that the file " + fileName + " contains any data.");
             return null;
         }
         return file;
@@ -366,9 +405,13 @@ public class App {
         try {
             returnInt = Integer.parseInt(frankenwordArg);
         } catch (NumberFormatException e) {
+            logEntry("Error: App.getNumberOfFrankenwordsToCreate was unable to convert the arg " + frankenwordArg +
+                    " to an integer.");
             return -1;
         }
         if (returnInt < 1 || returnInt > MAX_FRANKENWORDS) {
+            logEntry("Error: App.getNumberOfFrankenwordsToCreate determined that this number of words to print is " +
+                    "out of bounds: " + returnInt);
             return -1;
         }
         return returnInt;
