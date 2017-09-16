@@ -48,6 +48,7 @@ public class App {
     private static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
     private static final String NUM_TO_PRINT_ARG = "-numtoprint";
     private static final String SPACES_ARG = "-spaces";
+    private static boolean SPACES_REQUESTED = false;
 
     /**
      * Main program method.
@@ -220,32 +221,13 @@ public class App {
             throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
         }
 
-        if(!argsAreInGoodOrder(argsList)) {
-            logEntry("The args do not appear to be in good order.");
-            logEntry("Program terminated");
-            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-        }
-
-
-
-
-//        for(int i = 0; i < argsList.size(); i++) {
-//            String arg = argsList.get(i);
-//            if(arg.charAt(0) == '-') {
-//                if(i == argsList.size() - 1 && !arg.equals(SPACES_ARG)) {
-//                    logEntry("Error: The last program arg begins with '-' and it is not " + SPACES_ARG);
-//                    logEntry("Program terminated");
-//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-//                }
-//            }
-//        }
-
         // Check for illegal arguments.
         if(illegalArgsReceived(argsList)) {
             logEntry("Error: One or more illegal arguments were received.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
+
 
         // Make sure minimum required args were received.
         if((!argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) {
@@ -254,7 +236,17 @@ public class App {
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
+        // Make sure args appear to be in good order.
+        if(!argsAreInGoodOrder(argsList)) {
+            logEntry("The args do not appear to be in good order. Please see README for program usage.");
+            logEntry("Program terminated");
+            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+        }
+
+        // -words “english_words.txt” -specialchars “special_characters_A_shortest.txt” -spaces -numtoprint 1000
+
         // Populate class member variables.
+        // (argsList.get(i + 1) will not throw index out bounds exception because of vetting code above.)
         for(int i = 0; i < argsList.size(); i++) {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
                 wordsFile = makeNewFile(argsList.get(i + 1));
@@ -280,50 +272,12 @@ public class App {
                     throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                 }
             }
+            if(argsList.get(i).equals(SPACES_ARG)) {
+                SPACES_REQUESTED = true;
+            }
         }
-
-
-
         outputFile = new File("output.txt");
-
-
-
-
-//        for (int i = 0; i < 2; i++) {
-//            if (!fileExists(args[i])) {
-//                logEntry("Error: Unable to verify that file " + args[i] + " exists.");
-//                logEntry("Program terminated");
-//                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-//            }
-//            File thisFile = new File(args[i]);
-//            if(thisFile.length() == 0) {
-//                logEntry("Error: File " + args[i] + " appears to be empty.");
-//                logEntry("Program terminated");
-//                throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-//            }
-//        }
-//        try {
-//            numberOfFrankenwordsToCreate = Integer.parseInt(args[3]);
-//        } catch (NumberFormatException e) {
-//            logEntry("Error: Unable to parse number of frankenwords to print. Argument received: " + args[3] + ".");
-//            logEntry("Program terminated");
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-//        }
-//        if (numberOfFrankenwordsToCreate < 1 || numberOfFrankenwordsToCreate > MAX_FRANKENWORDS) {
-//            logEntry("Error: Number of frankenwords to print must be > 0 and < " + MAX_FRANKENWORDS + ".");
-//            logEntry("Argument received " + numberOfFrankenwordsToCreate + ".");
-//            logEntry("Program terminated");
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
-//        }
-//
-//        // Parse arguments
-//        wordsFile = new File(args[0]);
-//        specialCharactersFile = new File(args[1]);
-//        outputFile = new File(args[2]);
-
-
-
-        logEntry("Program arguments validated and parsed.");
+        logEntry("Program arguments parsed and validated.");
     }
 
     /**
@@ -332,13 +286,14 @@ public class App {
      * @param argsList the list of args to analyze
      * @return         true if the args appear to be in good order, false otherwise.
      */
-    public static boolean argsAreInGoodOrder(List<String> argsList) {
+    public static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
         for(int i = 0; i < argsList.size() - 1; i++) {
             String thisArg = argsList.get(i);
-            // Will not cause index out of bounds exceptions because for loop stops 1 short of end.
+            // Will not cause index out of bounds exceptions because for loop stops 1 short of end:
             if(thisArg.charAt(0) == '-' && (argsList.get(i + 1).charAt(0) == '-')) {
                 if(!thisArg.equals(SPACES_ARG)) {
-                    logEntry("A dash arg is followed by another dash arg, and the first dash arg is not " +
+                    logEntry("Error: App.argsAreInGoodOrder found that a dash arg is followed by another dash arg, " +
+                            "and the first dash arg is not " +
                             SPACES_ARG + ": " + thisArg);
                     return false;
                 }
@@ -346,7 +301,8 @@ public class App {
         }
         String lastArg = argsList.get(argsList.size() - 1);
         if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
-            logEntry("The last arg is a dash arg, and it is not " + SPACES_ARG + ": " + lastArg);
+            logEntry("Error: App.argsAreInGoodOrder found that the last arg is a dash arg, and it is not " +
+                    SPACES_ARG + ": " + lastArg);
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
         return true;
@@ -356,7 +312,7 @@ public class App {
      * @param argsList the args to analyze
      * @return         true if the args are legal, false otherwise
      */
-    public static boolean illegalArgsReceived(List<String> argsList) {
+    public static boolean illegalArgsReceived(List<String> argsList) { // todo: not tested
         List<String> acceptableArgs = new ArrayList<>(Arrays.asList(WORDS_FILE_ARG, SPECIAL_CHARS_FILE_ARG,
                 NUM_TO_PRINT_ARG, SPACES_ARG));
         for(String s : argsList) {
@@ -406,7 +362,7 @@ public class App {
             returnInt = Integer.parseInt(frankenwordArg);
         } catch (NumberFormatException e) {
             logEntry("Error: App.getNumberOfFrankenwordsToCreate was unable to convert the arg " + frankenwordArg +
-                    " to an integer.");
+                    " into an integer.");
             return -1;
         }
         if (returnInt < 1 || returnInt > MAX_FRANKENWORDS) {
@@ -417,16 +373,21 @@ public class App {
         return returnInt;
     }
 
-    /**
-     * Verifies specified file exists.
-     *
-     * @param fileName Name of file
-     * @return         True if file can be read, false otherwise.
-     */
-//    private static boolean fileExists(String fileName) { // can be functionally tested
-//        File file = new File(fileName);
-//        return file.exists();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Reads contents of a file into a list of strings.
@@ -551,20 +512,22 @@ public class App {
         } else {
             frankenword = addWeirdCapitalization(frankenword);
         }
-        // todo: if specialcharsfile exists...
-        if(oneInNChance(4)) {
-            frankenword = addSpecialCharacters(frankenword, specialCharacters);
+        if(specialCharacters.length > 0) {
+            if(oneInNChance(4)) {
+                frankenword = addSpecialCharacters(frankenword, specialCharacters);
+            }
         }
-        // todo: if -space arg received...
-        if(oneInNChance(4)) {
-            if(frankenword.length() > 6) {
-                if(oneInNChance(2)) {
-                    frankenword = breakInTwo(frankenword);
+        if(SPACES_REQUESTED) {
+            if(oneInNChance(4)) {
+                if(frankenword.length() > 6) {
+                    if(oneInNChance(2)) {
+                        frankenword = breakInTwo(frankenword);
+                    } else {
+                        frankenword = breakInThree(frankenword);
+                    }
                 } else {
-                    frankenword = breakInThree(frankenword);
+                    frankenword = breakInTwo(frankenword);
                 }
-            } else {
-                frankenword = breakInTwo(frankenword);
             }
         }
         return frankenword;
