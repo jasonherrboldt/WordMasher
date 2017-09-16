@@ -21,44 +21,34 @@ public class AppTest extends TestCase {
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
     /**
-     * Asserts App.parseArgs throws an exception for an illegal number of string array elements.
+     * Asserts App.parseArgs throws an exception for an illegal number of args.
+     *
+     * (Program must have 4, 5, 6, or 7 arguments.)
      */
-//    public void testParseArgs_invalidNumberOfArgs() {
-//
-//        // Test for 0, 1, 2, and 3 dummy args.
-//        for(int i = 0; i < 4; i++) {
-//            args = createDummyArray(i);
-//            try {
-//                App.parseArgs(args);
-//                fail("parseArgs should have thrown an illegal argument exception.");
-//            } catch (IllegalArgumentException e) {
-//                // Do nothing; test asserts exception is properly thrown.
-//            }
-//        }
-//
-//        // No test is needed for the correct number of args (4); happy path is validated in another test.
-//
-//        args = createDummyArray(5);
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
+    public void testParseArgs_invalidNumberOfArgs() {
 
-    /**
-     * Asserts App.parseArts throws an exception for program arguments with length of > 50.
-     */
-//    public void testParseArgs_argsTooLong() {
-//        args = createArgsArray("a.txt", "b.txt", "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.txt", "4");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
+        // Test for 0, 1, 2, and 3 dummy args.
+        for(int i = 0; i < 4; i++) {
+            args = createDummyArray(i);
+            try {
+                App.parseArgs(args);
+                fail("App.parseArgs should have thrown an illegal argument exception.");
+            } catch (IllegalArgumentException e) {
+                // Do nothing; test asserts exception is properly thrown.
+            }
+        }
+
+        // (Tests are not needed for the correct number of args (4 - 7); happy paths are validated in other tests.)
+
+        // Test for 1 more than the max allowed # of args:
+        args = createDummyArray(8);
+        try {
+            App.parseArgs(args);
+            fail("App.parseArgs should have thrown an illegal argument exception.");
+        } catch (IllegalArgumentException e) {
+            // Do nothing; test asserts exception is properly thrown.
+        }
+    }
 
     /**
      * Asserts App.parseArgs throws an exception if arguments array contains nonexistent files.

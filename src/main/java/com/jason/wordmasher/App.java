@@ -199,7 +199,7 @@ public class App {
      *
      * @param args Program arguments
      */
-    static void parseArgs(String[] args) throws IllegalArgumentException { // todo: not tested
+    static void parseArgs(String[] args) throws IllegalArgumentException { // todo: testing in progress
 
         // prepare data structures
         List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
@@ -212,7 +212,7 @@ public class App {
         // Validate arguments
 
         // Make sure a legal number of arguments were received.
-        if(!acceptableArgCount.contains(argsList.size())) {
+        if(!acceptableArgCount.contains(argsList.size())) { // tested
             logEntry("Error (App.parseArgs): Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
                     + args.length + ".");
             logEntry("Program terminated");
@@ -221,14 +221,14 @@ public class App {
         }
 
         // Check for illegal arguments.
-        if(illegalArgsReceived(argsList)) {
+        if(illegalArgsReceived(argsList)) { // testing handled by illegalArgsReceived
             logEntry("Error (App.parseArgs): One or more illegal arguments were received.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
         // Make sure minimum required args were received.
-        if(!(argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) {
+        if(!(argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) { // todo: needs testing
             logEntry("Error (App.parseArgs): The minimum args " + WORDS_FILE_ARG + " and " + NUM_TO_PRINT_ARG +
                     " were not both found.");
             logEntry("Program terminated");
@@ -236,7 +236,7 @@ public class App {
         }
 
         // Make sure args appear to be in good order.
-        if(!argsAreInGoodOrder(argsList)) {
+        if(!argsAreInGoodOrder(argsList)) { // testing is handled by argsAreInGoodOrder
             logEntry("Error (App.parseArgs): The args do not appear to be in good order. Please see README for " +
                     "program usage.");
             logEntry("Program terminated");
@@ -247,7 +247,7 @@ public class App {
         // (Calling argsList.get(i + 1) will not throw index out bounds exception because of vetting code above.)
         for(int i = 0; i < argsList.size(); i++) {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
-                wordsFile = makeNewFile(argsList.get(i + 1));
+                wordsFile = makeNewFile(argsList.get(i + 1)); // testing is handled by makeNewFile
                 if(wordsFile == null) {
                     logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
                             "wordsFile.");
@@ -256,7 +256,7 @@ public class App {
                 }
             }
             if(argsList.get(i).equals(SPECIAL_CHARS_FILE_ARG)) {
-                specialCharactersFile = makeNewFile(argsList.get(i + 1));
+                specialCharactersFile = makeNewFile(argsList.get(i + 1)); // testing is handled by makeNewFile
                 if(specialCharactersFile == null) {
                     logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
                             "specialCharactersFile.");
@@ -265,6 +265,7 @@ public class App {
                 }
             }
             if(argsList.get(i).equals(NUM_TO_PRINT_ARG)) {
+                // testing is handled by getNumberOfFrankenwordsToCreate
                 numberOfFrankenwordsToCreate = getNumberOfFrankenwordsToCreate(argsList.get(i + 1));
                 if(numberOfFrankenwordsToCreate == -1) {
                     logEntry("Error (App.parseArgs): App.getNumberOfFrankenwordsToCreate returned -1.");
