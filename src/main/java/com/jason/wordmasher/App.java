@@ -21,7 +21,7 @@ public class App {
     // Program arguments
     private static File wordsFile;
     private static File specialCharactersFile;
-    private static File outputFile;
+    private static File outputFile = new File("output.txt");
     private static int numberOfFrankenwordsToCreate = 0;
 
     // Logging
@@ -197,8 +197,6 @@ public class App {
     /**
      * Validates and parses program arguments.
      *
-     * (This method prints un-escaped user input to the logs, which is normally not allowed. But this is a toy program.)
-     *
      * @param args Program arguments
      */
     static void parseArgs(String[] args) throws IllegalArgumentException { // todo: not tested
@@ -215,43 +213,44 @@ public class App {
 
         // Make sure a legal number of arguments were received.
         if(!acceptableArgCount.contains(argsList.size())) {
-            logEntry("Error: Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
+            logEntry("Error (App.parseArgs): Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
                     + args.length + ".");
             logEntry("Program terminated");
-            throw new IllegalArgumentException("App.parseArgs encountered one or more illegal program arguments.");
+            throw new IllegalArgumentException("App.parseArgs determined that an illegal number of arguments were " +
+                    "received.");
         }
 
         // Check for illegal arguments.
         if(illegalArgsReceived(argsList)) {
-            logEntry("Error: One or more illegal arguments were received.");
+            logEntry("Error (App.parseArgs): One or more illegal arguments were received.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
-
         // Make sure minimum required args were received.
-        if((!argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) {
-            logEntry("Error: The minimum args '-wordsfile' and '-numtoprint' were not both found.");
+        if(!(argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) {
+            logEntry("Error (App.parseArgs): The minimum args " + WORDS_FILE_ARG + " and " + NUM_TO_PRINT_ARG +
+                    " were not both found.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
         // Make sure args appear to be in good order.
         if(!argsAreInGoodOrder(argsList)) {
-            logEntry("The args do not appear to be in good order. Please see README for program usage.");
+            logEntry("Error (App.parseArgs): The args do not appear to be in good order. Please see README for " +
+                    "program usage.");
             logEntry("Program terminated");
             throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
         }
 
-        // -words “english_words.txt” -specialchars “special_characters_A_shortest.txt” -spaces -numtoprint 1000
-
         // Populate class member variables.
-        // (argsList.get(i + 1) will not throw index out bounds exception because of vetting code above.)
+        // (Calling argsList.get(i + 1) will not throw index out bounds exception because of vetting code above.)
         for(int i = 0; i < argsList.size(); i++) {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
                 wordsFile = makeNewFile(argsList.get(i + 1));
                 if(wordsFile == null) {
-                    logEntry("Error: App.makeNewFile returned null when attempting to populate wordsFile.");
+                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
+                            "wordsFile.");
                     logEntry("Program terminated");
                     throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                 }
@@ -259,7 +258,8 @@ public class App {
             if(argsList.get(i).equals(SPECIAL_CHARS_FILE_ARG)) {
                 specialCharactersFile = makeNewFile(argsList.get(i + 1));
                 if(specialCharactersFile == null) {
-                    logEntry("Error: App.makeNewFile returned null when attempting to populate specialCharactersFile.");
+                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
+                            "specialCharactersFile.");
                     logEntry("Program terminated");
                     throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                 }
@@ -267,7 +267,7 @@ public class App {
             if(argsList.get(i).equals(NUM_TO_PRINT_ARG)) {
                 numberOfFrankenwordsToCreate = getNumberOfFrankenwordsToCreate(argsList.get(i + 1));
                 if(numberOfFrankenwordsToCreate == -1) {
-                    logEntry("Error: App.getNumberOfFrankenwordsToCreate returned -1.");
+                    logEntry("Error (App.parseArgs): App.getNumberOfFrankenwordsToCreate returned -1.");
                     logEntry("Program terminated");
                     throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                 }
@@ -276,7 +276,6 @@ public class App {
                 SPACES_REQUESTED = true;
             }
         }
-        outputFile = new File("output.txt");
         logEntry("Program arguments parsed and validated.");
     }
 
