@@ -95,7 +95,7 @@ Subword pattern A would have a minimum subword of M and a maximum subword of MYS
 
 Subword pattern B would have a maximum subword of MYSTIFY and a minimum subword of Y.
 
-Subword pattern C would allow for a range of possible values for i and j, but always leaving a minimum of one character between the two. (It is for this reason that only dictionary words of length three and greater are allowed.) For the word MYSTIFY, which consists of seven characters, i could span the inclusive range [0, 4] and j could span the inclusive range [2, 6], with the understanding that the values of both i and j are dependent on each other. 
+Subword pattern C would allow for a range of possible values for i and j, but always leaving a minimum of one character between the two. (It is for this reason that only words of length three and greater are allowed.) For the word MYSTIFY, which consists of seven characters, i could span the inclusive range [0, 4] and j could span the inclusive range [2, 6], with the understanding that the values of both i and j are dependent on each other. 
 
 One possible implementation of this pattern would be to first select i, then go on to select j given the constraints of the value of i. For example, let j take its maximum possible value for the example word, which in this case is 6. Now i can be any integer in the inclusive range [0, 4]. Let's say it's 2. Now we plug that into the formula for j. We have (i + 1) > j < word.length --> (2 + 1) > j < 7 --> 3 > j < 7. This means j can now be any integer in the inclusive range [4, 6]. Suppose the randomly chosen integer is 5. We have i = 2, j = 5. The subword is then STIF. Words of length n can create subwords that span lengths of [1, (n - 1)], inclusive. 
 
@@ -121,8 +121,14 @@ If the frankenword length is > 6, there is an even chance that it will be broken
 
 ## OUTPUT
 
-Finally the list of frankenwords is printed to an output file with name "output.txt" in the project root directory. Program will overwrite a file of the same name if it already exists.
+Finally the list of frankenwords is printed to an output file with name "output.txt" in the project root directory. The program will overwrite a file of the same name if it already exists.
+
+## LOGGING
+
+Several methods print useful information to the log file. This aids the reproduction of critical issues. I elected to roll my own logging infrastructure instead of using Log4J for the simple reason that there is not enough demand for the full utility of Log4J's features.
+
+Logs are created in the /log directory and named with today's date, e.g. 2017-09-24.txt. Sessions that begin before midnight and carry over will be logged to the same file. New sessions started after midnight will be logged to a new file. Each entry line has the following format: HH:MM:SS:SSS [log message]. Log uses military time.
 
 ## EXCEPTIONS
 
-The program's entire main method is couched within a try / catch block, which will catch all possible errors, warn the user if something goes wrong, print helpful error information to the log, and exit gracefully. If the program runs successfully, a message will appear to the user that the output file has been populated, at which point the user may open the output file and peruse the generated frankenwords for some light entertainment. 
+With the exception of logging and parsing program arguments, the program's entire main method is couched within a try / catch block. This block will catch all possible errors, warn the user if something goes wrong, print helpful error information to the log, and exit gracefully. If the program runs successfully, a message will appear to the user that the output file has been populated. 
