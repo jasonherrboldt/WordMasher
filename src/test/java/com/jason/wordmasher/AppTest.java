@@ -891,7 +891,7 @@ public class AppTest extends TestCase {
     /**
      * @return A temporary empty file.
      */
-    public File makeTempEmptyFile() {
+    private File makeTempEmptyFile() {
         String emptyFileName = "empty.txt";
         File tempFile = createFileWithStringList(new ArrayList<>(), emptyFileName);
         if(!tempFile.canRead()) {
@@ -905,7 +905,7 @@ public class AppTest extends TestCase {
      *
      * @param tempFile the temp file to delete
      */
-    public void deleteTempFile(File tempFile) {
+    private void deleteTempFile(File tempFile) {
         if(!tempFile.delete()) {
             throw new IllegalStateException("testMakeNewFile was unable to delete " + tempFile.getName());
         }
