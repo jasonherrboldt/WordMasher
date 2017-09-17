@@ -43,8 +43,8 @@ public class App {
     private static final int MIN_WORDS_TO_MASH = 1;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
-    private static List<String> englishWords;
-    private static List<String> usedEnglishWords = new ArrayList<>();
+    private static List<String> wordsToUse;
+    private static List<String> usedWords = new ArrayList<>();
     private static String errorMessage;
     static boolean ARGS_ARE_IN_GOOD_ORDER = false;
     static final int MAX_FRANKENWORDS = 1000;
@@ -63,7 +63,7 @@ public class App {
         startLog();
         if(parseArgs(args)) {
             try {
-                englishWords = readFileIntoListOfStrings(wordsFile);
+                wordsToUse = readFileIntoListOfStrings(wordsFile);
                 specialCharacters = readFileIntoCharArray(specialCharactersFile);
                 List<String> frankenwords = makeFrankenwords();
                 printFrankenwords(frankenwords);
@@ -480,7 +480,7 @@ public class App {
         String frankenword;
         for(int i = 0; i < numberOfFrankenwordsToCreate; i++) {
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
-            wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
+            wordsToMash = getWordsToMash(numberOfWordsToMash, wordsToUse, null);
             frankenword = makeFrankenword(wordsToMash);
             if(StringUtils.isBlank(frankenword)) {
                 errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
@@ -561,45 +561,45 @@ public class App {
     }
 
     /**
-     * Get a list of words to mash from englishWords.
+     * Get a list of words to mash from wordsToUse.
      *
      * @param numberOfWordsToMash The number of words to mash
-     * @param englishWords        englishWords mock
-     * @param usedEnglishWords_   usedEnglishWords mock (can be null if not unit testing)
+     * @param wordsToUse          wordsToUse mock for testing
+     * @param usedWords_          usedWords mock (can be null if not unit testing)
      * @return                    A list of words to mash
      */
-    static List<String> getWordsToMash(int numberOfWordsToMash, List<String> englishWords,
-                                       List<String> usedEnglishWords_) throws IllegalStateException { // tested
+    static List<String> getWordsToMash(int numberOfWordsToMash, List<String> wordsToUse,
+                                       List<String> usedWords_) throws IllegalStateException { // tested
         if(numberOfWordsToMash < MIN_WORDS_TO_MASH || numberOfWordsToMash > MAX_WORDS_TO_MASH) {
             errorMessage = "Error: App.getWordsToMash received an illegal int: "
                     + numberOfWordsToMash + ".";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
-        if(englishWords == null || englishWords.isEmpty()) {
-            errorMessage = "Error: getWordsToMash received a null or empty list of English words.";
+        if(wordsToUse == null || wordsToUse.isEmpty()) {
+            errorMessage = "Error: getWordsToMash received a null or empty list of words.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
         }
 
-        // Allow unit test to inject its own copy of usedEnglishWords. Otherwise use App's class member variable.
-        List<String> localUsedEnglishWords;
-        if(usedEnglishWords_ != null) {
-            localUsedEnglishWords = usedEnglishWords_;
+        // Allow unit test to inject its own copy of usedWords. Otherwise use App's class member variable.
+        List<String> localUsedWords;
+        if(usedWords_ != null) {
+            localUsedWords = usedWords_;
         } else {
-            localUsedEnglishWords = usedEnglishWords;
+            localUsedWords = usedWords;
         }
 
         List<String> wordsToMash = new ArrayList<>();
         int i = 0;
         while(wordsToMash.size() < numberOfWordsToMash) {
-            int randInt = getRandomIntInInclusiveRange(0, englishWords.size() - 1);
-            String candidateWord = englishWords.get(randInt);
-            if(!localUsedEnglishWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
+            int randInt = getRandomIntInInclusiveRange(0, wordsToUse.size() - 1);
+            String candidateWord = wordsToUse.get(randInt);
+            if(!localUsedWords.contains(candidateWord) && !wordsToMash.contains(candidateWord)) {
                 if(candidateWord.length() > MIN_CANDIDATE_WORD_LENGTH && candidateWord.length()
                         < MAX_CANDIDATE_WORD_LENGTH) {
                     wordsToMash.add(candidateWord);
-                    localUsedEnglishWords.add(candidateWord);
+                    localUsedWords.add(candidateWord);
                 }
             }
             i++;
@@ -611,8 +611,8 @@ public class App {
         }
 
         // Java is pass by value. Update App's class member variable with the local copy to maintain state.
-        if(usedEnglishWords_ == null) {
-            usedEnglishWords = localUsedEnglishWords;
+        if(usedWords_ == null) {
+            usedWords = localUsedWords;
         }
         return wordsToMash;
     }

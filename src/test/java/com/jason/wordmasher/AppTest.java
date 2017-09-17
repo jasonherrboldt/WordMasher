@@ -13,10 +13,10 @@ import java.util.*;
 public class AppTest extends TestCase {
 
     private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
-    private static final int MAX_ENGLISH_WORDS_MOCK = 100;
+    private static final int MAX_WORDS_MOCK = 100;
     private static List<String> mockList = new ArrayList<>();
-    private static List<String> englishWordsMock;
-    private static List<String> usedEnglishWordsMock;
+    private static List<String> wordsMock;
+    private static List<String> usedWordsMock;
     private static List<String> wordsToMash = populateWordsToMash();
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
@@ -301,13 +301,13 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.testGetWordsToMash correctly populates usedEnglishWords.
+     * Asserts App.testGetWordsToMash correctly populates usedWords.
      */
-    public void testGetWordsToMash_populatesUsedEnglishWords() {
+    public void testGetWordsToMash_populatesUsedWords() {
         if(wordsToMash == null) {
             fail("App.getWordsToMash returned a null list.");
         } else {
-            assert(wordsToMash.equals(usedEnglishWordsMock));
+            assert(wordsToMash.equals(usedWordsMock));
         }
     }
 
@@ -327,13 +327,13 @@ public class AppTest extends TestCase {
      * Asserts App.testGetWordsToMash generates a list of random words.
      */
     public void testGetWordsToMash_generatesRandomWords() {
-        if(usedEnglishWordsMock != null) {
-            usedEnglishWordsMock.clear();
+        if(usedWordsMock != null) {
+            usedWordsMock.clear();
         }
-        List<String> thisWordsToMash = App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
-        List<String> englishWordMockSub = new ArrayList<>(englishWordsMock.subList(0, 5));
+        List<String> thisWordsToMash = App.getWordsToMash(App.MAX_WORDS_TO_MASH, wordsMock, usedWordsMock);
+        List<String> wordMockSub = new ArrayList<>(wordsMock.subList(0, 5));
         List<String> thisWordsToMashSub = new ArrayList<>(thisWordsToMash.subList(0, 5));
-        assertFalse(englishWordMockSub.equals(thisWordsToMashSub));
+        assertFalse(wordMockSub.equals(thisWordsToMashSub));
     }
 
     /**
@@ -872,9 +872,9 @@ public class AppTest extends TestCase {
     /**
      * @return a list of 100 distinct strings, e.g. "word_0", "word_1", "word_2", ...
      */
-    private static List<String> populateEnglishWordsMock() {
+    private static List<String> populateWordsMock() {
         List<String> words = new ArrayList<>();
-        for(int i = 0; i < MAX_ENGLISH_WORDS_MOCK; i++) {
+        for(int i = 0; i < MAX_WORDS_MOCK; i++) {
             StringBuilder word = new StringBuilder("word_");
             words.add(word.append(Integer.toString(i)).toString());
         }
@@ -885,9 +885,9 @@ public class AppTest extends TestCase {
      * @return a populated wordsToMash variable
      */
     private static List<String> populateWordsToMash() {
-        englishWordsMock = populateEnglishWordsMock();
-        usedEnglishWordsMock = new ArrayList<>();
-        return App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
+        wordsMock = populateWordsMock();
+        usedWordsMock = new ArrayList<>();
+        return App.getWordsToMash(App.MAX_WORDS_TO_MASH, wordsMock, usedWordsMock);
     }
 
     /**
