@@ -21,17 +21,23 @@ public class AppTest extends TestCase {
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
     /**
-     * Asserts App.correctNumberOfArgsReceived returns false for an illegal number of args.
-     *
-     * (Program must have 4, 5, 6, or 7 arguments.)
+     * Asserts App.correctNumberOfArgsReceived returns false for an illegal number of args,
+     * and true for a legal number of args. (Legal num args is 4, 5, 6, or 7.)
      */
-    public void testCorrectNumberOfArgsReceived_invalidNumberOfArgs() {
+    public void testCorrectNumberOfArgsReceived() {
 
         // Test for 0, 1, 2, and 3 dummy args. Should return false.
         for(int i = 0; i < 4; i++) {
             args = createDummyArray(i);
             mockList = new ArrayList<>(Arrays.asList(args));
             assertFalse(App.correctNumberOfArgsReceived(mockList));
+        }
+
+        // Test for 4, 5, 6, and 7 dummy args. Should return true.
+        for(int i = 4; i < 8; i++) {
+            args = createDummyArray(i);
+            mockList = new ArrayList<>(Arrays.asList(args));
+            assertTrue(App.correctNumberOfArgsReceived(mockList));
         }
 
         // Test for 8 args. Should return false.
@@ -41,18 +47,33 @@ public class AppTest extends TestCase {
     }
 
     /**
-     * Asserts App.correctNumberOfArgsReceived returns true for a legal number of args.
-     *
-     * (Program must have 4, 5, 6, or 7 arguments.)
+     * Asserts App.minimumRequiredArgsReceived returns true when minimum required args are present,
+     * false otherwise.
      */
-    public void testCorrectNumberOfArgsReceived_validNumberOfArgs() {
+    public void testminimumRequiredArgsReceived() {
 
-        // Test for 4, 5, 6, and 7 dummy args. Should return true.
-        for(int i = 4; i < 8; i++) {
-            args = createDummyArray(i);
-            mockList = new ArrayList<>(Arrays.asList(args));
-            assertTrue(App.correctNumberOfArgsReceived(mockList));
-        }
+        // Should return true for minimum required args (App.WORDS_FILE_ARG & App.NUM_TO_PRINT_ARG).
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        assertTrue(App.minimumRequiredArgsReceived(mockList));
+
+        // Should return false if one of the minimum required args is missing (App.WORDS_FILE_ARG).
+        mockList.clear();
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        assertFalse(App.minimumRequiredArgsReceived(mockList));
+
+        // Should return false if the other minimum required args is missing (App.NUM_TO_PRINT_ARG).
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        assertFalse(App.minimumRequiredArgsReceived(mockList));
+
+        // Should return false if both of the minimum required args are missing (App.WORDS_FILE_ARG &
+        // App.NUM_TO_PRINT_ARG).
+        mockList.clear();
+        mockList.add("illegal_arg");
+        assertFalse(App.minimumRequiredArgsReceived(mockList));
+
     }
 
     /**

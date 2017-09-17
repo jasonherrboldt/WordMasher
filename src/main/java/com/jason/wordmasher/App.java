@@ -44,9 +44,9 @@ public class App {
     private static char[] specialCharacters;
     private static List<String> usedEnglishWords = new ArrayList<>();
     private static String errorMessage;
-    private static final String WORDS_FILE_ARG = "-wordsfile";
+    static final String WORDS_FILE_ARG = "-wordsfile";
     private static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
-    private static final String NUM_TO_PRINT_ARG = "-numtoprint";
+    static final String NUM_TO_PRINT_ARG = "-numtoprint";
     private static final String SPACES_ARG = "-spaces";
     private static boolean SPACES_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
@@ -222,7 +222,7 @@ public class App {
      * @param argsList The program arguments to analyze.
      * @return         True if an acceptable number of program arguments were received, false otherwise.
      */
-    public static boolean correctNumberOfArgsReceived(List<String> argsList) { // tested
+    static boolean correctNumberOfArgsReceived(List<String> argsList) { // tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
@@ -244,7 +244,7 @@ public class App {
      * @param argsList The program arguments to analyze.
      * @return         True if the minimum required program arguments were received, false otherwise.
      */
-    public static boolean minimumRequiredArgsReceived(List<String> argsList) { // todo: not tested
+    static boolean minimumRequiredArgsReceived(List<String> argsList) { // todo: not tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
@@ -264,7 +264,7 @@ public class App {
      * @param argsList The program arguments
      * @return         True if the CLMs were successfully populated, false otherwise.
      */
-    public static boolean populateClassMemberVariables(List<String> argsList) { // todo: not tested
+    static boolean populateClassMemberVariables(List<String> argsList) { // todo: not tested
         if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
             return false;
         }
@@ -313,7 +313,7 @@ public class App {
      * @param argsList the list of args to analyze
      * @return         true if the args appear to be in good order, false otherwise.
      */
-    public static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
+    static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
@@ -349,7 +349,7 @@ public class App {
      * @param argsList the args to analyze
      * @return         true if the args are legal, false otherwise
      */
-    public static boolean illegalArgsReceived(List<String> argsList) { // todo: not tested
+    static boolean illegalArgsReceived(List<String> argsList) { // todo: not tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
@@ -373,7 +373,7 @@ public class App {
      * @param fileName Name of file to analyze
      * @return         The file, if it exists and is not empty. Null otherwise.
      */
-    public static File makeNewFile(String fileName) { // todo: not tested
+    static File makeNewFile(String fileName) { // todo: not tested
         if(StringUtils.isBlank(fileName)) {
             logEntry("Error: App.makeNewFile received a blank arg.");
             return null;
@@ -396,7 +396,7 @@ public class App {
      * @param frankenwordArg the program arg to parse
      * @return               the successfully converted int, -1 otherwise.
      */
-    public static int getNumberOfFrankenwordsToCreate(String frankenwordArg) { // todo: not tested
+    static int getNumberOfFrankenwordsToCreate(String frankenwordArg) { // todo: not tested
         int returnInt;
         try {
             returnInt = Integer.parseInt(frankenwordArg);
