@@ -6,7 +6,7 @@ Clone the project URL into a local directory and import the project into your fa
 
 ## Program Usage
 
-Args may be submitted in any order. Do not surround arg strings with double or single quotes. Recommend no spaces in input file names and input files be in project root directory. 
+Args may be submitted in any order. Do not surround arg strings with double or single quotes. Recommend no spaces in input file names and input files be in project root directory. Of course this goes without saying, but make sure the referenced files exist and contain acceptable data. 
 
 * (Required) -wordsfile [WORDS_FILE]: A user-provided list of words to mash in a readable file. Words must have length {len | 2 > len < 10} to be picked up by the program. Words must be separated in the file by a carriage return, i.e. hitting Return between each typed word. A handy file of 58,000 English words may be downloaded [here](http://www.mieliestronk.com/wordlist.html). A copy of this file is included in the project root (english_words.txt).
 * (Required) -numtoprint [INT]: The number of frankenwords to print to the output file. INT must be an integer-parsable string in the range {n | 0 > n < 1001}.
@@ -75,6 +75,8 @@ Finally I create unit tests for the helper methods, which often results in chang
 Of course these tests often fail right out of the gate, which leads me to refine the methods until the tests pass. There are a number of methods that employ the use of pseudorandom number generators, e.g. how to decide which words to select, or how special characters and spaces should be added. For these kinds of methods, I wrapped the unit tests in a loop and made sure all possible method outcomes are captured, usually in a Set object. 
 
 My favorite thing about test-driven development is that once I'm done rigorously testing all my helper methods, I can simply click them together and watch the whole thing run smoothly the first time. (Well, close to the first time.) 
+
+Functional testing is limited; there are only four acceptable workflows ("happy paths") through the program. (See the SAMPLE OUTPUT section above.) For this reason I added the file regression_tests.txt, which contains program arguments for all four happy paths. If something goes wrong the program will alert the user and exit gracefully. 
 
 ## High Level Design
 The program starts by opening a file containing a number of words and reading them into memory. It will then select either 2 or 3 words at random from the list, with the following requirements: the selected words must have a length {int len | 2 > len < MAX}, where MAX will be around 10. No two n words may be the same. This holds for all frankenwords created in a given session; no two identical words will be used from the list of all words read into memory while the program is running.
