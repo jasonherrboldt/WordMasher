@@ -11,7 +11,6 @@ import java.util.*;
  */
 public class AppTest extends TestCase {
 
-    private static String[] args;
     private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
     private static final int MAX_ENGLISH_WORDS_MOCK = 100;
     private static List<String> mockList;
@@ -21,11 +20,14 @@ public class AppTest extends TestCase {
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
     /*
-        return(correctNumberOfArgsReceived(argsList) &&
-                !illegalArgsReceived(argsList) &&
-                minimumRequiredArgsReceived(argsList) &&
-                argsAreInGoodOrder(argsList) &&
-                populateClassMemberVariables(argsList));
+        correctNumberOfArgsReceived(argsList) // DONE
+        illegalArgsReceived(argsList) // DONE
+        minimumRequiredArgsReceived(argsList) // DONE
+        argsAreInGoodOrder(argsList) // DONE
+        populateClassMemberVariables(argsList)
+        makeNewFile(file)
+        populateClassMemberVariables
+        getNumberOfFrankenwordsToCreate
      */
 
     /**
@@ -33,6 +35,8 @@ public class AppTest extends TestCase {
      * and true for a legal number of args. (Legal num args is 4, 5, 6, or 7.)
      */
     public void testCorrectNumberOfArgsReceived() {
+
+        String[] args;
 
         // Test for 0, 1, 2, and 3 dummy args. Should return false.
         for(int i = 0; i < 4; i++) {
@@ -605,16 +609,18 @@ public class AppTest extends TestCase {
      * Asserts App.addWeirdCapitalization returns at least one unique string over a few short iterations.
      */
     public void testAddWeirdCapitalization_returnsUniqueString() {
-        boolean mismatchFound = false;
-        String frankenword = "spaceship";
-        String methodCall = "";
-        for(int i = 0; i < 5; i++) {
-            methodCall = App.addWeirdCapitalization(frankenword);
-            if(!methodCall.equals(frankenword)) {
-                mismatchFound = true;
+        for(int i = 0; i < 100; i++) {
+            boolean mismatchFound = false;
+            String frankenword = "spaceship";
+            String methodCall = "";
+            for(int j = 0; j < 50; j++) {
+                methodCall = App.addWeirdCapitalization(frankenword);
+                if(!methodCall.equals(frankenword)) {
+                    mismatchFound = true;
+                }
             }
+            assert(mismatchFound);
         }
-        assert(mismatchFound);
     }
 
     /**
