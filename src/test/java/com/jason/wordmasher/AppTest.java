@@ -47,6 +47,37 @@ public class AppTest extends TestCase {
     }
 
     /**
+     * Asserts that App.illegalArgsReceived returns true if illegal args are found, false otherwise.
+     */
+    public void testLegalArgsReceived() {
+
+        // Should return false for all legal args.
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add(App.SPACES_ARG);
+        assertFalse(App.illegalArgsReceived(mockList));
+
+
+        // Should return true for at least one illegal arg.
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add("-illegal_arg");
+        assertTrue(App.illegalArgsReceived(mockList));
+
+        // Should return true for at all illegal args.
+        mockList.clear();
+        mockList.add("-illegal_arg_A");
+        mockList.add("-illegal_arg_B");
+        mockList.add("-illegal_arg_C");
+        mockList.add("-illegal_arg_D");
+        assertTrue(App.illegalArgsReceived(mockList));
+    }
+
+    /**
      * Asserts App.minimumRequiredArgsReceived returns true when minimum required args are present,
      * false otherwise.
      */
@@ -73,8 +104,18 @@ public class AppTest extends TestCase {
         mockList.clear();
         mockList.add("illegal_arg");
         assertFalse(App.minimumRequiredArgsReceived(mockList));
-
     }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Asserts App.parseArgs throws an exception if arguments array contains nonexistent files.

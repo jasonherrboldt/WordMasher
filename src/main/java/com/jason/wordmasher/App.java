@@ -45,9 +45,9 @@ public class App {
     private static List<String> usedEnglishWords = new ArrayList<>();
     private static String errorMessage;
     static final String WORDS_FILE_ARG = "-wordsfile";
-    private static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
+    static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
     static final String NUM_TO_PRINT_ARG = "-numtoprint";
-    private static final String SPACES_ARG = "-spaces";
+    static final String SPACES_ARG = "-spaces";
     private static boolean SPACES_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
@@ -239,12 +239,36 @@ public class App {
     }
 
     /**
+     * Checks for illegal program arguments.
+     *
+     * @param argsList the args to analyze
+     * @return         true if illegal args are found, false otherwise
+     */
+    static boolean illegalArgsReceived(List<String> argsList) { // tested
+        if(argsList == null || argsList.isEmpty()) {
+            return true;
+        }
+        List<String> acceptableArgs = new ArrayList<>(Arrays.asList(WORDS_FILE_ARG, SPECIAL_CHARS_FILE_ARG,
+                NUM_TO_PRINT_ARG, SPACES_ARG));
+        for(String s : argsList) {
+            if(s.charAt(0) == '-') {
+                if(!acceptableArgs.contains(s)) {
+                    logEntry("Error: App.illegalArgsReceived determined that arg " + s + " is illegal.");
+                    print("One or more illegal arguments were received. Please see README for usage.");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Determine if the minimum required program arguments were received.
      *
      * @param argsList The program arguments to analyze.
      * @return         True if the minimum required program arguments were received, false otherwise.
      */
-    static boolean minimumRequiredArgsReceived(List<String> argsList) { // todo: not tested
+    static boolean minimumRequiredArgsReceived(List<String> argsList) { // tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
@@ -255,6 +279,43 @@ public class App {
             print(errorMessage);
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Determines whether or not the args appear to be in good order. Specifically, dash args must be followed by
+     * non-dash args (except for '-spaces').
+     *
+     * @param argsList the list of args to analyze
+     * @return         true if the args appear to be in good order, false otherwise.
+     */
+    static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty()) {
+            return false;
+        }
+        for(int i = 0; i < argsList.size() - 1; i++) {
+            String thisArg = argsList.get(i);
+            // Will not cause index out of bounds exceptions because for loop stops 1 short of end:
+            if(thisArg.charAt(0) == '-' && (argsList.get(i + 1).charAt(0) == '-')) {
+                if(!thisArg.equals(SPACES_ARG)) {
+                    logEntry("Error: App.argsAreInGoodOrder found that a dash arg is followed by another dash arg, " +
+                            "and the first dash arg is not " +
+                            SPACES_ARG + ": " + thisArg);
+                    logEntry(NIGO_MESSAGE);
+                    print(NIGO_MESSAGE);
+                    return false;
+                }
+            }
+        }
+        String lastArg = argsList.get(argsList.size() - 1);
+        if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
+            logEntry("Error: App.argsAreInGoodOrder found that the last arg is a dash arg, and it is not " +
+                    SPACES_ARG + ": " + lastArg);
+            logEntry(NIGO_MESSAGE);
+            print(NIGO_MESSAGE);
+            return false;
+        }
+        ARGS_ARE_IN_GOOD_ORDER = true;
         return true;
     }
 
@@ -301,67 +362,6 @@ public class App {
             }
             if(argsList.get(i).equals(SPACES_ARG)) {
                 SPACES_REQUESTED = true;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Determines whether or not the args appear to be in good order. Specifically, dash args must be followed by
-     * non-dash args (except for '-spaces').
-     *
-     * @param argsList the list of args to analyze
-     * @return         true if the args appear to be in good order, false otherwise.
-     */
-    static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
-        if(argsList == null || argsList.isEmpty()) {
-            return false;
-        }
-        for(int i = 0; i < argsList.size() - 1; i++) {
-            String thisArg = argsList.get(i);
-            // Will not cause index out of bounds exceptions because for loop stops 1 short of end:
-            if(thisArg.charAt(0) == '-' && (argsList.get(i + 1).charAt(0) == '-')) {
-                if(!thisArg.equals(SPACES_ARG)) {
-                    logEntry("Error: App.argsAreInGoodOrder found that a dash arg is followed by another dash arg, " +
-                            "and the first dash arg is not " +
-                            SPACES_ARG + ": " + thisArg);
-                    logEntry(NIGO_MESSAGE);
-                    print(NIGO_MESSAGE);
-                    return false;
-                }
-            }
-        }
-        String lastArg = argsList.get(argsList.size() - 1);
-        if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
-            logEntry("Error: App.argsAreInGoodOrder found that the last arg is a dash arg, and it is not " +
-                    SPACES_ARG + ": " + lastArg);
-            logEntry(NIGO_MESSAGE);
-            print(NIGO_MESSAGE);
-            return false;
-        }
-        ARGS_ARE_IN_GOOD_ORDER = true;
-        return true;
-    }
-
-    /**
-     * Checks for illegal program arguments.
-     *
-     * @param argsList the args to analyze
-     * @return         true if the args are legal, false otherwise
-     */
-    static boolean illegalArgsReceived(List<String> argsList) { // todo: not tested
-        if(argsList == null || argsList.isEmpty()) {
-            return false;
-        }
-        List<String> acceptableArgs = new ArrayList<>(Arrays.asList(WORDS_FILE_ARG, SPECIAL_CHARS_FILE_ARG,
-                NUM_TO_PRINT_ARG, SPACES_ARG));
-        for(String s : argsList) {
-            if(s.charAt(0) == '-') {
-                if(!acceptableArgs.contains(s)) {
-                    logEntry("Error: App.illegalArgsReceived determined that arg " + s + " is illegal.");
-                    print("One or more illegal arguments were received. Please see README for usage.");
-                    return false;
-                }
             }
         }
         return true;
