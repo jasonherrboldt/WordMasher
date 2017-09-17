@@ -51,7 +51,7 @@ public class App {
     private static boolean SPACES_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
-    public static boolean ARGS_ARE_IN_GOOD_ORDER = false;
+    static boolean ARGS_ARE_IN_GOOD_ORDER = false;
 
     /**
      * Main program method.
@@ -324,7 +324,7 @@ public class App {
      * @param argsList The program arguments
      * @return         True if the CLMs were successfully populated, false otherwise.
      */
-    static boolean populateClassMemberVariables(List<String> argsList) { // todo: not tested
+    static boolean populateClassMemberVariables(List<String> argsList) { // tested
         if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
             return false;
         }
@@ -333,7 +333,8 @@ public class App {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
                 wordsFile = makeNewFile(argsList.get(i + 1)); // testing is handled by makeNewFile
                 if(wordsFile == null) {
-                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate wordsFile.");
+                    logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate " +
+                            "wordsFile.");
                     logEntry("Program terminated");
                     print(NIGO_MESSAGE);
                     return false;

@@ -19,16 +19,6 @@ public class AppTest extends TestCase {
     private static List<String> wordsToMash = populateWordsToMash();
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
-    /*
-        correctNumberOfArgsReceived(argsList) // DONE
-        illegalArgsReceived(argsList) // DONE
-        minimumRequiredArgsReceived(argsList) // DONE
-        argsAreInGoodOrder(argsList) // DONE
-        makeNewFile // DONE
-        getNumberOfFrankenwordsToCreate
-        populateClassMemberVariables
-     */
-
     /**
      * Asserts App.correctNumberOfArgsReceived returns false for an illegal number of args,
      * and true for a legal number of args. (Legal num args is 4, 5, 6, or 7.)
@@ -217,91 +207,36 @@ public class AppTest extends TestCase {
         assertEquals(App.getNumberOfFrankenwordsToCreate(maxPlusOne), -1);
     }
 
-
-
-
-
-
-
-
-
-
-
     /**
-     * Asserts App.parseArgs throws an exception if arguments array contains nonexistent files.
+     * Assert App.populateClassMemberVariables returns true for valid program arguments.
+     *
+     * (Not necessary to test false returns for bad input; helper methods are tested separately for that.
+     *
+     * This is just making sure the happy path works.)
      */
-//    public void testParseArgs_nonExistentFiles() {
-//        args = createArgsArray("a.txt", "b.txt", "c.txt", "4");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
+    public void testPopulateClassMemberVariables() {
+        String tempWordsFileName = "temp_words.txt";
+        File tempWordsFile = createFileWithStringList(createDummyStringList(9), tempWordsFileName);
 
-    /**
-     * Asserts App.parseArgs throws an exception if arguments array contains empty files.
-     */
-//    public void testParseArgs_emptyArgFiles() {
-//        String emptyFileName = "empty.txt";
-//        List<String> emptyList = new ArrayList<>();
-//        File tempFile = createFileWithStringList(emptyList, emptyFileName);
-//        if(!tempFile.canRead()) {
-//            fail("Unable to read temporary test file " + tempFile.getName());
-//        }
-//        String[] args = createArgsArray(emptyFileName, "charList.txt", "output.txt", "4");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//            if(!tempFile.delete()) {
-//                fail("testParseArgs_emptyArgFiles was unable to delete " + tempFile.getName());
-//            }
-//        }
-//    }
+        String tempSpecialCharsFileName = "temp_special_chars.txt";
+        File tempSpecialCharsFile = createFileWithStringList(createDummyStringList(9), tempSpecialCharsFileName);
 
-    /**
-     * Asserts App.parseArgs throws an exception if arguments array contains an un-parsable integer string.
-     */
-//    public void testParseArgs_unparsableNumberOfFrankenwords() {
-//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "x");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add(tempWordsFileName);
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        mockList.add(tempSpecialCharsFileName);
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add("9");
+        mockList.add(App.SPACES_ARG);
 
-    /**
-     * Asserts App.validateArgs throws an exception if 4th program arguments is < 1.
-     */
-//    public void testParseArgs_negativeNumberOfFrankenwords() {
-//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "-1");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
+        App.ARGS_ARE_IN_GOOD_ORDER = true;
+        assertTrue(App.populateClassMemberVariables(mockList));
+        App.ARGS_ARE_IN_GOOD_ORDER = false;
 
-    /**
-     * Asserts App.validateArgs throws an exception if 4th program arguments is > 1000.
-     */
-//    public void testParseArgs_tooManyFrankenwords() {
-//        args = createArgsArray("english_words.txt", "special_characters.txt", "output.txt", "1001");
-//        try {
-//            App.parseArgs(args);
-//            fail("parseArgs should have thrown an illegal argument exception.");
-//        } catch (IllegalArgumentException e) {
-//            // Do nothing; test asserts exception is properly thrown.
-//        }
-//    }
-
-    // todo: happy path parseArgs test needed too!
+        deleteTempFile(tempWordsFile);
+        deleteTempFile(tempSpecialCharsFile);
+    }
 
     /**
      * Asserts App.readFileIntoListOfStrings returns a list that reflects the file data.
