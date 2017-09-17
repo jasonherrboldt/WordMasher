@@ -24,10 +24,9 @@ public class AppTest extends TestCase {
         illegalArgsReceived(argsList) // DONE
         minimumRequiredArgsReceived(argsList) // DONE
         argsAreInGoodOrder(argsList) // DONE
-        populateClassMemberVariables(argsList)
-        makeNewFile(file)
-        populateClassMemberVariables
+        makeNewFile
         getNumberOfFrankenwordsToCreate
+        populateClassMemberVariables
      */
 
     /**
@@ -166,9 +165,36 @@ public class AppTest extends TestCase {
         mockList.add(App.SPECIAL_CHARS_FILE_ARG);
         assertFalse(App.argsAreInGoodOrder(mockList));
         assertFalse(App.ARGS_ARE_IN_GOOD_ORDER);
+
+        App.ARGS_ARE_IN_GOOD_ORDER = false;
     }
 
+    /**
+     * Asserts App.makeNewFile returns non-null File objects when successful, null otherwise.
+     */
+    public void testMakeNewFile() {
 
+        // Make a temporary non-empty file.
+        String mockFileName = "mock.txt";
+        createFileWithStringList(createDummyStringList(10), mockFileName);
+
+        // Should return a non-null File object if successful.
+        File mockFile = App.makeNewFile(mockFileName);
+        assertNotNull(mockFile);
+        deleteTempFile(mockFile);
+
+        // Should return null for a non-existent file.
+        mockFile = App.makeNewFile("doesnt_exist.txt");
+        assertNull(mockFile);
+
+        // Make a temporary empty file.
+        File tempEmptyFile = makeTempEmptyFile();
+
+        // Should return null for an empty file.
+        mockFile = App.makeNewFile(tempEmptyFile.getName());
+        assertNull(mockFile);
+        deleteTempFile(tempEmptyFile);
+    }
 
 
 
@@ -901,6 +927,29 @@ public class AppTest extends TestCase {
         englishWordsMock = populateEnglishWordsMock();
         usedEnglishWordsMock = new ArrayList<>();
         return App.getWordsToMash(App.MAX_WORDS_TO_MASH, englishWordsMock, usedEnglishWordsMock);
+    }
+
+    /**
+     * @return A temporary empty file.
+     */
+    public File makeTempEmptyFile() {
+        String emptyFileName = "empty.txt";
+        File tempFile = createFileWithStringList(new ArrayList<>(), emptyFileName);
+        if(!tempFile.canRead()) {
+            throw new IllegalStateException("makeTempFile was unable to read temporary file " + tempFile.getName());
+        }
+        return tempFile;
+    }
+
+    /**
+     * Delete a temporary file.
+     *
+     * @param tempFile the temp file to delete
+     */
+    public void deleteTempFile(File tempFile) {
+        if(!tempFile.delete()) {
+            throw new IllegalStateException("testMakeNewFile was unable to delete " + tempFile.getName());
+        }
     }
 
     /**

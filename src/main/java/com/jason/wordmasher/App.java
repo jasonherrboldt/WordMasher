@@ -372,7 +372,7 @@ public class App {
      * @param fileName Name of file to analyze
      * @return         The file, if it exists and is not empty. Null otherwise.
      */
-    static File makeNewFile(String fileName) { // todo: not tested
+    static File makeNewFile(String fileName) { // tested
         if(StringUtils.isBlank(fileName)) {
             logEntry("Error: App.makeNewFile received a blank arg.");
             return null;
