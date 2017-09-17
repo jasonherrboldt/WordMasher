@@ -107,7 +107,7 @@ public class App {
         // Break the news to the user.
         String time = new SimpleDateFormat("kk:mm:ss").format(new Date());
         print("\nSomething went wrong around " + time + ". See " + LOG_FILENAME
-                + " for more information.");
+                + " for more information. Also see README for program usage.");
     }
 
 
