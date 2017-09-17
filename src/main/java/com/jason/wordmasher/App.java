@@ -47,7 +47,7 @@ public class App {
     static final String WORDS_FILE_ARG = "-wordsfile";
     static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
     static final String NUM_TO_PRINT_ARG = "-numtoprint";
-    static final String SPACES_ARG = "-spaces";
+    static final String SPACES_ARG = "-addspaces";
     private static boolean SPACES_REQUESTED = false;
     private static boolean SPECIAL_CHARS_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
@@ -199,7 +199,6 @@ public class App {
     //***** PARSING PROGRAM ARGS *****//
     //********************************//
 
-    // -words “english_words.txt” -specialchars “special_characters_A_shortest.txt” -spaces -numtoprint 1000
 
     /**
      * Validates and parses program arguments.
@@ -287,7 +286,7 @@ public class App {
 
     /**
      * Determines whether or not the args appear to be in good order. Specifically, dash args must be followed by
-     * non-dash args (except for '-spaces').
+     * non-dash args (except for SPACES_ARG).
      *
      * @param argsList the list of args to analyze
      * @return         true if the args appear to be in good order, false otherwise.
