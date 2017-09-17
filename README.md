@@ -8,10 +8,10 @@ Clone the project URL into a local directory and import the project into your fa
 
 Args may be submitted in any order. Do not surround arg strings with double or single quotes. Recommend no spaces in input file names and input files be in project root directory. 
 
-* (Required) -wordsfile [WORDS_FILE]: A user-provided list of words to mash in a readable file. Words must have length {len | 2 > len < 10} to be picked up by the program. (A list of 58,000 English words may be downloaded [here](http://www.mieliestronk.com/wordlist.html), and a sample list is included in the project root.)
+* (Required) -wordsfile [WORDS_FILE]: A user-provided list of words to mash in a readable file. Words must have length {len | 2 > len < 10} to be picked up by the program. Words must be separated in the file by a carriage return, i.e. hitting Return between each typed word. A handy file of 58,000 English words may be downloaded [here](http://www.mieliestronk.com/wordlist.html). A copy of this file is included in the project root (english_words.txt).
 * (Required) -numtoprint [INT]: The number of frankenwords to print to the output file. INT must be an integer-parsable string in the range {n | 0 > n < 1001}.
-* -specialcharsfile [SPECIAL_CHARS_FILE]: A user-provided list of special characters to be randomly sprinkled into the frankenwords. Character strings must have a length of exactly one. There is no restriction on what special characters may be injected at runtime, but some may cause trouble when opening the output file with certain programs. Use with caution. Special characters may repeat; if you want more numbers to appear than other special chars, enter the chars 0 - 9 multiple times and other special chars only once. Four sample special character files are included in the project root, or you can create your own. (See SPECIAL CHARACTERS section below for more information.) 
-* -addspaces: Program will randomly add one or two spaces into generated frankenwords. (See SPACES section below for more information.) 
+* -specialcharsfile [SPECIAL_CHARS_FILE]: A user-provided list of special characters to be randomly sprinkled into the frankenwords. Character strings must have a length of exactly one, and must be separated in the file by a carriage return. There is no restriction on what special characters may be injected at runtime, but some may cause trouble when opening the output file with certain programs. Use with caution. Special characters may repeat; if you want more numbers to appear than other special chars, enter the chars 0 - 9 multiple times and other special chars only once. Four sample special character files are included in the project root, or you can create your own. (See SPECIAL CHARACTERS section below for more information.) 
+* -addspaces: Program will randomly inject one or two spaces into generated frankenwords. (See SPACES section below for more information.) 
 
 ## Sample Output
     WITH SPECIAL CHARACTERS AND ADDED SPACES
@@ -63,22 +63,23 @@ Args may be submitted in any order. Do not surround arg strings with double or s
     oilEdb
 
 ## Test-Driven Development
-Every method in this project was broken down into smaller helper methods, and each helper method was rigorously unit tested. 
 
-My approach is to create a rough draft of a method to discover its required inputs and outputs and true intended functionality. Then I break the method into smaller helper methods, each with their own injectable arguments and non-void returns. 
+All unit tests are located in the AppTest class. 
+
+I'm a big cheerleader of test-driven development. Every method in this project was broken down into smaller helper methods, and each helper method was rigorously unit tested. 
+
+My approach is to create a rough draft of a method to explore and invent its functionality. Then I break the method into smaller helper methods, each with their own injectable arguments and non-void returns. 
 
 Finally I create unit tests for the helper methods, which often results in changing the method signatures to accept additional parameters for injection. This helps me figure out how to mock any necessary objects, which for the purposes of this exercise consist largely of data structures from Java's util package. 
 
-Of course these tests often fail right out of the gate, which leads me to refine the methods until the tests pass. There are a number of methods that employ the use of pseudorandom number generators, e.g. how to decide which words to select, or how they should be split up. For these kinds of methods, I wrapped the unit tests in a loop and made sure all possible method outcomes are captured, usually in a Set object. 
+Of course these tests often fail right out of the gate, which leads me to refine the methods until the tests pass. There are a number of methods that employ the use of pseudorandom number generators, e.g. how to decide which words to select, or how special characters and spaces should be added. For these kinds of methods, I wrapped the unit tests in a loop and made sure all possible method outcomes are captured, usually in a Set object. 
 
-My favorite thing about test-driven development is that once I'm done rigorously testing all my methods, I can simply click them together and watch the whole thing run smoothly the first time! (Well, or close to the first time.) 
+My favorite thing about test-driven development is that once I'm done rigorously testing all my helper methods, I can simply click them together and watch the whole thing run smoothly the first time. (Well, close to the first time.) 
 
 ## High Level Design
-The program starts by opening a file containing a number of words and reading them into memory. It will then select an integer at random that is either 2 or 3.
+The program starts by opening a file containing a number of words and reading them into memory. It will then select either 2 or 3 words at random from the list, with the following requirements: the selected words must have a length {int len | 2 > len < MAX}, where MAX will be around 10. No two n words may be the same. This holds for all frankenwords created in a given session; no two identical words will be used from the list of all words read into memory while the program is running.
 
-Once it has n, it then selects n of the words in memory at random, with the following requirements: the selected words must have a length len like so: {int len | 2 > len < MAX}, where MAX will be around 10. No two n words may be the same, and this holds for all frankenwords created in a given session. 
-
-Once it has n random words of a specified length, it mashes them up to create a frankenword. 
+Once it has n distinct and random words of a specified length, it mashes them up to create a frankenword. 
 
 It starts by creating subwords for each of the n chosen words, deciding at random each time which subword pattern to employ: 
 
