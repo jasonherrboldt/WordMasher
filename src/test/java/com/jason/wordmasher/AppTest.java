@@ -1,6 +1,7 @@
 package com.jason.wordmasher;
 
 import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.*;
@@ -819,7 +820,8 @@ public class AppTest extends TestCase {
      * @return A string array of arguments.
      */
     private String[] createArgsArray(String arg_0, String arg_1, String arg_2, String arg_3) {
-        if(arg_0 == null || arg_1 == null || arg_2 == null || arg_3 == null) {
+        if(StringUtils.isBlank(arg_0) || StringUtils.isBlank(arg_1) || StringUtils.isBlank(arg_2) ||
+                StringUtils.isBlank(arg_3)) {
             throw new IllegalStateException("createArgsArray called with one or more null arguments.");
         }
         String[] args = new String[4];

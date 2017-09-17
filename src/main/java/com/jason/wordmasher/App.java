@@ -482,7 +482,7 @@ public class App {
             numberOfWordsToMash = oneInNChance(2) ? 2 : 3;
             wordsToMash = getWordsToMash(numberOfWordsToMash, englishWords, null);
             frankenword = makeFrankenword(wordsToMash);
-            if(frankenword == null || frankenword.isEmpty()) {
+            if(StringUtils.isBlank(frankenword)) {
                 errorMessage = "Error: App.wordsToMash returned a null or empty frankenword to App.makeFrankenwords.";
                 logEntry(errorMessage);
                 throw new IllegalStateException(errorMessage);
@@ -653,7 +653,7 @@ public class App {
      */
     static String addSpecialCharacters(String frankenWord, char[] specialCharacters)
             throws IllegalStateException { // tested
-        if(frankenWord == null || frankenWord.length() < 3 || specialCharacters == null
+        if(StringUtils.isBlank(frankenWord) || frankenWord.length() < 3 || specialCharacters == null
                 || specialCharacters.length == 0) {
             errorMessage = "Error: App.addSpecialCharacters received an illegal argument.";
             logEntry(errorMessage);
@@ -712,7 +712,7 @@ public class App {
      * @return            The capitalized word
      */
     static String addStandardCapitalization(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() < 3) {
+        if(StringUtils.isBlank(frankenword)|| frankenword.length() < 3) {
             errorMessage = "Error: App.addStandardCapitalization received an illegal string.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -733,7 +733,7 @@ public class App {
      * @return            The processed word
      */
     static String addWeirdCapitalization(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() < 3) {
+        if(StringUtils.isBlank(frankenword) || frankenword.length() < 3) {
             errorMessage = "Error: App.addWeirdCapitalization received an illegal string.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -759,7 +759,7 @@ public class App {
      * @return     The subword
      */
     static String makeSubword(String word, int n) throws IllegalStateException { // tested
-        if(word == null || word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
+        if(StringUtils.isBlank(word)|| word.length() < MIN_CANDIDATE_WORD_LENGTH || word.length() > MAX_CANDIDATE_WORD_LENGTH) {
             errorMessage = "Error: makeSubword received an illegal 1st argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -810,7 +810,7 @@ public class App {
      * @return            the broken word
      */
     static String breakInTwo(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() < 3 || frankenword.length() > 27) {
+        if(StringUtils.isBlank(frankenword) || frankenword.length() < 3 || frankenword.length() > 27) {
             errorMessage = "Error: App.breakInTwo received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
@@ -831,7 +831,7 @@ public class App {
      * @return            the broken word
      */
     static String breakInThree(String frankenword) { // tested
-        if(frankenword == null || frankenword.length() < 7 || frankenword.length() > 27) {
+        if(StringUtils.isBlank(frankenword) || frankenword.length() < 7 || frankenword.length() > 27) {
             errorMessage = "Error: App.breakInThree received an illegal argument.";
             logEntry(errorMessage);
             throw new IllegalStateException(errorMessage);
