@@ -49,6 +49,7 @@ public class App {
     static final String NUM_TO_PRINT_ARG = "-numtoprint";
     static final String SPACES_ARG = "-spaces";
     private static boolean SPACES_REQUESTED = false;
+    private static boolean SPECIAL_CHARS_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
     static boolean ARGS_ARE_IN_GOOD_ORDER = false;
@@ -63,7 +64,9 @@ public class App {
         if(parseArgs(args)) {
             try {
                 englishWords = readFileIntoListOfStrings(wordsFile);
-                specialCharacters = readFileIntoCharArray(specialCharactersFile);
+                if(SPECIAL_CHARS_REQUESTED) {
+                    specialCharacters = readFileIntoCharArray(specialCharactersFile);
+                }
                 List<String> frankenwords = makeFrankenwords();
                 printFrankenwords(frankenwords);
                 print("\nThe output file has been populated!");
@@ -349,6 +352,7 @@ public class App {
                     print(NIGO_MESSAGE);
                     return false;
                 }
+                SPECIAL_CHARS_REQUESTED = true;
             }
             if(argsList.get(i).equals(NUM_TO_PRINT_ARG)) {
                 // testing is handled by getNumberOfFrankenwordsToCreate
@@ -552,9 +556,11 @@ public class App {
         } else {
             frankenword = addWeirdCapitalization(frankenword);
         }
-        if(specialCharacters.length > 0) {
-            if(oneInNChance(4)) {
-                frankenword = addSpecialCharacters(frankenword, specialCharacters);
+        if(SPECIAL_CHARS_REQUESTED) {
+            if(specialCharacters.length > 0) {
+                if(oneInNChance(4)) {
+                    frankenword = addSpecialCharacters(frankenword, specialCharacters);
+                }
             }
         }
         if(SPACES_REQUESTED) {
