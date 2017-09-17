@@ -21,32 +21,37 @@ public class AppTest extends TestCase {
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
     /**
-     * Asserts App.parseArgs throws an exception for an illegal number of args.
+     * Asserts App.correctNumberOfArgsReceived returns false for an illegal number of args.
      *
      * (Program must have 4, 5, 6, or 7 arguments.)
      */
-    public void testParseArgs_invalidNumberOfArgs() {
+    public void testCorrectNumberOfArgsReceived_invalidNumberOfArgs() {
 
-        // Test for 0, 1, 2, and 3 dummy args.
+        // Test for 0, 1, 2, and 3 dummy args. Should return false.
         for(int i = 0; i < 4; i++) {
             args = createDummyArray(i);
-            try {
-                App.parseArgs(args);
-                fail("App.parseArgs should have thrown an illegal argument exception.");
-            } catch (IllegalArgumentException e) {
-                // Do nothing; test asserts exception is properly thrown.
-            }
+            mockList = new ArrayList<>(Arrays.asList(args));
+            assertFalse(App.correctNumberOfArgsReceived(mockList));
         }
 
-        // (Tests are not needed for the correct number of args (4 - 7); happy paths are validated in other tests.)
-
-        // Test for 1 more than the max allowed # of args:
+        // Test for 8 args. Should return false.
         args = createDummyArray(8);
-        try {
-            App.parseArgs(args);
-            fail("App.parseArgs should have thrown an illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // Do nothing; test asserts exception is properly thrown.
+        mockList = new ArrayList<>(Arrays.asList(args));
+        assertFalse(App.correctNumberOfArgsReceived(mockList));
+    }
+
+    /**
+     * Asserts App.correctNumberOfArgsReceived returns true for a legal number of args.
+     *
+     * (Program must have 4, 5, 6, or 7 arguments.)
+     */
+    public void testCorrectNumberOfArgsReceived_validNumberOfArgs() {
+
+        // Test for 4, 5, 6, and 7 dummy args. Should return true.
+        for(int i = 4; i < 8; i++) {
+            args = createDummyArray(i);
+            mockList = new ArrayList<>(Arrays.asList(args));
+            assertTrue(App.correctNumberOfArgsReceived(mockList));
         }
     }
 
@@ -123,6 +128,8 @@ public class AppTest extends TestCase {
 //            // Do nothing; test asserts exception is properly thrown.
 //        }
 //    }
+
+    // todo: happy path parseArgs test needed too!
 
     /**
      * Asserts App.readFileIntoListOfStrings returns a list that reflects the file data.

@@ -51,7 +51,7 @@ public class App {
     private static boolean SPACES_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
-    private static boolean ARGS_ARE_IN_GOOD_ORDER = false;
+    public static boolean ARGS_ARE_IN_GOOD_ORDER = false;
 
     /**
      * Main program method.
@@ -203,29 +203,17 @@ public class App {
      *
      * @param args Program arguments
      */
-    static boolean parseArgs(String[] args) { // todo: testing in progress
+    static boolean parseArgs(String[] args) { // no testing required
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         ListIterator<String> iterator = argsList.listIterator();
         while (iterator.hasNext()) {
             iterator.set(iterator.next().toLowerCase());
         }
-        if(!correctNumberOfArgsReceived(argsList)) { // testing handled by correctNumberOfArgsReceived
-            return false;
-        }
-        if(illegalArgsReceived(argsList)) { // testing handled by illegalArgsReceived
-            return false;
-        }
-        if(!minimumRequiredArgsReceived(argsList)) { // testing handled by minimumRequiredArgsReceived
-            return false;
-        }
-        if(!argsAreInGoodOrder(argsList)) { // testing is handled by argsAreInGoodOrder
-            return false;
-        }
-        if(!populateClassMemberVariables(argsList)) { // testing is handled by populateClassMemberVariables
-            return false;
-        }
-        logEntry("Program arguments parsed and validated.");
-        return true;
+        return(correctNumberOfArgsReceived(argsList) &&
+                !illegalArgsReceived(argsList) &&
+                minimumRequiredArgsReceived(argsList) &&
+                argsAreInGoodOrder(argsList) &&
+                populateClassMemberVariables(argsList));
     }
 
     /**
@@ -234,8 +222,8 @@ public class App {
      * @param argsList The program arguments to analyze.
      * @return         True if an acceptable number of program arguments were received, false otherwise.
      */
-    public static boolean correctNumberOfArgsReceived(List<String> argsList) { // todo: not tested
-        if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
+    public static boolean correctNumberOfArgsReceived(List<String> argsList) { // tested
+        if(argsList == null || argsList.isEmpty()) {
             return false;
         }
         List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
@@ -257,7 +245,7 @@ public class App {
      * @return         True if the minimum required program arguments were received, false otherwise.
      */
     public static boolean minimumRequiredArgsReceived(List<String> argsList) { // todo: not tested
-        if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
+        if(argsList == null || argsList.isEmpty()) {
             return false;
         }
         if(!argsList.contains(WORDS_FILE_ARG) || !argsList.contains(NUM_TO_PRINT_ARG)) {
