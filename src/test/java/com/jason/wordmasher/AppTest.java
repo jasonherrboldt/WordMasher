@@ -13,7 +13,7 @@ public class AppTest extends TestCase {
 
     private static final int CREATE_DUMMY_ARRAY_MAX = 2000;
     private static final int MAX_ENGLISH_WORDS_MOCK = 100;
-    private static List<String> mockList;
+    private static List<String> mockList = new ArrayList<>();
     private static List<String> englishWordsMock;
     private static List<String> usedEnglishWordsMock;
     private static List<String> wordsToMash = populateWordsToMash();
@@ -24,7 +24,7 @@ public class AppTest extends TestCase {
         illegalArgsReceived(argsList) // DONE
         minimumRequiredArgsReceived(argsList) // DONE
         argsAreInGoodOrder(argsList) // DONE
-        makeNewFile
+        makeNewFile // DONE
         getNumberOfFrankenwordsToCreate
         populateClassMemberVariables
      */
@@ -195,6 +195,30 @@ public class AppTest extends TestCase {
         assertNull(mockFile);
         deleteTempFile(tempEmptyFile);
     }
+
+    /**
+     * Asserts App.getNumberOfFrankenwordsToCreate returns an integer-parsed string, -1 if unable to parse,
+     * and -1 if parsed int is not within legal range (1 > n <= App.MAX_FRANKENWORDS).
+     */
+    public void testGetNumberOfFrankenwordsToCreate() {
+        // if (returnInt < 1 || returnInt > MAX_FRANKENWORDS) {
+
+        // Happy path should return parsed int.
+        assertEquals(App.getNumberOfFrankenwordsToCreate("9"), 9);
+
+        // A non-integer-parsable string should return -1.
+        assertEquals(App.getNumberOfFrankenwordsToCreate("x"), -1);
+
+        // An integer-parsable string should return -1 if out of range (too low).
+        assertEquals(App.getNumberOfFrankenwordsToCreate("0"), -1);
+
+        // An integer-parsable string should return -1 if out of range (too high).
+        String maxPlusOne = Integer.toString(App.MAX_FRANKENWORDS + 1);
+        assertEquals(App.getNumberOfFrankenwordsToCreate(maxPlusOne), -1);
+    }
+
+
+
 
 
 

@@ -32,7 +32,7 @@ public class App {
 
     // Misc variables
     private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
-    private static final int MAX_FRANKENWORDS = 1000;
+    static final int MAX_FRANKENWORDS = 1000;
     private static final int MAX_ONE_IN_N_CHANCE = 100;
     private static final int MAX_WHILE = 1000;
     static final int MAX_WORDS_TO_MASH = 10;
@@ -395,7 +395,7 @@ public class App {
      * @param frankenwordArg the program arg to parse
      * @return               the successfully converted int, -1 otherwise.
      */
-    static int getNumberOfFrankenwordsToCreate(String frankenwordArg) { // todo: not tested
+    static int getNumberOfFrankenwordsToCreate(String frankenwordArg) { // tested
         int returnInt;
         try {
             returnInt = Integer.parseInt(frankenwordArg);
