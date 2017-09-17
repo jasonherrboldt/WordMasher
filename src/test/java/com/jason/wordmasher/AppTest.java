@@ -20,6 +20,14 @@ public class AppTest extends TestCase {
     private static List<String> wordsToMash = populateWordsToMash();
     private static char[] specialCharactersMock = populateSpecialCharactersMock();
 
+    /*
+        return(correctNumberOfArgsReceived(argsList) &&
+                !illegalArgsReceived(argsList) &&
+                minimumRequiredArgsReceived(argsList) &&
+                argsAreInGoodOrder(argsList) &&
+                populateClassMemberVariables(argsList));
+     */
+
     /**
      * Asserts App.correctNumberOfArgsReceived returns false for an illegal number of args,
      * and true for a legal number of args. (Legal num args is 4, 5, 6, or 7.)
@@ -49,7 +57,7 @@ public class AppTest extends TestCase {
     /**
      * Asserts that App.illegalArgsReceived returns true if illegal args are found, false otherwise.
      */
-    public void testLegalArgsReceived() {
+    public void testIllegalArgsReceived() {
 
         // Should return false for all legal args.
         mockList.clear();
@@ -106,7 +114,55 @@ public class AppTest extends TestCase {
         assertFalse(App.minimumRequiredArgsReceived(mockList));
     }
 
+    /**
+     * Asserts App.argsAreInGoodOrder returns true when args are in good order, false otherwise.
+     *
+     * (Good order means dash args are followed by non-dash args, with the exception of App.SPACES_ARG.)
+     */
+    public void testArgsAreInGoodOrder() {
 
+        App.ARGS_ARE_IN_GOOD_ORDER = false;
+
+        // Legal args in good order should return true.
+        mockList.clear();
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add("words_file.txt");
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        mockList.add("special_chars.txt");
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add("100");
+        mockList.add(App.SPACES_ARG);
+        assertTrue(App.argsAreInGoodOrder(mockList));
+        assertTrue(App.ARGS_ARE_IN_GOOD_ORDER);
+
+        App.ARGS_ARE_IN_GOOD_ORDER = false;
+
+        // Legal args in good order should return true when received in any order.
+        mockList.clear();
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add("100");
+        mockList.add(App.SPACES_ARG);
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        mockList.add("special_chars.txt");
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add("words_file.txt");
+        assertTrue(App.argsAreInGoodOrder(mockList));
+        assertTrue(App.ARGS_ARE_IN_GOOD_ORDER);
+
+        App.ARGS_ARE_IN_GOOD_ORDER = false;
+
+        // Legal args not in good order should return false.
+        mockList.clear();
+        mockList.add(App.NUM_TO_PRINT_ARG);
+        mockList.add(App.SPACES_ARG);
+        mockList.add("special_chars.txt");
+        mockList.add(App.WORDS_FILE_ARG);
+        mockList.add("words_file.txt");
+        mockList.add("100");
+        mockList.add(App.SPECIAL_CHARS_FILE_ARG);
+        assertFalse(App.argsAreInGoodOrder(mockList));
+        assertFalse(App.ARGS_ARE_IN_GOOD_ORDER);
+    }
 
 
 

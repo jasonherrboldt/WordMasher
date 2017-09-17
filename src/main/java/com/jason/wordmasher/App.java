@@ -289,18 +289,17 @@ public class App {
      * @param argsList the list of args to analyze
      * @return         true if the args appear to be in good order, false otherwise.
      */
-    static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
+    static boolean argsAreInGoodOrder(List<String> argsList) { // tested
         if(argsList == null || argsList.isEmpty()) {
             return false;
         }
+        // Only loop through argsList.size() - 1 to prevent index out of bounds exceptions.
         for(int i = 0; i < argsList.size() - 1; i++) {
             String thisArg = argsList.get(i);
-            // Will not cause index out of bounds exceptions because for loop stops 1 short of end:
             if(thisArg.charAt(0) == '-' && (argsList.get(i + 1).charAt(0) == '-')) {
                 if(!thisArg.equals(SPACES_ARG)) {
                     logEntry("Error: App.argsAreInGoodOrder found that a dash arg is followed by another dash arg, " +
-                            "and the first dash arg is not " +
-                            SPACES_ARG + ": " + thisArg);
+                            "and the first dash arg is not " + SPACES_ARG + ". Offending arg: " + thisArg);
                     logEntry(NIGO_MESSAGE);
                     print(NIGO_MESSAGE);
                     return false;
