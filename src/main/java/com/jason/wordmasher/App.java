@@ -31,28 +31,26 @@ public class App {
     private static final File LOG_FILE = new File(LOG_FILENAME);
 
     // Misc variables
-    private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
-    static final int MAX_FRANKENWORDS = 1000;
-    private static final int MAX_ONE_IN_N_CHANCE = 100;
-    private static final int MAX_WHILE = 1000;
-    static final int MAX_WORDS_TO_MASH = 10;
-    private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
-    private static final int MIN_WORDS_TO_MASH = 1;
-    private static final String PARSE_ARGS_ERROR_MESSAGE =
-            "App.parseArgs encountered one or more illegal program arguments.";
-    private static List<String> englishWords;
-    private static char[] specialCharacters;
-    private static List<String> usedEnglishWords = new ArrayList<>();
-    private static String errorMessage;
-    static final String WORDS_FILE_ARG = "-wordsfile";
-    static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
-    static final String NUM_TO_PRINT_ARG = "-numtoprint";
-    static final String SPACES_ARG = "-addspaces";
     private static boolean SPACES_REQUESTED = false;
     private static boolean SPECIAL_CHARS_REQUESTED = false;
+    private static char[] specialCharacters;
+    private static final int MAX_CANDIDATE_WORD_LENGTH = 10;
+    private static final int MAX_ONE_IN_N_CHANCE = 100;
+    private static final int MAX_WHILE = 1000;
+    private static final int MIN_CANDIDATE_WORD_LENGTH = 2;
+    private static final int MIN_WORDS_TO_MASH = 1;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
+    private static List<String> englishWords;
+    private static List<String> usedEnglishWords = new ArrayList<>();
+    private static String errorMessage;
     static boolean ARGS_ARE_IN_GOOD_ORDER = false;
+    static final int MAX_FRANKENWORDS = 1000;
+    static final int MAX_WORDS_TO_MASH = 10;
+    static final String NUM_TO_PRINT_ARG = "-numtoprint";
+    static final String SPACES_ARG = "-addspaces";
+    static final String SPECIAL_CHARS_FILE_ARG = "-specialcharsfile";
+    static final String WORDS_FILE_ARG = "-wordsfile";
 
     /**
      * Main program method.
@@ -205,7 +203,7 @@ public class App {
      *
      * @param args Program arguments
      */
-    static boolean parseArgs(String[] args) { // no testing required
+    private static boolean parseArgs(String[] args) { // all sub-components individually tested
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         ListIterator<String> iterator = argsList.listIterator();
         while (iterator.hasNext()) {
