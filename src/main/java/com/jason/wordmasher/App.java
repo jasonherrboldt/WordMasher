@@ -67,7 +67,7 @@ public class App {
                 specialCharacters = readFileIntoCharArray(specialCharactersFile);
                 List<String> frankenwords = makeFrankenwords();
                 printFrankenwords(frankenwords);
-                print("\nThe output file has been populated!");
+                print("\n" + outputFile.getName() + " has been created.");
                 logEntry("Program finished.");
             } catch (Exception e) {
                 handleMainException(e);
