@@ -2,7 +2,7 @@
 A Java coding exercise that mashes parts of different words together in a random fashion to create interesting "frankenwords". 
 
 ## How To Run
-Clone the project URL into a local directory and import the project into your favorite IDE. (I used IntelliJ IDEA - Community 2017.2.) Make sure you have Maven installed and a local Maven repository. See pom.xml for application and unit test dependencies. 
+Clone the project into a local directory and import the project into your favorite IDE. (I used IntelliJ IDEA - Community 2017.2.) Make sure you have Maven installed and a local Maven repository. See pom.xml for application and unit test dependencies. 
 
 ## Program Usage
 
