@@ -51,6 +51,7 @@ public class App {
     private static boolean SPACES_REQUESTED = false;
     private static final String NIGO_MESSAGE = "The program arguments do not appear to be in good order. " +
             "Please see README for program usage.";
+    private static boolean ARGS_ARE_IN_GOOD_ORDER = false;
 
     /**
      * Main program method.
@@ -124,7 +125,7 @@ public class App {
                 print("WARN: unable to create directory 'logs'.");
             }
         }
-        logEntry("New log started.");
+        logEntry("New session started.");
     }
 
     /**
@@ -203,58 +204,83 @@ public class App {
      * @param args Program arguments
      */
     static boolean parseArgs(String[] args) { // todo: testing in progress
-
-        // prepare data structures
-        List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         ListIterator<String> iterator = argsList.listIterator();
         while (iterator.hasNext()) {
             iterator.set(iterator.next().toLowerCase());
         }
-
-        // Validate arguments
-
-        // Make sure a legal number of arguments were received.
-        if(!acceptableArgCount.contains(argsList.size())) { // tested
-            errorMessage = "Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
-                    + args.length + ".";
-            logEntry(errorMessage);
-            print(errorMessage);
-//            logEntry("Program terminated");
-//            throw new IllegalArgumentException("App.parseArgs determined that an illegal number of arguments were " +
-//                    "received.");
+        if(!correctNumberOfArgsReceived(argsList)) { // testing handled by correctNumberOfArgsReceived
             return false;
         }
-
-        // Check for illegal arguments.
         if(illegalArgsReceived(argsList)) { // testing handled by illegalArgsReceived
-            errorMessage = "One or more illegal arguments were received. Please see README for usage.";
-            logEntry(errorMessage);
-            print(errorMessage);
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             return false;
         }
+        if(!minimumRequiredArgsReceived(argsList)) { // testing handled by minimumRequiredArgsReceived
+            return false;
+        }
+        if(!argsAreInGoodOrder(argsList)) { // testing is handled by argsAreInGoodOrder
+            return false;
+        }
+        if(!populateClassMemberVariables(argsList)) { // testing is handled by populateClassMemberVariables
+            return false;
+        }
+        logEntry("Program arguments parsed and validated.");
+        return true;
+    }
 
-        // Make sure minimum required args were received.
-        if(!(argsList.contains(WORDS_FILE_ARG) && argsList.contains(NUM_TO_PRINT_ARG))) { // todo: needs testing
+    /**
+     * Determines if an acceptable number of program arguments were received.
+     *
+     * @param argsList The program arguments to analyze.
+     * @return         True if an acceptable number of program arguments were received, false otherwise.
+     */
+    public static boolean correctNumberOfArgsReceived(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
+            return false;
+        }
+        List<Integer> acceptableArgCount = new ArrayList<>(Arrays.asList(4, 5, 6, 7));
+        if(!acceptableArgCount.contains(argsList.size())) {
+            logEntry("App.correctNumberOfArgsReceived determined that an invalid number of args was received.");
+            errorMessage = "Program must have 4, 5, 6, or 7 arguments. Number of arguments received: "
+                    + argsList.size() + ".";
+            logEntry(errorMessage);
+            print(errorMessage);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Determine if the minimum required program arguments were received.
+     *
+     * @param argsList The program arguments to analyze.
+     * @return         True if the minimum required program arguments were received, false otherwise.
+     */
+    public static boolean minimumRequiredArgsReceived(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
+            return false;
+        }
+        if(!argsList.contains(WORDS_FILE_ARG) || !argsList.contains(NUM_TO_PRINT_ARG)) {
             errorMessage = "The minimum required program arguments " + WORDS_FILE_ARG + " and " + NUM_TO_PRINT_ARG +
                     " were not both found.";
             logEntry(errorMessage);
             print(errorMessage);
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
             return false;
         }
+        return true;
+    }
 
-        // Make sure args appear to be in good order.
-        if(!argsAreInGoodOrder(argsList)) { // testing is handled by argsAreInGoodOrder
-            logEntry(NIGO_MESSAGE);
-            print(NIGO_MESSAGE);
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+    /**
+     * Populate class member variables.
+     *
+     * @param argsList The program arguments
+     * @return         True if the CLMs were successfully populated, false otherwise.
+     */
+    public static boolean populateClassMemberVariables(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty() || !ARGS_ARE_IN_GOOD_ORDER) {
             return false;
         }
-
-        // Populate class member variables.
-        // (Calling argsList.get(i + 1) will not throw index out bounds exception because of vetting code above.)
+        // argsList.get(i + 1) will not throw an index out of bounds exception if ARGS_ARE_IN_GOOD_ORDER.
         for(int i = 0; i < argsList.size(); i++) {
             if(argsList.get(i).equals(WORDS_FILE_ARG)) {
                 wordsFile = makeNewFile(argsList.get(i + 1)); // testing is handled by makeNewFile
@@ -262,7 +288,6 @@ public class App {
                     logEntry("Error (App.parseArgs): App.makeNewFile returned null when attempting to populate wordsFile.");
                     logEntry("Program terminated");
                     print(NIGO_MESSAGE);
-//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -273,7 +298,6 @@ public class App {
                             "specialCharactersFile.");
                     logEntry("Program terminated");
                     print(NIGO_MESSAGE);
-//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -284,7 +308,6 @@ public class App {
                     logEntry("Error (App.parseArgs): App.getNumberOfFrankenwordsToCreate returned -1.");
                     logEntry("Program terminated");
                     print(NIGO_MESSAGE);
-//                    throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -292,17 +315,20 @@ public class App {
                 SPACES_REQUESTED = true;
             }
         }
-        logEntry("Program arguments parsed and validated.");
         return true;
     }
 
     /**
-     * Determines whether or not the args appear to be in good order. Specifically,
+     * Determines whether or not the args appear to be in good order. Specifically, dash args must be followed by
+     * non-dash args (except for '-spaces').
      *
      * @param argsList the list of args to analyze
      * @return         true if the args appear to be in good order, false otherwise.
      */
     public static boolean argsAreInGoodOrder(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty()) {
+            return false;
+        }
         for(int i = 0; i < argsList.size() - 1; i++) {
             String thisArg = argsList.get(i);
             // Will not cause index out of bounds exceptions because for loop stops 1 short of end:
@@ -311,6 +337,8 @@ public class App {
                     logEntry("Error: App.argsAreInGoodOrder found that a dash arg is followed by another dash arg, " +
                             "and the first dash arg is not " +
                             SPACES_ARG + ": " + thisArg);
+                    logEntry(NIGO_MESSAGE);
+                    print(NIGO_MESSAGE);
                     return false;
                 }
             }
@@ -319,30 +347,37 @@ public class App {
         if(lastArg.charAt(0) == '-' && !lastArg.equals(SPACES_ARG)) {
             logEntry("Error: App.argsAreInGoodOrder found that the last arg is a dash arg, and it is not " +
                     SPACES_ARG + ": " + lastArg);
-//            throw new IllegalArgumentException(PARSE_ARGS_ERROR_MESSAGE);
+            logEntry(NIGO_MESSAGE);
+            print(NIGO_MESSAGE);
             return false;
         }
+        ARGS_ARE_IN_GOOD_ORDER = true;
         return true;
     }
 
     /**
+     * Checks for illegal program arguments.
+     *
      * @param argsList the args to analyze
      * @return         true if the args are legal, false otherwise
      */
     public static boolean illegalArgsReceived(List<String> argsList) { // todo: not tested
+        if(argsList == null || argsList.isEmpty()) {
+            return false;
+        }
         List<String> acceptableArgs = new ArrayList<>(Arrays.asList(WORDS_FILE_ARG, SPECIAL_CHARS_FILE_ARG,
                 NUM_TO_PRINT_ARG, SPACES_ARG));
         for(String s : argsList) {
             if(s.charAt(0) == '-') {
                 if(!acceptableArgs.contains(s)) {
                     logEntry("Error: App.illegalArgsReceived determined that arg " + s + " is illegal.");
+                    print("One or more illegal arguments were received. Please see README for usage.");
                     return false;
                 }
             }
         }
         return true;
     }
-
 
     /**
      * Create and validate a new File object.
@@ -351,7 +386,7 @@ public class App {
      * @return         The file, if it exists and is not empty. Null otherwise.
      */
     public static File makeNewFile(String fileName) { // todo: not tested
-        if(StringUtils.isNotBlank(fileName)) {
+        if(StringUtils.isBlank(fileName)) {
             logEntry("Error: App.makeNewFile received a blank arg.");
             return null;
         }
