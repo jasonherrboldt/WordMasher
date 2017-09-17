@@ -83,11 +83,11 @@ public class App {
     private static void handleMainException(Exception e) {
 
         // Try to print something meaningful to the log.
-        if(errorMessage != null && !errorMessage.isEmpty()) {
+        if(!StringUtils.isBlank(errorMessage)) {
             logEntry(errorMessage);
         }
         String exceptionMessage = e.getMessage();
-        if(exceptionMessage != null && !exceptionMessage.isEmpty()) {
+        if(StringUtils.isBlank(exceptionMessage)) {
             logEntry(exceptionMessage);
         }
         Throwable cause = e.getCause();
@@ -135,7 +135,7 @@ public class App {
      * @param log the log entry
      */
     private static void logEntry(String log) throws IllegalStateException { // can be functionally tested
-        if(log != null && !log.isEmpty()) {
+        if(!StringUtils.isBlank(log)) {
             try {
                 FileWriter fw;
                 BufferedWriter bw;
@@ -425,7 +425,7 @@ public class App {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            while((line = br.readLine()) != null) {
+            while(!StringUtils.isBlank(line = br.readLine())) {
                 returnList.add(line);
             }
         } catch (IOException e) {
