@@ -1,0 +1,17 @@
+Regression tests:
+
+ONE (EVERYTHING)
+
+-wordsfile english_words.txt -specialcharsfile special_characters_A_more_nums.txt -addspaces -numtoprint 10
+
+TWO (WITH SPACES, NO SPECIAL CHARS)
+
+-wordsfile english_words.txt -addspaces -numtoprint 10
+
+THREE (WITH SPECIAL CHARS, NO SPACES)
+
+-wordsfile english_words.txt -specialcharsfile special_characters_A_more_nums.txt -numtoprint 10
+
+FOUR (NO SPECIAL CHARS OR SPACES)
+
+-wordsfile english_words.txt -numtoprint 10

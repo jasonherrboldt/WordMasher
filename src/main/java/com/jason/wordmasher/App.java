@@ -444,22 +444,27 @@ public class App {
      * @return Char array from file
      */
     static char[] readFileIntoCharArray(File file) throws IllegalStateException { // tested
-        List<String> fileStringList = readFileIntoListOfStrings(file); // Already vetted for empty files.
-        int fileLength = fileStringList.size();
-        char[] returnArray = new char[fileLength];
+        if(file != null) {
+            if(file.exists()) {
+                List<String> fileStringList = readFileIntoListOfStrings(file); // Already vetted for empty files.
+                int fileLength = fileStringList.size();
+                char[] returnArray = new char[fileLength];
 
-        for(int i = 0; i < fileLength; i++) {
-            String s = fileStringList.get(i);
-            if(s.length() != 1 || s.equals("")) {
-                errorMessage = "Error: App.readFileIntoCharArray encountered an illegal string in " +
-                        "specialCharactersFile.";
-                logEntry(errorMessage);
-                throw new IllegalStateException(errorMessage);
+                for(int i = 0; i < fileLength; i++) {
+                    String s = fileStringList.get(i);
+                    if(s.length() != 1 || s.equals("")) {
+                        errorMessage = "Error: App.readFileIntoCharArray encountered an illegal string in " +
+                                "specialCharactersFile.";
+                        logEntry(errorMessage);
+                        throw new IllegalStateException(errorMessage);
+                    }
+                    returnArray[i] = s.charAt(0);
+                }
+                logEntry("The file " + file.getName() + " has been read into a char array.");
+                return returnArray;
             }
-            returnArray[i] = s.charAt(0);
         }
-        logEntry("The file " + file.getName() + " has been read into a char array.");
-        return returnArray;
+        return null;
     }
 
 
