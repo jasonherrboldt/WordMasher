@@ -86,7 +86,7 @@ public class App {
             logEntry(errorMessage);
         }
         String exceptionMessage = e.getMessage();
-        if(StringUtils.isBlank(exceptionMessage)) {
+        if(!StringUtils.isBlank(exceptionMessage)) {
             logEntry(exceptionMessage);
         }
         Throwable cause = e.getCause();
