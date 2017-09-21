@@ -12,7 +12,7 @@ The user will always be alerted if an error occurs, and advised to review the lo
 
 * (Required) -wordsfile [WORDS_FILE]: A user-provided file of words to mash. Words must have length {len | 2 > len < 10} to be picked up by the program. The program selects 2 or 3 distinct words for every frankenword, which creates a relationship between the number of words in the words file and the number of requested frankenwords. A good rule of thumb is to have at least 3n words in your words file for n requested frankenwords to avoid errors. Words must be separated in the file by a carriage return, i.e. hitting Return between each typed word. A handy file of 58,000 English words may be downloaded [here](http://www.mieliestronk.com/wordlist.html). A copy of this file is included in the project root (english_words.txt).
 * (Required) -numtoprint [INT]: The number of frankenwords to print to the output file. INT must be an integer-parsable string in the range {n | 0 > n < 1001}.
-* -specialcharsfile [SPECIAL_CHARS_FILE]: A user-provided file of special characters to be randomly sprinkled into the frankenwords. Character strings must have a length of exactly one, and must be separated in the file by a carriage return. There is no restriction on what special characters may be injected at runtime, but some may cause trouble when opening the output file with certain programs. Use with caution. Special characters may repeat; if you want more numbers to appear than other special chars, enter the chars 0 - 9 multiple times and other special chars only once. Four sample special character files are included in the project root, or you can create your own. (See SPECIAL CHARACTERS section below for more information.) 
+* -specialcharsfile [SPECIAL_CHARS_FILE]: A user-provided file of special characters to be randomly sprinkled into the frankenwords. Character strings must have a length of exactly one, and must be separated in the file by a carriage return. There is no restriction on what special characters may be injected at runtime, but some may cause trouble when opening the output file with certain programs. Use with caution. Special characters may repeat. For example if you want more numbers to appear than other special chars, enter the chars 0 - 9 multiple times and other special chars only once. Four sample special character files are included in the project root, or you can create your own. (See SPECIAL CHARACTERS section below for more information.) 
 * -addspaces: Program will randomly inject one or two spaces into generated frankenwords. (See SPACES section below for more information.) 
 
 ## Sample Output
@@ -111,7 +111,7 @@ There is a 50% chance that the first letter of the frankenword will be capitaliz
 
 ## Special Characters
 
-A weighted random boolean function decides if special characters should be inserted into the frankenword. There will be a 1 in X chance (where X is around 6) that this boolean function returns true. 
+If the user injected a file of special characters at runtime, a weighted random boolean function decides if special characters should be inserted into the frankenword. There will be a 1 in X chance (where X is around 6) that this boolean function returns true. 
 
 The special character inserter picks an integer r as such: 
 * If the frankenword length is < 6, r can only be 1. Then a special character s is chosen at random from the list of special characters, and used to replace a random index of the frankenword.
@@ -119,7 +119,7 @@ The special character inserter picks an integer r as such:
 
 ## Added Spaces
 
-A weighted random boolean function decides if special characters should be inserted into the frankenword. There will be a 1 in X chance (where X is around 4) that this boolean function returns true. 
+If the user requested added spaces at runtime, a weighted random boolean function decides if special characters should be inserted into the frankenword. There will be a 1 in X chance (where X is around 4) that this boolean function returns true. 
 
 If the frankenword length is > 6, there is an even chance that it will be broken into either two or three words. Otherwise it will be broken into two words.
 
